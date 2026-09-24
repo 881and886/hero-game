@@ -1,1627 +1,1345 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>勇者紀元：星界誓約 (Aether Oath RPG)</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        rpgDark: '#0a0e1a',
-                        rpgCard: '#121a2d',
-                        rpgBorder: '#233252',
-                        rpgGold: '#f59e0b',
-                        rpgPurple: '#9333ea',
-                        rpgCrimson: '#ef4444'
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Noto+Sans+TC:wght@400;600;700;900&display=swap');
-        
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background: radial-gradient(circle at 50% 15%, #182544 0%, #080c14 100%);
-            color: #f1f5f9;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>三國志：天下歸一 (Chronicles of the Three Kingdoms)</title>
+  <style>
+    :root {
+      --bg-main: #141210;
+      --panel-bg: #221d18;
+      --panel-border: #4a3b2c;
+      --accent-gold: #d4af37;
+      --accent-red: #8b1e1e;
+      --accent-blue: #234c7a;
+      --accent-green: #2d5a27;
+      --text-main: #f0e6d2;
+      --text-muted: #a69886;
+      --loyalty-full: #ff4500;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    header {
+      background: linear-gradient(180deg, #2b170c 0%, #170d07 100%);
+      border-bottom: 2px solid var(--accent-gold);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .game-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--accent-gold);
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .res-bar {
+      display: flex;
+      gap: 16px;
+      font-size: 0.95rem;
+      background: rgba(0,0,0,0.5);
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--panel-border);
+    }
+    .res-item b { color: var(--accent-gold); margin-left: 4px; }
+    .audio-ctrl {
+      background: #33261a;
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+    .audio-ctrl:hover { background: var(--accent-gold); color: #000; }
 
-        .title-font {
-            font-family: 'Cinzel', serif;
-        }
+    nav {
+      background: #191410;
+      display: flex;
+      border-bottom: 1px solid var(--panel-border);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .tab-btn.active {
+      color: var(--accent-gold);
+      border-bottom-color: var(--accent-gold);
+      background: rgba(212, 175, 55, 0.08);
+    }
 
-        .glass-panel {
-            background: rgba(18, 26, 45, 0.82);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(66, 92, 148, 0.28);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-        }
+    main {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 16px;
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: block; animation: fadeIn 0.25s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Damage text float */
-        @keyframes floatDamage {
-            0% { opacity: 0; transform: translateY(0) scale(0.7); }
-            25% { opacity: 1; transform: translateY(-24px) scale(1.25); }
-            100% { opacity: 0; transform: translateY(-60px) scale(0.9); }
-        }
-        .damage-number {
-            position: absolute;
-            animation: floatDamage 0.85s ease-out forwards;
-            font-weight: 900;
-            pointer-events: none;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.9);
-            z-index: 60;
-        }
+    /* 君主選擇畫面 */
+    .lord-select-screen {
+      text-align: center;
+      padding: 30px 10px;
+    }
+    .lord-cards {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .lord-card {
+      background: var(--panel-bg);
+      border: 2px solid var(--panel-border);
+      border-radius: 8px;
+      width: 280px;
+      padding: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+      text-align: left;
+    }
+    .lord-card:hover {
+      border-color: var(--accent-gold);
+      transform: translateY(-6px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+    .lord-card h3 { color: var(--accent-gold); margin-bottom: 8px; }
+    .lord-card .trait { color: #8ec3ff; font-size: 0.9rem; margin-bottom: 12px; }
+    .lord-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
 
-        .shake {
-            animation: screenShake 0.35s ease-in-out;
-        }
-        @keyframes screenShake {
-            0% { transform: translate(0, 0); }
-            20% { transform: translate(-6px, 5px); }
-            40% { transform: translate(6px, -4px); }
-            60% { transform: translate(-4px, 2px); }
-            80% { transform: translate(3px, -2px); }
-            100% { transform: translate(0, 0); }
-        }
+    /* 主畫面佈局 */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 850px) { .grid-2 { grid-template-columns: 1fr; } }
 
-        @keyframes portalRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .portal-spin {
-            animation: portalRotate 10s linear infinite;
-        }
+    .card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card h3 {
+      font-size: 1.1rem;
+      color: var(--accent-gold);
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .card-glow-ssr {
-            box-shadow: 0 0 22px rgba(245, 158, 11, 0.65);
-            border-color: #fbbf24 !important;
-        }
-        .card-glow-sr {
-            box-shadow: 0 0 18px rgba(168, 85, 247, 0.5);
-            border-color: #c084fc !important;
-        }
-    </style>
+    /* 內政按鈕 */
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .action-box {
+      background: #2a221a;
+      border: 1px solid #3d3023;
+      padding: 12px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .action-box b { color: #eedcb2; }
+    .action-box p { font-size: 0.8rem; color: var(--text-muted); }
+    .btn {
+      background: linear-gradient(180deg, #443322 0%, #2b1f14 100%);
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn:hover:not(:disabled) { background: var(--accent-gold); color: #000; font-weight: bold; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: #666; color: #888; }
+    .btn-red { border-color: #e65c5c; color: #ff8c8c; }
+    .btn-red:hover:not(:disabled) { background: #b02e2e; color: #fff; }
+
+    /* 人才列表與卡片 */
+    .general-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      max-height: 540px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .gen-card {
+      background: #1c1814;
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 12px;
+      position: relative;
+    }
+    .gen-card.awake {
+      border-color: var(--loyalty-full);
+      box-shadow: 0 0 10px rgba(255, 69, 0, 0.25);
+    }
+    .awake-tag {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--loyalty-full);
+      color: #fff;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .gen-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .gen-name { font-weight: bold; font-size: 1rem; color: #ffdca8; }
+    .gen-stats {
+      font-size: 0.85rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      margin: 8px 0;
+      color: var(--text-muted);
+    }
+    .gen-stats span b { color: #fff; }
+    .loyalty-bar {
+      height: 8px;
+      background: #332a22;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 6px 0;
+    }
+    .loyalty-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d4af37, #ff6b35);
+      width: 50%;
+    }
+    .loyalty-fill.full { background: #ff4500; }
+
+    /* 紙娃娃裝備展示區 */
+    .doll-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #16120e;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .doll-svg {
+      width: 200px;
+      height: 240px;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.7));
+    }
+    .doll-slots {
+      width: 100%;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .doll-slot {
+      display: flex;
+      justify-content: space-between;
+      background: #201a14;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #3a2e22;
+    }
+
+    /* 戰略地圖 */
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .city-card {
+      background: #1c1712;
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 14px;
+      transition: 0.2s;
+    }
+    .city-card.owned { border-color: var(--accent-green); }
+    .city-card.enemy { border-color: #8a3030; }
+    .city-card h4 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .city-tag {
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .city-tag.mine { background: var(--accent-green); color: #fff; }
+    .city-tag.theirs { background: #802020; color: #fff; }
+
+    /* 戰鬥與結算彈窗 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 20px;
+    }
+    .modal-box {
+      background: #1f1812;
+      border: 2px solid var(--accent-gold);
+      border-radius: 8px;
+      max-width: 650px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+      animation: popIn 0.3s ease-out;
+    }
+    @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* 歷史事件彈窗 */
+    .event-card {
+      background: #2b1f14;
+      border-left: 4px solid var(--accent-gold);
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+    .log-box {
+      background: #120e0b;
+      border: 1px solid #33251a;
+      border-radius: 6px;
+      padding: 10px;
+      height: 120px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+      color: #a0907d;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+  </style>
 </head>
-<body class="flex flex-col select-none" onclick="AudioEngine.tryAutoResume()">
+<body>
 
-    <!-- Top Navigation & Audio Control Bar -->
-    <header class="glass-panel sticky top-0 z-40 border-b border-indigo-900/40 px-4 py-3">
-        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('adventure')">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center text-xl shadow-lg border border-amber-300/40">
-                    ⚔️
-                </div>
-                <div>
-                    <h1 class="text-base md:text-lg font-black tracking-wider title-font text-amber-400">勇者紀元：星界誓約</h1>
-                    <p class="text-xs text-slate-400 font-medium">Lv.<span id="ui-hero-level">1</span> <span id="ui-hero-title">星界旅人</span></p>
-                </div>
-            </div>
+  <!-- 頂部資訊列 -->
+  <header>
+    <div class="game-title">
+      <span>⚔️</span> 三國志：天下歸一
+    </div>
+    <div class="res-bar" id="resBar" style="display:none;">
+      <div class="res-item">年份: <b id="uiDate">西元195年 春</b></div>
+      <div class="res-item">銀兩: <b id="uiGold">1500</b></div>
+      <div class="res-item">糧草: <b id="uiFood">2000</b></div>
+      <div class="res-item">總兵力: <b id="uiTroops">8000</b></div>
+      <div class="res-item">勢力城池: <b id="uiCities">1/8</b></div>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button class="audio-ctrl" id="btnAudioToggle">🎵 BGM: 內政主城</button>
+      <button class="btn" id="btnNextTurn" style="display:none;" onclick="nextSeason()">進入下季 ➔</button>
+    </div>
+  </header>
 
-            <!-- Currency & BGM Controls -->
-            <div class="flex items-center gap-2 md:gap-4 text-xs md:text-sm">
-                <div class="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-full border border-amber-500/30">
-                    <span class="text-amber-400 text-sm">🪙</span>
-                    <span id="ui-gold" class="font-bold text-amber-300">1,500</span>
-                </div>
-                <div class="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-full border border-cyan-500/30">
-                    <span class="text-cyan-400 text-sm">💎</span>
-                    <span id="ui-gems" class="font-bold text-cyan-300">600</span>
-                </div>
+  <!-- 導航分頁 -->
+  <nav id="mainNav" style="display:none;">
+    <button class="tab-btn active" onclick="switchTab('tab-city')">🏰 內政主城</button>
+    <button class="tab-btn" onclick="switchTab('tab-tavern')">🍶 尋訪招賢</button>
+    <button class="tab-btn" onclick="switchTab('tab-court')">📜 人才賜寶</button>
+    <button class="tab-btn" onclick="switchTab('tab-map')">🗺️ 征戰天下</button>
+  </nav>
 
-                <!-- Web Audio BGM Toggle Button -->
-                <button id="btn-bgm-toggle" onclick="toggleBGM(event)" class="px-3 py-1.5 rounded-xl bg-indigo-950/90 hover:bg-indigo-900 flex items-center gap-2 border border-indigo-500/40 text-indigo-300 hover:text-white transition shadow">
-                    <i id="bgm-icon" class="fa-solid fa-music text-xs animate-bounce"></i>
-                    <span id="bgm-status-text" class="text-xs font-bold">BGM: 播放中</span>
-                </button>
-            </div>
+  <!-- 主要內容區 -->
+  <main>
+    <!-- 選擇初始君主 -->
+    <div id="screen-lord-select" class="lord-select-screen">
+      <h2 style="color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 8px;">奉天應命 · 逐鹿中原</h2>
+      <p style="color: var(--text-muted);">請選擇您的起家君主，各勢力具備專屬歷史加成與初相遇人才：</p>
+      <div class="lord-cards">
+        <div class="lord-card" onclick="chooseLord('liubei')">
+          <h3>劉備 · 玄德</h3>
+          <div class="trait">🌟 特性【仁德聚義】</div>
+          <p>• 人才招募成功率 +30%<br>• 與關羽、張飛有誓死情誼（開局即忠誠100%）<br>• 起點：平原小城，民心最高。</p>
         </div>
-    </header>
-
-    <!-- Main Navigation Tabs -->
-    <nav class="max-w-7xl mx-auto w-full px-4 pt-3">
-        <div class="grid grid-cols-4 md:flex md:space-x-3 gap-2 border-b border-slate-800/80 pb-2">
-            <button onclick="switchTab('adventure')" id="tab-btn-adventure" class="tab-btn flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs md:text-sm font-bold transition bg-indigo-600 text-white shadow-lg">
-                <i class="fa-solid fa-compass"></i> <span>冒險主線</span>
-            </button>
-            <button onclick="switchTab('hero')" id="tab-btn-hero" class="tab-btn flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs md:text-sm font-bold transition bg-slate-800/70 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-shirt"></i> <span>紙娃娃換裝</span>
-            </button>
-            <button onclick="switchTab('gacha')" id="tab-btn-gacha" class="tab-btn flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs md:text-sm font-bold transition bg-slate-800/70 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-gem"></i> <span>星界召喚</span>
-            </button>
-            <button onclick="switchTab('battle')" id="tab-btn-battle" class="tab-btn flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs md:text-sm font-bold transition bg-slate-800/70 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-khanda"></i> <span>討伐戰場</span>
-            </button>
+        <div class="lord-card" onclick="chooseLord('caocao')">
+          <h3>曹操 · 孟德</h3>
+          <div class="trait">🌟 特性【雄才招賢】</div>
+          <p>• 內政銀兩與糧草收益 +25%<br>• 酒館刷新花費折半<br>• 開局猛將：夏侯惇、曹仁。</p>
         </div>
-    </nav>
-
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto w-full px-4 py-4 flex-1">
-
-        <!-- ================= TAB 1: 冒險主線 ================= -->
-        <section id="tab-adventure" class="tab-panel space-y-4">
-            <div class="glass-panel p-5 md:p-6 rounded-2xl relative overflow-hidden border border-slate-700/50">
-                <div class="flex flex-col md:flex-row gap-6 items-center">
-                    <div class="w-full md:w-1/3 aspect-[16/10] rounded-xl overflow-hidden relative bg-slate-950 border border-slate-700 flex items-center justify-center shadow-inner">
-                        <div id="story-scene-bg" class="text-7xl select-none">🌲🏰</div>
-                        <div class="absolute bottom-2 left-2 right-2 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs text-slate-200 flex items-center justify-between">
-                            <span><i class="fa-solid fa-location-dot text-amber-400 mr-1.5"></i><span id="story-location-name">微光之森營地</span></span>
-                            <span class="text-indigo-400 text-[10px]">主線進度</span>
-                        </div>
-                    </div>
-                    
-                    <div class="w-full md:w-2/3 flex flex-col justify-between space-y-3">
-                        <div>
-                            <div class="inline-block px-3 py-1 bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold rounded-full mb-2">
-                                <span id="story-chapter-tag">序章：覺醒的誓約者</span>
-                            </div>
-                            <h2 id="story-dialogue-speaker" class="text-lg md:text-xl font-bold text-white mb-2">精靈導師 艾莉婭</h2>
-                            <p id="story-dialogue-text" class="text-slate-300 leading-relaxed text-sm min-h-[70px] bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
-                                「歡迎來到艾爾德蘭大陸！遠古星石正在與深淵力量產生共鳴。前往討伐戰場擊破魔物，或在紙娃娃衣櫥強化你的神兵吧！」
-                            </p>
-                        </div>
-                        <div class="flex flex-wrap gap-2.5 pt-2">
-                            <button onclick="advanceStory()" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl text-xs md:text-sm transition shadow-lg flex items-center gap-2">
-                                <span>推展劇情</span> <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                            <button onclick="startBattleWithMonster(battleState.currentStageIndex)" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs md:text-sm transition shadow-lg flex items-center gap-2">
-                                <i class="fa-solid fa-skull"></i> <span>前往當前討伐關卡</span>
-                            </button>
-                            <button onclick="giveStarterGift()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs transition border border-slate-700">
-                                🎁 領取新手冒險禮包
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stage List Overview -->
-            <div class="glass-panel p-5 rounded-2xl border border-slate-700/50">
-                <h3 class="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-map-location-dot"></i> 大陸討伐關卡進度
-                </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3" id="stage-roadmap-container">
-                    <!-- Dynamic Stages Injected -->
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= TAB 2: 紙娃娃換裝系統 (含數值對比) ================= -->
-        <section id="tab-hero" class="tab-panel hidden space-y-4">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                
-                <!-- Left: SVG Paper Doll Canvas & Real-time Stats -->
-                <div class="lg:col-span-5 glass-panel p-5 rounded-2xl flex flex-col items-center justify-between relative min-h-[480px]">
-                    <div class="w-full flex justify-between items-center mb-2">
-                        <span class="text-xs font-bold text-amber-400 bg-amber-950/60 border border-amber-700/50 px-3 py-1 rounded-full">
-                            ✨ 即時紙娃娃渲染
-                        </span>
-                        <span class="text-xs text-slate-400">目前戰力：<b id="hero-total-power" class="text-amber-300 text-sm">320</b></span>
-                    </div>
-
-                    <!-- SVG Paper Doll Container -->
-                    <div class="w-64 h-80 relative flex items-center justify-center my-2">
-                        <div class="absolute bottom-2 w-48 h-10 bg-indigo-500/20 rounded-full blur-md animate-pulse"></div>
-
-                        <!-- Vector Paper Doll Layers -->
-                        <svg id="hero-paper-doll" class="w-64 h-80 drop-shadow-xl" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Layer 0: Wings & Aura -->
-                            <g id="layer-aura"></g>
-
-                            <!-- Layer 1: Body Base -->
-                            <g id="layer-body">
-                                <ellipse cx="100" cy="226" rx="42" ry="7" fill="#020617" fill-opacity="0.7"/>
-                                <rect x="84" y="150" width="11" height="54" rx="5" fill="#f8fafc"/>
-                                <rect x="105" y="150" width="11" height="54" rx="5" fill="#e2e8f0"/>
-                                <rect id="doll-boots-left" x="80" y="186" width="15" height="24" rx="4" fill="#334155"/>
-                                <rect id="doll-boots-right" x="105" y="186" width="15" height="24" rx="4" fill="#1e293b"/>
-                                <rect x="75" y="90" width="50" height="65" rx="10" fill="#fbd38d"/>
-                                <rect x="58" y="95" width="13" height="50" rx="6" fill="#fbd38d"/>
-                                <rect x="129" y="95" width="13" height="50" rx="6" fill="#fbd38d"/>
-                                <ellipse cx="100" cy="60" rx="26" ry="29" fill="#fbd38d"/>
-                                <ellipse cx="91" cy="58" rx="3" ry="4.5" fill="#1e293b"/>
-                                <ellipse cx="109" cy="58" rx="3" ry="4.5" fill="#1e293b"/>
-                                <circle cx="92" cy="56" r="1.5" fill="#ffffff"/>
-                                <circle cx="110" cy="56" r="1.5" fill="#ffffff"/>
-                                <path d="M95 68 Q100 73 105 68" stroke="#78350f" stroke-width="2" stroke-linecap="round" fill="none"/>
-                            </g>
-
-                            <!-- Layer 2: Hair -->
-                            <g id="layer-hair"></g>
-                            <!-- Layer 3: Armor -->
-                            <g id="layer-armor"></g>
-                            <!-- Layer 4: Helmet -->
-                            <g id="layer-helmet"></g>
-                            <!-- Layer 5: Weapon -->
-                            <g id="layer-weapon"></g>
-                            <!-- Layer 6: Shield -->
-                            <g id="layer-shield"></g>
-                        </svg>
-                    </div>
-
-                    <!-- Current Character Stats Block -->
-                    <div class="w-full grid grid-cols-3 gap-2 text-center mt-2">
-                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                            <span class="text-[11px] text-rose-400 block font-semibold"><i class="fa-solid fa-burst"></i> 攻擊力</span>
-                            <span id="stat-hero-atk" class="text-base md:text-lg font-bold text-white">45</span>
-                        </div>
-                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                            <span class="text-[11px] text-sky-400 block font-semibold"><i class="fa-solid fa-shield"></i> 防禦力</span>
-                            <span id="stat-hero-def" class="text-base md:text-lg font-bold text-white">20</span>
-                        </div>
-                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
-                            <span class="text-[11px] text-emerald-400 block font-semibold"><i class="fa-solid fa-heart"></i> 最大生命</span>
-                            <span id="stat-hero-hp" class="text-base md:text-lg font-bold text-white">200</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right: Equipment Slots & Preview Contrast Box -->
-                <div class="lg:col-span-7 glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
-                    <div>
-                        <!-- Slot Bar -->
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
-                                <i class="fa-solid fa-shield-halved"></i> 穿戴欄位與裝備對比
-                            </h3>
-                            <span class="text-[11px] text-slate-400">點選背包道具查看「數值對比」</span>
-                        </div>
-
-                        <!-- 4 Equipped Slots -->
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4">
-                            <div class="bg-slate-900/90 p-2.5 rounded-xl border border-indigo-900/40 flex flex-col items-center">
-                                <span class="text-[11px] text-slate-400">頭部</span>
-                                <div id="slot-helmet-icon" class="text-2xl my-1">🧢</div>
-                                <span id="slot-helmet-name" class="text-xs font-semibold text-slate-200 truncate w-full text-center">基礎髮型</span>
-                            </div>
-                            <div class="bg-slate-900/90 p-2.5 rounded-xl border border-indigo-900/40 flex flex-col items-center">
-                                <span class="text-[11px] text-slate-400">護甲</span>
-                                <div id="slot-armor-icon" class="text-2xl my-1">👕</div>
-                                <span id="slot-armor-name" class="text-xs font-semibold text-slate-200 truncate w-full text-center">旅人便服</span>
-                            </div>
-                            <div class="bg-slate-900/90 p-2.5 rounded-xl border border-indigo-900/40 flex flex-col items-center">
-                                <span class="text-[11px] text-slate-400">武器</span>
-                                <div id="slot-weapon-icon" class="text-2xl my-1">🗡️</div>
-                                <span id="slot-weapon-name" class="text-xs font-semibold text-slate-200 truncate w-full text-center">初心短劍</span>
-                            </div>
-                            <div class="bg-slate-900/90 p-2.5 rounded-xl border border-indigo-900/40 flex flex-col items-center">
-                                <span class="text-[11px] text-slate-400">飾品 / 翅膀</span>
-                                <div id="slot-accessory-icon" class="text-2xl my-1">✨</div>
-                                <span id="slot-accessory-name" class="text-xs font-semibold text-slate-200 truncate w-full text-center">空飾品位</span>
-                            </div>
-                        </div>
-
-                        <!-- ★ Before → After Real-time Comparison Preview Panel ★ -->
-                        <div id="stat-comparison-card" class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 p-3.5 rounded-xl border border-amber-500/40 mb-4 transition duration-200">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-code-compare text-amber-400"></i>
-                                    預覽更換：<span id="preview-item-title" class="text-white">點選下方裝備查看差異</span>
-                                </span>
-                                <button id="btn-confirm-equip" onclick="confirmEquipPreview()" class="hidden px-3 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-lg text-xs shadow-lg transition">
-                                    確認換上 ➔
-                                </button>
-                            </div>
-                            <div class="grid grid-cols-3 gap-2 text-xs" id="comparison-stats-row">
-                                <div class="bg-black/40 p-2 rounded-lg text-center">
-                                    <span class="text-slate-400 block text-[10px]">生命值</span>
-                                    <span id="cmp-hp-text" class="font-bold text-slate-200">--</span>
-                                </div>
-                                <div class="bg-black/40 p-2 rounded-lg text-center">
-                                    <span class="text-slate-400 block text-[10px]">攻擊力</span>
-                                    <span id="cmp-atk-text" class="font-bold text-slate-200">--</span>
-                                </div>
-                                <div class="bg-black/40 p-2 rounded-lg text-center">
-                                    <span class="text-slate-400 block text-[10px]">防禦力</span>
-                                    <span id="cmp-def-text" class="font-bold text-slate-200">--</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Wardrobe Filter Tabs -->
-                        <div class="flex gap-2 border-b border-slate-800 pb-2 mb-2 text-xs">
-                            <button onclick="filterInventory('all')" id="inv-filter-all" class="inv-filter-btn text-amber-400 font-bold px-2.5 py-1 bg-slate-800 rounded">全部</button>
-                            <button onclick="filterInventory('weapon')" id="inv-filter-weapon" class="inv-filter-btn text-slate-400 hover:text-white px-2.5 py-1">武器</button>
-                            <button onclick="filterInventory('armor')" id="inv-filter-armor" class="inv-filter-btn text-slate-400 hover:text-white px-2.5 py-1">防具</button>
-                            <button onclick="filterInventory('helmet')" id="inv-filter-helmet" class="inv-filter-btn text-slate-400 hover:text-white px-2.5 py-1">頭飾</button>
-                            <button onclick="filterInventory('accessory')" id="inv-filter-accessory" class="inv-filter-btn text-slate-400 hover:text-white px-2.5 py-1">飾品光環</button>
-                        </div>
-
-                        <!-- Inventory List -->
-                        <div id="wardrobe-inventory-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-52 overflow-y-auto pr-1">
-                            <!-- Items populated here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= TAB 3: 星界召喚 (抽卡) ================= -->
-        <section id="tab-gacha" class="tab-panel hidden space-y-4">
-            <div class="glass-panel p-6 rounded-2xl relative overflow-hidden border border-indigo-700/40 text-center">
-                <div class="relative w-44 h-44 mx-auto my-3 flex items-center justify-center">
-                    <div class="absolute inset-0 rounded-full border-4 border-dashed border-cyan-400/40 portal-spin"></div>
-                    <div class="absolute inset-3 rounded-full border-2 border-purple-500/50 animate-pulse"></div>
-                    <div class="w-28 h-28 rounded-full bg-gradient-to-tr from-indigo-900 via-purple-800 to-amber-500 flex items-center justify-center text-5xl shadow-2xl">
-                        🔮
-                    </div>
-                </div>
-
-                <h2 class="text-xl md:text-2xl font-black title-font text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-purple-300 to-cyan-300">
-                    星界神域召喚石盤
-                </h2>
-                <p class="text-slate-300 text-xs md:text-sm mt-1 max-w-md mx-auto">
-                    注入魂石喚醒古代神兵。有機率獲得 SSR 熾天使光翼、星界弒神之刃或熾天使聖光甲！
-                </p>
-
-                <!-- Probability Bar -->
-                <div class="flex justify-center items-center gap-3 mt-3 text-xs font-semibold">
-                    <span class="text-slate-400">機率：</span>
-                    <span class="text-slate-400">N: 50%</span>
-                    <span class="text-sky-400">R: 32%</span>
-                    <span class="text-purple-400">SR: 14%</span>
-                    <span class="text-amber-400 font-bold">SSR: 4%</span>
-                </div>
-
-                <!-- Summon Buttons -->
-                <div class="flex flex-wrap justify-center gap-4 mt-5">
-                    <button onclick="performSummon(1)" class="px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg transition active:scale-95 flex items-center gap-2 text-xs md:text-sm">
-                        <span>單抽召喚</span>
-                        <span class="bg-black/30 px-2 py-0.5 rounded-full text-[11px] text-cyan-200">💎 100</span>
-                    </button>
-                    <button onclick="performSummon(10)" class="px-7 py-2.5 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 hover:from-amber-400 hover:to-purple-500 text-white font-extrabold rounded-xl shadow-xl transition active:scale-95 flex items-center gap-2 border border-amber-300/40 text-xs md:text-sm">
-                        <span>十連召喚 (必得 SR 以上)</span>
-                        <span class="bg-black/30 px-2 py-0.5 rounded-full text-[11px] text-amber-200">💎 900</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Gacha Result View -->
-            <div id="gacha-result-container" class="glass-panel p-5 rounded-2xl hidden">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-base font-bold text-amber-400">✨ 召喚獲得道具</h3>
-                    <button onclick="closeGachaResult()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-slate-300 font-bold">確認收下</button>
-                </div>
-                <div id="gacha-cards-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-3"></div>
-            </div>
-        </section>
-
-        <!-- ================= TAB 4: 討伐戰場 (完善狀態機與結算流程) ================= -->
-        <section id="tab-battle" class="tab-panel hidden space-y-4">
-            <div class="glass-panel p-4 md:p-6 rounded-2xl relative border border-slate-700/60 min-h-[460px] flex flex-col justify-between" id="battle-arena">
-                
-                <!-- Stage Header -->
-                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5 mb-2 text-xs">
-                    <div class="flex items-center gap-2">
-                        <span id="battle-stage-badge" class="px-2.5 py-0.5 rounded-full bg-rose-600/30 border border-rose-500 text-rose-300 font-bold">Chapter 1</span>
-                        <span id="battle-stage-title" class="font-bold text-slate-200">微光之森的異動</span>
-                    </div>
-                    <div class="text-slate-400">
-                        關卡難度：<span id="battle-stage-diff" class="text-amber-400 font-bold">一般</span>
-                    </div>
-                </div>
-
-                <!-- Battle Stage Arena Visual -->
-                <div class="relative w-full py-5 px-4 bg-slate-950/80 rounded-xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 overflow-hidden">
-                    
-                    <!-- Player Hero in Combat -->
-                    <div class="flex flex-col items-center w-full md:w-1/3 relative" id="player-combat-card">
-                        <div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-indigo-400 bg-indigo-950/80 p-1 relative flex items-center justify-center shadow-lg">
-                            <div class="text-4xl select-none">🧙‍♂️</div>
-                            <div id="player-shield-badge" class="hidden absolute -bottom-2 bg-sky-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-black border border-white shadow">
-                                🛡️ <span id="player-shield-val">0</span>
-                            </div>
-                        </div>
-                        <div class="mt-2 text-center w-full max-w-[200px]">
-                            <div class="font-bold text-xs md:text-sm text-slate-200">星界誓約者 (你)</div>
-                            <!-- Player HP Bar -->
-                            <div class="w-full bg-slate-800 rounded-full h-3.5 mt-1 border border-slate-700 overflow-hidden relative">
-                                <div id="player-hp-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-300" style="width: 100%;"></div>
-                                <span id="player-hp-text" class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-slate-900 drop-shadow">200 / 200</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Center Combat Turn Indicator -->
-                    <div class="flex flex-col items-center justify-center">
-                        <div class="w-10 h-10 rounded-full bg-rose-600/30 border border-rose-500 text-rose-300 font-extrabold flex items-center justify-center text-xs title-font shadow-lg">
-                            VS
-                        </div>
-                        <div id="combat-turn-status" class="text-xs text-amber-400 font-semibold mt-2 animate-pulse text-center">
-                            你的回合：請打出卡牌
-                        </div>
-                    </div>
-
-                    <!-- Enemy Monster in Combat -->
-                    <div class="flex flex-col items-center w-full md:w-1/3 relative" id="enemy-container">
-                        <div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-rose-500 bg-rose-950/50 p-1 relative flex items-center justify-center shadow-lg">
-                            <div id="enemy-sprite" class="text-4xl md:text-5xl transition transform duration-200 select-none">🟢</div>
-                            <div id="enemy-intent-badge" class="absolute -top-2 -right-2 bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black shadow-lg">
-                                ⚔️ 準備攻擊 (18)
-                            </div>
-                        </div>
-                        <div class="mt-2 text-center w-full max-w-[200px]">
-                            <div id="enemy-name" class="font-bold text-xs md:text-sm text-rose-300">森林史萊姆</div>
-                            <!-- Enemy HP Bar -->
-                            <div class="w-full bg-slate-800 rounded-full h-3.5 mt-1 border border-slate-700 overflow-hidden relative">
-                                <div id="enemy-hp-bar" class="bg-gradient-to-r from-rose-500 to-red-600 h-full transition-all duration-300" style="width: 100%;"></div>
-                                <span id="enemy-hp-text" class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white drop-shadow">110 / 110</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Battle Narrative Log Box -->
-                <div id="battle-log-text" class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 my-2.5 text-xs text-slate-300 text-center min-h-[36px] flex items-center justify-center">
-                    遭遇野外魔物！準備出牌進行迎擊！
-                </div>
-
-                <!-- Player Hand Deck & Energy Controls -->
-                <div id="combat-actions-panel">
-                    <div class="flex justify-between items-center mb-2 px-1">
-                        <div class="text-xs text-slate-300 flex items-center gap-2">
-                            <span>當前能量：<b id="player-energy-val" class="text-cyan-400 text-sm font-black">3/3</b></span>
-                        </div>
-                        <button onclick="endPlayerTurn()" id="btn-end-turn" class="px-4 py-1.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 rounded-xl text-slate-950 font-black text-xs transition shadow-lg active:scale-95">
-                            結束回合 (End Turn) ⏳
-                        </button>
-                    </div>
-
-                    <!-- Hand Cards Grid -->
-                    <div id="hand-cards-container" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                        <!-- Dynamically Injected Hand Cards -->
-                    </div>
-                </div>
-
-                <!-- Battle Settlement Overlay (Victory / Defeat) -->
-                <div id="battle-settlement-overlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center p-6 z-30">
-                    <div id="settlement-icon" class="text-6xl mb-2 animate-bounce">🏆</div>
-                    <h3 id="settlement-title" class="text-2xl font-black text-amber-400 title-font mb-1">戰鬥大獲全勝！</h3>
-                    <p id="settlement-rewards" class="text-xs md:text-sm text-slate-300 mb-5 text-center">
-                        獲得獎勵：🪙 +150 金幣 | 💎 +50 魂石 | 經驗值提升
-                    </p>
-                    <div class="flex flex-wrap gap-3 justify-center">
-                        <button id="btn-settle-next" onclick="proceedToNextStage()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs md:text-sm shadow-xl transition">
-                            晉級下一關 ➔
-                        </button>
-                        <button id="btn-settle-retry" onclick="retryCurrentStage()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs md:text-sm border border-slate-700 transition">
-                            再次挑戰本關
-                        </button>
-                        <button onclick="switchTab('adventure')" class="px-4 py-2.5 bg-indigo-900/60 hover:bg-indigo-800 text-indigo-300 font-bold rounded-xl text-xs md:text-sm border border-indigo-700/50 transition">
-                            返回營地整備
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Global Toast Notification -->
-    <div id="game-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 glass-panel px-5 py-2.5 rounded-full border border-amber-400/50 text-amber-300 font-bold text-xs md:text-sm pointer-events-none opacity-0 transition-opacity duration-300 z-50 shadow-2xl flex items-center gap-2">
-        <i class="fa-solid fa-bell"></i> <span id="toast-text">通知訊息</span>
+        <div class="lord-card" onclick="chooseLord('sunquan')">
+          <h3>孫權 · 仲謀</h3>
+          <div class="trait">🌟 特性【坐斷東南】</div>
+          <p>• 守城戰鬥戰力 +35%<br>• 水鄉科技自帶加成，易招募江東名將與女將<br>• 開局猛將：周泰、黃蓋。</p>
+        </div>
+      </div>
     </div>
 
-    <script>
-        /* -------------------------------------------------------------
-         * 1. 純 Web Audio API 晶片音樂 (8-bit / 奇幻 MIDI 配樂引擎)
-         * -----------------------------------------------------------*/
-        const AudioEngine = {
-            ctx: null,
-            bgmPlaying: false,
-            bgmTimer: null,
-            noteIndex: 0,
-            isMuted: false,
+    <!-- 1. 內政主城 -->
+    <div id="tab-city" class="view-panel">
+      <div class="grid-2">
+        <div>
+          <!-- 君主紙娃娃 -->
+          <div class="doll-container">
+            <h4 id="dollLordName" style="color:var(--accent-gold); margin-bottom:10px;">君主立繪</h4>
+            <svg class="doll-svg" viewBox="0 0 200 240" id="lordDollSvg">
+              <!-- 底層陰影 -->
+              <ellipse cx="100" cy="225" rx="55" ry="10" fill="#000" opacity="0.4"/>
+              <!-- 坐騎層 -->
+              <g id="slot-mount"></g>
+              <!-- 披風/披甲 -->
+              <path d="M60,90 Q100,160 50,210 L150,210 Q100,160 140,90 Z" fill="#4a1515" id="dollCape"/>
+              <!-- 身體/鎧甲 -->
+              <rect x="75" y="80" width="50" height="75" rx="6" fill="#3a3a3a" id="slot-armor"/>
+              <!-- 頭部與臉 -->
+              <circle cx="100" cy="55" r="22" fill="#eac086"/>
+              <!-- 五官簡約 -->
+              <path d="M92,52 L98,52 M102,52 L108,52" stroke="#4a2e18" stroke-width="2" stroke-linecap="round"/>
+              <path d="M95,65 Q100,70 105,65" stroke="#4a2e18" stroke-width="2" fill="none"/>
+              <!-- 鬍鬚 -->
+              <path d="M95,67 Q100,85 105,67 Z" fill="#1a1410"/>
+              <!-- 頭盔/頭冠 -->
+              <g id="slot-helm">
+                <path d="M78,50 Q100,20 122,50 Q100,42 78,50 Z" fill="#d4af37"/>
+                <circle cx="100" cy="28" r="4" fill="#ff4500"/>
+              </g>
+              <!-- 主武器 -->
+              <g id="slot-weapon"></g>
+            </svg>
+            <div class="doll-slots">
+              <div class="doll-slot"><span>佩劍/神兵</span><b id="slotWeapText">青銅劍 (+5武)</b></div>
+              <div class="doll-slot"><span>身著寶甲</span><b id="slotArmorText">鐵鱗甲 (+5統)</b></div>
+              <div class="doll-slot"><span>座下名駒</span><b id="slotMountText">宛馬 (+3行)</b></div>
+            </div>
+          </div>
 
-            // 奇幻冒險風格 MIDI 旋律序列 (高音主旋律 + 低音和弦)
-            // 頻率數值對應音階 C4, E4, G4, A4, B4, C5 等
-            bgmNotes: [
-                { lead: 440.00, bass: 110.00, dur: 0.22 }, // A4, A2
-                { lead: 523.25, bass: 110.00, dur: 0.22 }, // C5
-                { lead: 659.25, bass: 110.00, dur: 0.22 }, // E5
-                { lead: 587.33, bass: 146.83, dur: 0.22 }, // D5, D3
-                { lead: 440.00, bass: 146.83, dur: 0.22 },
-                { lead: 523.25, bass: 146.83, dur: 0.22 },
-                { lead: 659.25, bass: 130.81, dur: 0.22 }, // E5, C3
-                { lead: 783.99, bass: 130.81, dur: 0.22 }, // G5
-                { lead: 659.25, bass: 130.81, dur: 0.22 },
-                { lead: 587.33, bass: 164.81, dur: 0.22 }, // D5, E3
-                { lead: 493.88, bass: 164.81, dur: 0.22 }, // B4
-                { lead: 440.00, bass: 110.00, dur: 0.44 }  // A4, A2
-            ],
+          <div class="card" style="margin-top:16px;">
+            <h3>即時政務簡報</h3>
+            <p id="cityBrief" style="font-size:0.85rem; line-height:1.6; color:var(--text-muted);">
+              主公起兵平原，民心所向。當前糧草尚足，宜廣積糧、整軍備，待天時有變則定中原。
+            </p>
+            <div class="log-box" id="gameLog">
+              <div>[紀錄] 歲在甲子，群雄割據，霸業肇始。</div>
+            </div>
+          </div>
+        </div>
 
-            init() {
-                if (!this.ctx) {
-                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                    this.ctx = new AudioCtx();
-                }
-                if (this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
-            },
+        <div>
+          <!-- 內政指令 -->
+          <div class="card">
+            <h3>政務廳 · 興邦立國</h3>
+            <div class="action-grid">
+              <div class="action-box">
+                <b>開墾荒田 (消耗 200銀)</b>
+                <p>指派文官興修水利，秋季糧草產出大幅提升。</p>
+                <button class="btn" onclick="doDomestic('farm')">施行開墾</button>
+              </div>
+              <div class="action-box">
+                <b>通商通渠 (消耗 200糧)</b>
+                <p>招徠商賈行會，每季銀兩稅收持續提升。</p>
+                <button class="btn" onclick="doDomestic('commerce')">整頓商市</button>
+              </div>
+              <div class="action-box">
+                <b>廣募義勇 (消耗 300銀, 300糧)</b>
+                <p>響應主公號召，徵集 1,000 名精壯步卒。</p>
+                <button class="btn" onclick="doDomestic('recruit')">發布徵兵</button>
+              </div>
+              <div class="action-box">
+                <b>軍器研發 (消耗 500銀)</b>
+                <p>研發攻城投石與床弩，提升全軍部隊戰鬥力。</p>
+                <button class="btn" onclick="doDomestic('tech')">研發軍械</button>
+              </div>
+            </div>
+          </div>
 
-            tryAutoResume() {
-                if (this.ctx && this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
-            },
+          <!-- 歷史事件觸發區 -->
+          <div class="card">
+            <h3>名士奇遇與重大事件</h3>
+            <div id="eventContainer">
+              <div class="event-card">
+                <b>暫無特殊事件</b>
+                <p style="color:var(--text-muted);">隨四季流轉、勢力擴展，將有機會觸發「三顧茅廬」、「鳳雛出山」等名將宿命。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            startBGM() {
-                this.init();
-                if (this.bgmPlaying) return;
-                this.bgmPlaying = true;
-                this.noteIndex = 0;
-                this.playNextBgmNote();
-            },
+    <!-- 2. 尋訪招募 (酒館) -->
+    <div id="tab-tavern" class="view-panel">
+      <div class="card">
+        <h3>
+          <span>🍶 洛陽酒館 / 集市求賢</span>
+          <button class="btn" onclick="refreshTavern()">重金招宴 (消耗 150 銀兩)</button>
+        </h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
+          酒館內各路隱士雲集。主公魅力與專屬絆倒將大幅影響招納成敗。
+        </p>
+        <div class="general-list" id="tavernList">
+          <!-- 動態載入在野武將 -->
+        </div>
+      </div>
+    </div>
 
-            stopBGM() {
-                this.bgmPlaying = false;
-                if (this.bgmTimer) {
-                    clearTimeout(this.bgmTimer);
-                    this.bgmTimer = null;
-                }
-            },
+    <!-- 3. 人才庫與賜寶 -->
+    <div id="tab-court" class="view-panel">
+      <div class="grid-2">
+        <div class="card">
+          <h3>主公寶庫 (賞賜重臣)</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">
+            將名器賜予武將可大幅激增其忠誠。當<b>忠誠度達 100</b> 時，將解鎖<b>【潛能極致發揮】</b>，全屬性提升 20% 並啟用專屬神技！
+          </p>
+          <div id="treasuryList" style="display:flex; flex-direction:column; gap:8px;">
+            <!-- 寶物列表 -->
+          </div>
+        </div>
+        <div class="card">
+          <h3>麾下文武名冊 (<span id="officerCount">0</span>員)</h3>
+          <div class="general-list" id="courtList">
+            <!-- 動態載入麾下武將 -->
+          </div>
+        </div>
+      </div>
+    </div>
 
-            playNextBgmNote() {
-                if (!this.bgmPlaying || this.isMuted) return;
+    <!-- 4. 征戰天下 (地圖) -->
+    <div id="tab-map" class="view-panel">
+      <div class="card">
+        <h3>🗺️ 中原十三州征戰</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
+          調遣大將與兵馬攻伐鄰郡。一統八大要邑即可終結亂世，成就帝業！
+        </p>
+        <div class="map-grid" id="mapGrid">
+          <!-- 動態地圖 -->
+        </div>
+      </div>
+    </div>
+  </main>
 
-                const step = this.bgmNotes[this.noteIndex];
-                const now = this.ctx.currentTime;
+  <!-- 彈窗：賜寶選擇 -->
+  <div id="giftModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3 style="color:var(--accent-gold); margin-bottom:12px;">選擇賞賜對象</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;" id="giftItemDesc"></p>
+      <div id="giftTargetList" style="max-height:240px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
+      <div style="text-align:right; margin-top:16px;">
+        <button class="btn" onclick="closeGiftModal()">取消</button>
+      </div>
+    </div>
+  </div>
 
-                // 1. 主旋律 (Lead Synth)
-                const leadOsc = this.ctx.createOscillator();
-                const leadGain = this.ctx.createGain();
-                leadOsc.type = 'triangle';
-                leadOsc.frequency.setValueAtTime(step.lead, now);
+  <!-- 彈窗：攻城對決 -->
+  <div id="battleModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3 id="battleTitle" style="color:#ff6b6b; margin-bottom:12px;">攻城激戰！</h3>
+      <div style="display:flex; justify-content:space-around; margin:20px 0; text-align:center;">
+        <div>
+          <h4 id="playerWarLead" style="color:var(--accent-gold);">我方主將</h4>
+          <div id="playerWarPower" style="font-size:1.4rem; font-weight:bold; color:#7ec8ff;">戰力: 0</div>
+        </div>
+        <div style="font-size:1.8rem; font-weight:bold; align-self:center; color:#ff4500;">VS</div>
+        <div>
+          <h4 id="enemyWarLead" style="color:#ff8585;">敵城守將</h4>
+          <div id="enemyWarPower" style="font-size:1.4rem; font-weight:bold; color:#ff8585;">戰力: 0</div>
+        </div>
+      </div>
+      <div id="battleReport" style="background:#110d0a; padding:12px; border-radius:6px; font-size:0.88rem; min-height:80px; color:#e0d3c1; line-height:1.6;">
+      </div>
+      <div style="text-align:center; margin-top:20px;">
+        <button class="btn btn-red" id="btnConfirmBattle" onclick="finishBattle()">擂鼓衝鋒！</button>
+      </div>
+    </div>
+  </div>
 
-                leadGain.gain.setValueAtTime(0.045, now);
-                leadGain.gain.exponentialRampToValueAtTime(0.001, now + step.dur * 0.95);
+  <script>
+    /* ==========================================================================
+       1. 內建 Web Audio API - 多場景三首晶片 MIDI 配樂引擎
+       ========================================================================== */
+    class RetroMidiEngine {
+      constructor() {
+        this.ctx = null;
+        this.currentScene = 'city'; // 'city', 'tavern', 'conquest'
+        this.isPlaying = false;
+        this.tempo = 140;
+        this.step = 0;
+        this.timer = null;
 
-                leadOsc.connect(leadGain);
-                leadGain.connect(this.ctx.destination);
-
-                leadOsc.start(now);
-                leadOsc.stop(now + step.dur);
-
-                // 2. 低音和弦 (Bass Synth)
-                const bassOsc = this.ctx.createOscillator();
-                const bassGain = this.ctx.createGain();
-                bassOsc.type = 'sine';
-                bassOsc.frequency.setValueAtTime(step.bass, now);
-
-                bassGain.gain.setValueAtTime(0.065, now);
-                bassGain.gain.exponentialRampToValueAtTime(0.001, now + step.dur * 0.95);
-
-                bassOsc.connect(bassGain);
-                bassGain.connect(this.ctx.destination);
-
-                bassOsc.start(now);
-                bassOsc.stop(now + step.dur);
-
-                // 循環推進下一個音符
-                this.noteIndex = (this.noteIndex + 1) % this.bgmNotes.length;
-                this.bgmTimer = setTimeout(() => {
-                    this.playNextBgmNote();
-                }, step.dur * 1000);
-            },
-
-            playClick() {
-                if (this.isMuted) return;
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(460, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(920, this.ctx.currentTime + 0.08);
-                gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.08);
-            },
-
-            playSlash() {
-                if (this.isMuted) return;
-                this.init();
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(280, now);
-                osc.frequency.exponentialRampToValueAtTime(50, now + 0.16);
-                gain.gain.setValueAtTime(0.28, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.16);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.16);
-            },
-
-            playShield() {
-                if (this.isMuted) return;
-                this.init();
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(320, now);
-                osc.frequency.exponentialRampToValueAtTime(750, now + 0.22);
-                gain.gain.setValueAtTime(0.25, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.22);
-            },
-
-            playRareFanfare() {
-                if (this.isMuted) return;
-                this.init();
-                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-                notes.forEach((freq, i) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    const start = this.ctx.currentTime + (i * 0.09);
-                    osc.type = 'triangle';
-                    osc.frequency.value = freq;
-                    gain.gain.setValueAtTime(0.22, start);
-                    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(start);
-                    osc.stop(start + 0.35);
-                });
-            }
+        // 音符頻率映射 (Hz)
+        this.N = {
+          C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+          C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+          C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.00, rest: 0
         };
 
-        function toggleBGM(e) {
-            if (e) e.stopPropagation();
-            AudioEngine.init();
-            const btnText = document.getElementById('bgm-status-text');
-            const icon = document.getElementById('bgm-icon');
-
-            if (AudioEngine.bgmPlaying) {
-                AudioEngine.stopBGM();
-                btnText.innerText = "BGM: 已暫停";
-                icon.className = "fa-solid fa-pause text-xs";
-                showToast("🎵 背景音樂已暫停");
-            } else {
-                AudioEngine.startBGM();
-                btnText.innerText = "BGM: 播放中";
-                icon.className = "fa-solid fa-music text-xs animate-bounce";
-                showToast("🎶 奇幻 8-bit 背景配樂開始播放");
-            }
-        }
-
-        /* -------------------------------------------------------------
-         * 2. 裝備數據庫與全套裝飾庫
-         * -----------------------------------------------------------*/
-        const ITEM_DATABASE = {
-            // WEAPONS
-            w_novice_sword: { id: 'w_novice_sword', type: 'weapon', name: '初心短劍', rarity: 'N', atk: 15, def: 0, hp: 0, icon: '🗡️' },
-            w_steel_blade: { id: 'w_steel_blade', type: 'weapon', name: '誓約重鋼劍', rarity: 'R', atk: 35, def: 5, hp: 40, icon: '⚔️' },
-            w_flame_saber: { id: 'w_flame_saber', type: 'weapon', name: '業火烈焰劍', rarity: 'SR', atk: 75, def: 12, hp: 80, icon: '🔥' },
-            w_celestial_blade: { id: 'w_celestial_blade', type: 'weapon', name: '星界弒神之刃', rarity: 'SSR', atk: 140, def: 30, hp: 160, icon: '⚡' },
-
-            // ARMOR
-            a_cloth_robe: { id: 'a_cloth_robe', type: 'armor', name: '旅人便服', rarity: 'N', atk: 0, def: 8, hp: 30, icon: '👕' },
-            a_iron_chest: { id: 'a_iron_chest', type: 'armor', name: '銀衛鎖子甲', rarity: 'R', atk: 6, def: 24, hp: 80, icon: '🛡️' },
-            a_shadow_plate: { id: 'a_shadow_plate', type: 'armor', name: '暗影庇護重鎧', rarity: 'SR', atk: 18, def: 50, hp: 160, icon: '🥋' },
-            a_celestial_armor: { id: 'a_celestial_armor', type: 'armor', name: '熾天使聖光戰甲', rarity: 'SSR', atk: 35, def: 90, hp: 320, icon: '🌟' },
-
-            // HELMET / HAIR
-            h_normal_hair: { id: 'h_normal_hair', type: 'helmet', name: '棕色俐落短髮', rarity: 'N', atk: 3, def: 3, hp: 15, icon: '💇' },
-            h_iron_helm: { id: 'h_iron_helm', type: 'helmet', name: '騎士覆面鐵盔', rarity: 'R', atk: 6, def: 18, hp: 50, icon: '⛑️' },
-            h_mage_hood: { id: 'h_mage_hood', type: 'helmet', name: '虛空法師兜帽', rarity: 'SR', atk: 22, def: 22, hp: 100, icon: '🧙' },
-            h_crown_glory: { id: 'h_crown_glory', type: 'helmet', name: '星辰不朽神冠', rarity: 'SSR', atk: 48, def: 42, hp: 220, icon: '👑' },
-
-            // ACCESSORY / AURA
-            acc_none: { id: 'acc_none', type: 'accessory', name: '空飾品位', rarity: 'N', atk: 0, def: 0, hp: 0, icon: '✖️' },
-            acc_feather: { id: 'acc_feather', type: 'accessory', name: '精靈庇佑翎羽', rarity: 'R', atk: 12, def: 6, hp: 40, icon: '🪶' },
-            acc_magic_ring: { id: 'acc_magic_ring', type: 'accessory', name: '混沌魔源指環', rarity: 'SR', atk: 32, def: 15, hp: 80, icon: '💍' },
-            acc_angel_wings: { id: 'acc_angel_wings', type: 'accessory', name: '輝煌熾天使光翼', rarity: 'SSR', atk: 70, def: 45, hp: 260, icon: '🪽' }
-        };
-
-        // 關卡進度與怪物列表 (Stage 1 ~ 5)
-        const STAGE_CATALOG = [
-            { id: 1, title: "微光之森的異動", diff: "一般", monster: "森林史萊姆", sprite: "🟢", hp: 110, atk: 18, gold: 150, gems: 60, icon: "🌲" },
-            { id: 2, title: "哥布林廢棄石窟", diff: "挑戰", monster: "哥布林酋長", sprite: "👺", hp: 240, atk: 32, gold: 320, gems: 120, icon: "⛏️" },
-            { id: 3, title: "凋零暗夜古城", diff: "困難", monster: "深淵死亡騎士", sprite: "🛡️", hp: 420, atk: 48, gold: 600, gems: 220, icon: "🏰" },
-            { id: 4, title: "幽冥靈魂祭壇", diff: "噩夢", monster: "虛空亡靈巫妖", sprite: "💀", hp: 680, atk: 68, gold: 1000, gems: 350, icon: "🔮" },
-            { id: 5, title: "暗夜火山巢穴", diff: "滅世 BOSS", monster: "滅世狂暴黑龍", sprite: "🐉", hp: 1100, atk: 92, gold: 2000, gems: 800, icon: "🌋" }
+        // 樂譜1: 內政主城 (悠揚古風五度循環)
+        this.trackCityMelody = [
+          'G4', 'rest', 'A4', 'C5', 'D5', 'rest', 'C5', 'A4',
+          'G4', 'E4', 'G4', 'rest', 'A4', 'rest', 'G4', 'rest',
+          'C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'A4', 'G4',
+          'E4', 'D4', 'C4', 'D4', 'C4', 'rest', 'rest', 'rest'
+        ];
+        this.trackCityBass = [
+          'C3', 'C3', 'G3', 'C3', 'F3', 'F3', 'C3', 'F3',
+          'C3', 'C3', 'G3', 'C3', 'A3', 'A3', 'E3', 'A3',
+          'F3', 'F3', 'C3', 'F3', 'G3', 'G3', 'D3', 'G3',
+          'C3', 'G3', 'C3', 'G3', 'C3', 'rest', 'C3', 'rest'
         ];
 
-        // 冒險劇情
-        const STORY_LINES = [
-            { chapter: "序章：覺醒的誓約者", speaker: "精靈導師 艾莉婭", text: "「旅人，你終於醒了！這片大陸正被深淵裂隙吞噬。試著穿上更好的裝備，並前往關卡迎敵吧！」", bg: "🌲⛺", loc: "微光之森營地" },
-            { chapter: "第一章：林地的震動", speaker: "巡林客 達倫", text: "「狂暴魔物正向神殿聚集，每擊敗一名首領，就能解鎖下一個更危險的未知領域！」", bg: "🌲🐾", loc: "迷霧林道" },
-            { chapter: "第二章：遠古神盤的共鳴", speaker: "大祭司 卡蓮", text: "「星界神石感應到強大誓約！消耗魂石進行抽卡召喚，將能召喚出足以斬斷黑夜的遠古神兵！」", bg: "🔮✨", loc: "星界召喚神壇" },
-            { chapter: "終章：黑翼的龍息", speaker: "深淵主宰", text: "「渺小的凡人，即便你披上熾天使的光翼，在滅世龍炎面前也終將化為灰燼！」", bg: "🌋🐉", loc: "世界之脊火山口" }
+        // 樂譜2: 酒館招募 (輕快市井舞曲、切分音)
+        this.trackTavernMelody = [
+          'E4', 'G4', 'A4', 'G4', 'E4', 'D4', 'C4', 'D4',
+          'E4', 'E4', 'G4', 'A4', 'C5', 'rest', 'A4', 'G4',
+          'A4', 'C5', 'D5', 'C5', 'A4', 'G4', 'E4', 'G4',
+          'D4', 'rest', 'E4', 'D4', 'C4', 'rest', 'C4', 'rest'
+        ];
+        this.trackTavernBass = [
+          'A3', 'E3', 'A3', 'E3', 'C3', 'G3', 'C3', 'G3',
+          'F3', 'C3', 'F3', 'C3', 'G3', 'D3', 'G3', 'D3',
+          'A3', 'E3', 'A3', 'E3', 'F3', 'C3', 'F3', 'C3',
+          'G3', 'rest', 'G3', 'rest', 'C3', 'G3', 'C3', 'rest'
         ];
 
-        /* -------------------------------------------------------------
-         * 3. 遊戲狀態與存檔
-         * -----------------------------------------------------------*/
-        let playerState = {
-            name: "星界誓約者",
-            level: 1,
-            gold: 1500,
-            gems: 600,
-            maxClearedStage: 1, // 已解鎖關卡進度
-            equipped: {
-                weapon: 'w_novice_sword',
-                armor: 'a_cloth_robe',
-                helmet: 'h_normal_hair',
-                accessory: 'acc_none'
-            },
-            inventory: [
-                'w_novice_sword',
-                'a_cloth_robe',
-                'h_normal_hair',
-                'acc_none'
-            ],
-            storyIndex: 0
-        };
-
-        // 預覽裝備狀態暫存 (用於 Before → After 數值對比)
-        let pendingPreviewItemId = null;
-
-        function loadGame() {
-            const saved = localStorage.getItem('AETHER_RPG_V2_SAVE');
-            if (saved) {
-                try {
-                    playerState = Object.assign(playerState, JSON.parse(saved));
-                } catch(e) {
-                    console.error("存檔格式錯誤", e);
-                }
-            }
-            updateCurrencyUI();
-            renderPaperDoll();
-            renderEquippedSlotsUI();
-            filterInventory('all');
-            renderStoryUI();
-            renderRoadmapStages();
-        }
-
-        function saveGame() {
-            localStorage.setItem('AETHER_RPG_V2_SAVE', JSON.stringify(playerState));
-        }
-
-        function updateCurrencyUI() {
-            document.getElementById('ui-gold').innerText = playerState.gold.toLocaleString();
-            document.getElementById('ui-gems').innerText = playerState.gems.toLocaleString();
-            document.getElementById('ui-hero-level').innerText = playerState.level;
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('game-toast');
-            document.getElementById('toast-text').innerText = msg;
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
-            setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
-            }, 2200);
-        }
-
-        function switchTab(tabId) {
-            AudioEngine.playClick();
-            document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'text-white');
-                btn.classList.add('bg-slate-800/70', 'text-slate-400');
-            });
-
-            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
-            if (activeBtn) {
-                activeBtn.classList.add('bg-indigo-600', 'text-white');
-                activeBtn.classList.remove('bg-slate-800/70', 'text-slate-400');
-            }
-
-            if (tabId === 'hero') {
-                renderPaperDoll();
-                renderEquippedSlotsUI();
-                resetComparisonPreview();
-            } else if (tabId === 'battle' && !battleState.inBattle) {
-                startBattleWithMonster(battleState.currentStageIndex);
-            }
-        }
-
-        /* -------------------------------------------------------------
-         * 4. 數值計算與「Before → After 數值對比預覽」
-         * -----------------------------------------------------------*/
-        function calculateStatsWithOverrides(customEquip = null) {
-            const eq = customEquip || playerState.equipped;
-            let atk = 20 + (playerState.level * 4);
-            let def = 10 + (playerState.level * 2);
-            let hp = 180 + (playerState.level * 25);
-
-            ['weapon', 'armor', 'helmet', 'accessory'].forEach(slot => {
-                const item = ITEM_DATABASE[eq[slot]];
-                if (item) {
-                    atk += item.atk || 0;
-                    def += item.def || 0;
-                    hp += item.hp || 0;
-                }
-            });
-            return { atk, def, hp };
-        }
-
-        function previewItemComparison(itemId) {
-            const item = ITEM_DATABASE[itemId];
-            if (!item) return;
-
-            AudioEngine.playClick();
-            pendingPreviewItemId = itemId;
-
-            // 當前數值 (Before)
-            const currentStats = calculateStatsWithOverrides();
-
-            // 模擬更換該部件後的數值 (After)
-            const simulatedEquip = { ...playerState.equipped, [item.type]: item.id };
-            const nextStats = calculateStatsWithOverrides(simulatedEquip);
-
-            // 渲染對比介面
-            document.getElementById('preview-item-title').innerText = `${item.name} (${item.rarity})`;
-            
-            const btnConfirm = document.getElementById('btn-confirm-equip');
-            const isEquipped = playerState.equipped[item.type] === item.id;
-            if (!isEquipped) {
-                btnConfirm.classList.remove('hidden');
-                btnConfirm.innerText = `確認換上 ➔`;
-            } else {
-                btnConfirm.classList.add('hidden');
-            }
-
-            renderDiffStat('cmp-hp-text', currentStats.hp, nextStats.hp);
-            renderDiffStat('cmp-atk-text', currentStats.atk, nextStats.atk);
-            renderDiffStat('cmp-def-text', currentStats.def, nextStats.def);
-        }
-
-        function renderDiffStat(elemId, beforeVal, afterVal) {
-            const el = document.getElementById(elemId);
-            const diff = afterVal - beforeVal;
-
-            if (diff > 0) {
-                el.innerHTML = `<span class="text-slate-300">${beforeVal}</span> ➔ <span class="text-emerald-400 font-extrabold">${afterVal} (+${diff}) ↑</span>`;
-            } else if (diff < 0) {
-                el.innerHTML = `<span class="text-slate-300">${beforeVal}</span> ➔ <span class="text-rose-400 font-extrabold">${afterVal} (${diff}) ↓</span>`;
-            } else {
-                el.innerHTML = `<span class="text-slate-200">${beforeVal} ➔ ${afterVal} (持平)</span>`;
-            }
-        }
-
-        function resetComparisonPreview() {
-            pendingPreviewItemId = null;
-            document.getElementById('preview-item-title').innerText = "點選下方裝備查看差異";
-            document.getElementById('btn-confirm-equip').classList.add('hidden');
-            const cur = calculateStatsWithOverrides();
-            document.getElementById('cmp-hp-text').innerText = `${cur.hp}`;
-            document.getElementById('cmp-atk-text').innerText = `${cur.atk}`;
-            document.getElementById('cmp-def-text').innerText = `${cur.def}`;
-        }
-
-        function confirmEquipPreview() {
-            if (!pendingPreviewItemId) return;
-            equipItem(pendingPreviewItemId);
-        }
-
-        /* -------------------------------------------------------------
-         * 5. SVG 紙娃娃視覺渲染引擎
-         * -----------------------------------------------------------*/
-        function renderPaperDoll() {
-            const stats = calculateStatsWithOverrides();
-            document.getElementById('stat-hero-atk').innerText = stats.atk;
-            document.getElementById('stat-hero-def').innerText = stats.def;
-            document.getElementById('stat-hero-hp').innerText = stats.hp;
-            document.getElementById('hero-total-power').innerText = Math.round(stats.atk * 1.8 + stats.def * 1.5 + stats.hp * 0.4);
-
-            const eq = playerState.equipped;
-
-            // 1. 光環/翅膀 (Aura Layer)
-            const auraLayer = document.getElementById('layer-aura');
-            if (eq.accessory === 'acc_angel_wings') {
-                auraLayer.innerHTML = `
-                    <g fill="#fef08a" opacity="0.9" filter="drop-shadow(0 0 8px #eab308)">
-                        <path d="M48 110 C15 70 5 30 2 15 C20 30 45 60 70 95 Z" />
-                        <path d="M52 125 C25 95 15 60 14 45 C35 60 55 90 75 115 Z" />
-                        <path d="M152 110 C185 70 195 30 198 15 C180 30 155 60 130 95 Z" />
-                        <path d="M148 125 C175 95 185 60 186 45 C165 60 145 90 125 115 Z" />
-                    </g>
-                `;
-            } else if (eq.accessory === 'acc_magic_ring') {
-                auraLayer.innerHTML = `
-                    <circle cx="100" cy="115" r="70" stroke="#c084fc" stroke-width="3.5" stroke-dasharray="8 6" fill="none" opacity="0.8" class="portal-spin" />
-                `;
-            } else if (eq.accessory === 'acc_feather') {
-                auraLayer.innerHTML = `
-                    <path d="M60 85 Q40 60 65 40 Q75 65 60 85 Z" fill="#38bdf8" opacity="0.75"/>
-                `;
-            } else {
-                auraLayer.innerHTML = '';
-            }
-
-            // 2. 髮型 (Hair Layer)
-            const hairLayer = document.getElementById('layer-hair');
-            if (eq.helmet === 'h_normal_hair') {
-                hairLayer.innerHTML = `
-                    <path d="M74 58 C72 35 90 25 100 25 C115 25 128 35 126 58 C120 40 80 40 74 58 Z" fill="#78350f"/>
-                    <path d="M72 50 Q66 70 70 82 Q74 65 77 56 Z" fill="#78350f"/>
-                    <path d="M128 50 Q134 70 130 82 Q126 65 123 56 Z" fill="#78350f"/>
-                `;
-            } else {
-                hairLayer.innerHTML = '';
-            }
-
-            // 3. 頭部裝備 (Helmet Layer)
-            const helmetLayer = document.getElementById('layer-helmet');
-            if (eq.helmet === 'h_iron_helm') {
-                helmetLayer.innerHTML = `
-                    <path d="M70 58 C70 28 130 28 130 58 L130 65 L70 65 Z" fill="#94a3b8" stroke="#334155" stroke-width="2"/>
-                    <rect x="80" y="55" width="40" height="6" rx="2" fill="#0f172a"/>
-                    <path d="M96 18 L104 18 L102 36 L98 36 Z" fill="#ef4444"/>
-                `;
-            } else if (eq.helmet === 'h_mage_hood') {
-                helmetLayer.innerHTML = `
-                    <path d="M68 62 C68 25 100 12 100 12 C100 12 132 25 132 62 C132 80 122 86 122 86 L78 86 C78 86 68 80 68 62 Z" fill="#581c87" stroke="#9333ea" stroke-width="2"/>
-                    <circle cx="100" cy="24" r="3" fill="#facc15"/>
-                `;
-            } else if (eq.helmet === 'h_crown_glory') {
-                helmetLayer.innerHTML = `
-                    <path d="M75 42 L82 24 L92 34 L100 16 L108 34 L118 24 L125 42 Z" fill="#facc15" stroke="#ca8a04" stroke-width="1.5"/>
-                    <circle cx="100" cy="28" r="4" fill="#ef4444"/>
-                `;
-            } else {
-                helmetLayer.innerHTML = '';
-            }
-
-            // 4. 護甲 (Armor Layer)
-            const armorLayer = document.getElementById('layer-armor');
-            if (eq.armor === 'a_cloth_robe') {
-                armorLayer.innerHTML = `
-                    <rect x="74" y="90" width="52" height="68" rx="8" fill="#2563eb"/>
-                    <path d="M74 140 L126 140 L122 165 L78 165 Z" fill="#1d4ed8"/>
-                    <line x1="100" y1="90" x2="100" y2="140" stroke="#facc15" stroke-width="2"/>
-                    <rect x="73" y="132" width="54" height="8" rx="2" fill="#78350f"/>
-                    <rect x="96" y="131" width="8" height="10" rx="1" fill="#facc15"/>
-                `;
-            } else if (eq.armor === 'a_iron_chest') {
-                armorLayer.innerHTML = `
-                    <path d="M70 92 L130 92 L124 150 L76 150 Z" fill="#94a3b8" stroke="#334155" stroke-width="2"/>
-                    <circle cx="100" cy="115" r="12" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
-                    <rect x="56" y="90" width="18" height="16" rx="4" fill="#64748b"/>
-                    <rect x="126" y="90" width="18" height="16" rx="4" fill="#64748b"/>
-                `;
-            } else if (eq.armor === 'a_shadow_plate') {
-                armorLayer.innerHTML = `
-                    <path d="M68 90 L132 90 L122 152 L78 152 Z" fill="#1e1b4b" stroke="#7e22ce" stroke-width="2.5"/>
-                    <polygon points="100,105 110,122 90,122" fill="#a855f7"/>
-                    <polygon points="55,92 70,80 73,105" fill="#581c87"/>
-                    <polygon points="145,92 130,80 127,105" fill="#581c87"/>
-                `;
-            } else if (eq.armor === 'a_celestial_armor') {
-                armorLayer.innerHTML = `
-                    <path d="M68 90 L132 90 L122 155 L78 155 Z" fill="#eab308" stroke="#fef08a" stroke-width="2.5"/>
-                    <path d="M100 95 L115 125 L85 125 Z" fill="#ffffff" opacity="0.95"/>
-                    <circle cx="100" cy="120" r="7" fill="#38bdf8"/>
-                    <ellipse cx="64" cy="95" rx="14" ry="10" fill="#facc15" stroke="#ca8a04"/>
-                    <ellipse cx="136" cy="95" rx="14" ry="10" fill="#facc15" stroke="#ca8a04"/>
-                `;
-            }
-
-            // 5. 武器 (Weapon Layer)
-            const weaponLayer = document.getElementById('layer-weapon');
-            if (eq.weapon === 'w_novice_sword') {
-                weaponLayer.innerHTML = `
-                    <g transform="translate(136, 120) rotate(-25)">
-                        <rect x="0" y="-45" width="6" height="45" rx="2" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
-                        <rect x="-6" y="0" width="18" height="4" rx="2" fill="#78350f"/>
-                        <rect x="1" y="4" width="4" height="14" rx="2" fill="#451a03"/>
-                    </g>
-                `;
-            } else if (eq.weapon === 'w_steel_blade') {
-                weaponLayer.innerHTML = `
-                    <g transform="translate(138, 125) rotate(-28)">
-                        <polygon points="0,-75 10,-70 8,0 0,0" fill="#93c5fd" stroke="#1d4ed8" stroke-width="1.5"/>
-                        <rect x="-8" y="0" width="22" height="6" rx="2" fill="#1e293b"/>
-                        <rect x="1" y="6" width="5" height="18" rx="2" fill="#0f172a"/>
-                    </g>
-                `;
-            } else if (eq.weapon === 'w_flame_saber') {
-                weaponLayer.innerHTML = `
-                    <g transform="translate(138, 125) rotate(-28)">
-                        <path d="M2 -80 Q14 -40 8 0 L0 0 Z" fill="#ef4444" stroke="#f97316" stroke-width="2"/>
-                        <line x1="4" y1="-70" x2="4" y2="-5" stroke="#fef08a" stroke-width="2.5"/>
-                        <rect x="-8" y="0" width="22" height="6" rx="2" fill="#7c2d12"/>
-                        <rect x="1" y="6" width="5" height="18" rx="2" fill="#431407"/>
-                    </g>
-                `;
-            } else if (eq.weapon === 'w_celestial_blade') {
-                weaponLayer.innerHTML = `
-                    <g transform="translate(142, 130) rotate(-30)">
-                        <polygon points="3,-95 14,-65 8,0 0,0" fill="#facc15" stroke="#ffffff" stroke-width="2"/>
-                        <circle cx="5" cy="-30" r="4.5" fill="#38bdf8"/>
-                        <rect x="-10" y="0" width="26" height="7" rx="3" fill="#854d0e"/>
-                        <rect x="2" y="7" width="5" height="22" rx="2" fill="#ca8a04"/>
-                    </g>
-                `;
-            }
-
-            // 6. 護盾 (Shield Layer)
-            const shieldLayer = document.getElementById('layer-shield');
-            if (eq.armor === 'a_iron_chest' || eq.armor === 'a_celestial_armor') {
-                shieldLayer.innerHTML = `
-                    <g transform="translate(48, 115)">
-                        <path d="M0 0 L20 0 L16 35 L10 42 L4 35 Z" fill="#475569" stroke="#94a3b8" stroke-width="2"/>
-                        <circle cx="10" cy="18" r="4" fill="#f59e0b"/>
-                    </g>
-                `;
-            } else {
-                shieldLayer.innerHTML = '';
-            }
-        }
-
-        function renderEquippedSlotsUI() {
-            ['helmet', 'armor', 'weapon', 'accessory'].forEach(slot => {
-                const item = ITEM_DATABASE[playerState.equipped[slot]];
-                if (item) {
-                    document.getElementById(`slot-${slot}-name`).innerText = item.name;
-                    document.getElementById(`slot-${slot}-icon`).innerText = item.icon;
-                }
-            });
-        }
-
-        function filterInventory(type) {
-            AudioEngine.playClick();
-            document.querySelectorAll('.inv-filter-btn').forEach(btn => {
-                btn.className = 'inv-filter-btn text-slate-400 hover:text-white px-2.5 py-1';
-            });
-            const activeFilter = document.getElementById(`inv-filter-${type}`);
-            if (activeFilter) {
-                activeFilter.className = 'inv-filter-btn text-amber-400 font-bold px-2.5 py-1 bg-slate-800 rounded';
-            }
-
-            const listContainer = document.getElementById('wardrobe-inventory-list');
-            listContainer.innerHTML = '';
-
-            const displayItems = playerState.inventory
-                .map(id => ITEM_DATABASE[id])
-                .filter(item => item && (type === 'all' || item.type === type));
-
-            if (displayItems.length === 0) {
-                listContainer.innerHTML = '<div class="col-span-2 text-center text-slate-500 py-6 text-xs">此分類暫無道具，快去召喚抽取吧！</div>';
-                return;
-            }
-
-            displayItems.forEach(item => {
-                const isEquipped = playerState.equipped[item.type] === item.id;
-                const rarityBadge = getRarityBadgeHtml(item.rarity);
-
-                const card = document.createElement('div');
-                card.className = `p-2 rounded-xl border transition flex items-center justify-between gap-2 cursor-pointer ${
-                    isEquipped ? 'bg-indigo-950/70 border-amber-400/80 shadow-md' : 'bg-slate-900/70 border-slate-800 hover:border-indigo-400/60'
-                }`;
-
-                // 點擊卡片觸發 Before → After 對比預覽
-                card.onclick = () => previewItemComparison(item.id);
-
-                card.innerHTML = `
-                    <div class="flex items-center gap-2 min-w-0">
-                        <div class="text-2xl">${item.icon}</div>
-                        <div class="truncate">
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-xs font-bold text-slate-200 truncate">${item.name}</span>
-                                ${rarityBadge}
-                            </div>
-                            <div class="text-[10px] text-slate-400">
-                                ${item.atk ? `<span class="text-rose-400 mr-1.5">攻+${item.atk}</span>` : ''}
-                                ${item.def ? `<span class="text-sky-400 mr-1.5">防+${item.def}</span>` : ''}
-                                ${item.hp ? `<span class="text-emerald-400">血+${item.hp}</span>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        ${isEquipped 
-                            ? '<span class="text-[9px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded font-bold">已裝備</span>'
-                            : `<button onclick="event.stopPropagation(); equipItem('${item.id}')" class="text-[10px] bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-0.5 rounded font-bold transition">換上</button>`
-                        }
-                    </div>
-                `;
-                listContainer.appendChild(card);
-            });
-        }
-
-        function equipItem(itemId) {
-            const item = ITEM_DATABASE[itemId];
-            if (!item) return;
-
-            AudioEngine.playShield();
-            playerState.equipped[item.type] = item.id;
-            saveGame();
-
-            renderPaperDoll();
-            renderEquippedSlotsUI();
-            filterInventory('all');
-            previewItemComparison(item.id);
-            showToast(`已換上裝備：${item.name}！紙娃娃與戰力已同步更新！`);
-        }
-
-        function getRarityBadgeHtml(rarity) {
-            switch(rarity) {
-                case 'SSR': return '<span class="text-[9px] px-1.5 py-0.2 bg-amber-500/20 border border-amber-400 text-amber-300 font-black rounded">SSR</span>';
-                case 'SR': return '<span class="text-[9px] px-1.5 py-0.2 bg-purple-500/20 border border-purple-400 text-purple-300 font-bold rounded">SR</span>';
-                case 'R': return '<span class="text-[9px] px-1.5 py-0.2 bg-sky-500/20 border border-sky-400 text-sky-300 font-bold rounded">R</span>';
-                default: return '<span class="text-[9px] px-1.5 py-0.2 bg-slate-700 text-slate-300 rounded">N</span>';
-            }
-        }
-
-        /* -------------------------------------------------------------
-         * 6. 抽卡系統
-         * -----------------------------------------------------------*/
-        const GACHA_POOL = Object.values(ITEM_DATABASE);
-
-        function performSummon(times) {
-            const cost = times === 1 ? 100 : 900;
-            if (playerState.gems < cost) {
-                AudioEngine.playClick();
-                showToast("💎 魂石不足！領取新手補給或在戰場討伐即可獲取！");
-                return;
-            }
-
-            AudioEngine.playRareFanfare();
-            playerState.gems -= cost;
-            updateCurrencyUI();
-
-            const pulled = [];
-            for (let i = 0; i < times; i++) {
-                pulled.push(rollSingleGacha(times === 10 && i === 9));
-            }
-
-            pulled.forEach(item => {
-                if (!playerState.inventory.includes(item.id)) {
-                    playerState.inventory.push(item.id);
-                }
-            });
-            saveGame();
-            displayGachaResult(pulled);
-        }
-
-        function rollSingleGacha(guaranteeSR = false) {
-            const rand = Math.random() * 100;
-            let targetRarity = 'N';
-
-            if (guaranteeSR) {
-                targetRarity = rand < 25 ? 'SSR' : 'SR';
-            } else {
-                if (rand < 4) targetRarity = 'SSR';
-                else if (rand < 18) targetRarity = 'SR';
-                else if (rand < 50) targetRarity = 'R';
-                else targetRarity = 'N';
-            }
-
-            const candidates = GACHA_POOL.filter(it => it.rarity === targetRarity);
-            return candidates[Math.floor(Math.random() * candidates.length)] || GACHA_POOL[0];
-        }
-
-        function displayGachaResult(items) {
-            const container = document.getElementById('gacha-result-container');
-            const grid = document.getElementById('gacha-cards-grid');
-            grid.innerHTML = '';
-            container.classList.remove('hidden');
-
-            items.forEach(item => {
-                const glow = item.rarity === 'SSR' ? 'card-glow-ssr' : (item.rarity === 'SR' ? 'card-glow-sr' : '');
-                const card = document.createElement('div');
-                card.className = `glass-panel p-3 rounded-xl border border-slate-700 flex flex-col items-center text-center ${glow}`;
-                card.innerHTML = `
-                    <div class="text-3xl my-2">${item.icon}</div>
-                    <div class="font-bold text-xs text-white truncate w-full">${item.name}</div>
-                    <div class="my-1">${getRarityBadgeHtml(item.rarity)}</div>
-                    <div class="text-[10px] text-slate-400 mt-1">
-                        ${item.atk ? `攻+${item.atk} ` : ''}
-                        ${item.def ? `防+${item.def} ` : ''}
-                        ${item.hp ? `血+${item.hp}` : ''}
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-            showToast(`召喚成功！獲得了 ${items.length} 件神兵裝備！`);
-        }
-
-        function closeGachaResult() {
-            AudioEngine.playClick();
-            document.getElementById('gacha-result-container').classList.add('hidden');
-        }
-
-        /* -------------------------------------------------------------
-         * 7. 討伐戰場 (關卡推進與戰鬥循環修復)
-         * -----------------------------------------------------------*/
-        let battleState = {
-            inBattle: false,
-            currentStageIndex: 0,
-            monster: null,
-            playerHp: 180,
-            playerMaxHp: 180,
-            playerShield: 0,
-            energy: 3,
-            maxEnergy: 3,
-            turn: 'player', // 'player' | 'enemy' | 'ended'
-            isProcessing: false
-        };
-
-        const COMBAT_SKILL_CARDS = [
-            { id: 'strike', name: '誓約重斬', cost: 1, type: 'attack', power: 1.0, icon: '⚔️', desc: '打出基礎 100% 攻擊力傷害' },
-            { id: 'shield', name: '聖靈晶盾', cost: 1, type: 'defend', power: 1.2, icon: '🛡️', desc: '獲得防禦力 120% 的護盾' },
-            { id: 'burst', name: '星芒滅擊', cost: 2, type: 'attack', power: 2.2, icon: '☄️', desc: '凝聚星芒，打出 220% 爆發重傷' },
-            { id: 'heal', name: '自然治癒', cost: 1, type: 'heal', power: 0.8, icon: '🌿', desc: '恢復自身 25% 最大生命值' }
+        // 樂譜3: 攻陷敵城 / 凱旋壯烈大捷 (雄壯號角和弦軍樂)
+        this.trackConquestMelody = [
+          'C4', 'E4', 'G4', 'C5', 'G4', 'C5', 'E5', 'rest',
+          'D5', 'rest', 'C5', 'D5', 'E5', 'D5', 'C5', 'rest',
+          'F4', 'A4', 'C5', 'F5', 'E5', 'D5', 'C5', 'G4',
+          'C5', 'rest', 'C5', 'rest', 'C5', 'rest', 'rest', 'rest'
         ];
+        this.trackConquestBass = [
+          'C3', 'G3', 'C3', 'G3', 'C3', 'G3', 'C3', 'G3',
+          'G3', 'D3', 'G3', 'D3', 'C3', 'G3', 'C3', 'G3',
+          'F3', 'C3', 'F3', 'C3', 'G3', 'D3', 'G3', 'D3',
+          'C3', 'C3', 'E3', 'G3', 'C3', 'rest', 'C3', 'rest'
+        ];
+      }
 
-        function renderRoadmapStages() {
-            const container = document.getElementById('stage-roadmap-container');
-            container.innerHTML = '';
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+      }
 
-            STAGE_CATALOG.forEach((st, idx) => {
-                const isUnlocked = idx + 1 <= playerState.maxClearedStage;
-                const isCurrent = idx === battleState.currentStageIndex;
+      playTone(freq, type, duration, gainLevel = 0.1) {
+        if (!freq || freq <= 0 || !this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
 
-                const card = document.createElement('div');
-                card.className = `glass-panel p-3 rounded-xl border transition flex flex-col justify-between ${
-                    isCurrent ? 'border-amber-400 bg-amber-950/20' : (isUnlocked ? 'border-slate-700' : 'border-slate-800 opacity-50')
-                }`;
+          gain.gain.setValueAtTime(gainLevel, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
 
-                card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-black text-amber-400">CH.${st.id}</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">${st.diff}</span>
-                        </div>
-                        <div class="text-xs font-bold text-white mt-1 flex items-center gap-1.5">
-                            <span>${st.icon}</span> <span class="truncate">${st.title}</span>
-                        </div>
-                        <div class="text-[10px] text-slate-400 mt-1">首領：${st.monster}</div>
-                    </div>
-                    <div class="mt-2.5">
-                        ${isUnlocked
-                            ? `<button onclick="startBattleWithMonster(${idx})" class="w-full py-1 text-xs font-bold rounded ${isCurrent ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 hover:bg-slate-700 text-slate-200'}">出戰</button>`
-                            : `<div class="text-center text-[10px] text-slate-600 font-bold py-1">🔒 尚未解鎖</div>`
-                        }
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch(e) {}
+      }
+
+      setScene(sceneName) {
+        if (this.currentScene === sceneName) return;
+        this.currentScene = sceneName;
+        this.step = 0;
+        const names = {
+          city: '🎵 BGM: 內政主城 (清平調)',
+          tavern: '🍶 BGM: 酒館喧囂 (市井曲)',
+          conquest: '⚔️ BGM: 拔寨破城 (凱旋歌)'
+        };
+        const btn = document.getElementById('btnAudioToggle');
+        if (btn && this.isPlaying) {
+          btn.textContent = names[sceneName] || '🎵 BGM: 播放中';
+        }
+      }
+
+      start() {
+        this.init();
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        this.isPlaying = true;
+        this.step = 0;
+        clearInterval(this.timer);
+        this.timer = setInterval(() => this.tick(), (60 / this.tempo / 2) * 1000);
+      }
+
+      stop() {
+        this.isPlaying = false;
+        clearInterval(this.timer);
+      }
+
+      tick() {
+        if (!this.isPlaying) return;
+
+        let melodyList, bassList;
+        if (this.currentScene === 'tavern') {
+          melodyList = this.trackTavernMelody;
+          bassList = this.trackTavernBass;
+        } else if (this.currentScene === 'conquest') {
+          melodyList = this.trackConquestMelody;
+          bassList = this.trackConquestBass;
+        } else {
+          melodyList = this.trackCityMelody;
+          bassList = this.trackCityBass;
         }
 
-        function startBattleWithMonster(stageIdx) {
-            const stage = STAGE_CATALOG[stageIdx] || STAGE_CATALOG[0];
-            const stats = calculateStatsWithOverrides();
+        const melodyNote = melodyList[this.step % melodyList.length];
+        const bassNote = bassList[this.step % bassList.length];
 
-            battleState.inBattle = true;
-            battleState.currentStageIndex = stageIdx;
-            battleState.monster = {
-                id: stage.id,
-                name: stage.monster,
-                sprite: stage.sprite,
-                maxHp: stage.hp,
-                hp: stage.hp,
-                atk: stage.atk,
-                gold: stage.gold,
-                gems: stage.gems
-            };
-            battleState.playerMaxHp = stats.hp;
-            battleState.playerHp = stats.hp;
-            battleState.playerShield = 0;
-            battleState.energy = 3;
-            battleState.turn = 'player';
-            battleState.isProcessing = false;
-
-            // 關閉結算彈窗
-            document.getElementById('battle-settlement-overlay').classList.add('hidden');
-            document.getElementById('combat-actions-panel').classList.remove('opacity-30', 'pointer-events-none');
-            document.getElementById('btn-end-turn').disabled = false;
-
-            // 更新戰鬥關卡標籤
-            document.getElementById('battle-stage-badge').innerText = `Chapter ${stage.id}`;
-            document.getElementById('battle-stage-title').innerText = stage.title;
-            document.getElementById('battle-stage-diff').innerText = stage.diff;
-
-            document.getElementById('enemy-sprite').innerText = stage.sprite;
-            document.getElementById('enemy-name').innerText = stage.monster;
-            document.getElementById('enemy-intent-badge').innerText = `⚔️ 意圖：攻擊 (${stage.atk})`;
-            document.getElementById('combat-turn-status').innerText = '你的回合：請打出卡牌';
-
-            updateBattleStatusUI();
-            renderCombatHandCards();
-            renderRoadmapStages();
-            logBattle(`⚔️ 進入【${stage.title}】，迎戰首領【${stage.monster}】！`);
-            switchTab('battle');
+        if (melodyNote && this.N[melodyNote]) {
+          this.playTone(this.N[melodyNote], 'triangle', 0.22, 0.08); // 輕柔木管感
+        }
+        if (bassNote && this.N[bassNote]) {
+          this.playTone(this.N[bassNote], 'square', 0.18, 0.04);   // 8-bit 低音底蘊
         }
 
-        function updateBattleStatusUI() {
-            // Player
-            const pPct = Math.max(0, (battleState.playerHp / battleState.playerMaxHp) * 100);
-            document.getElementById('player-hp-bar').style.width = `${pPct}%`;
-            document.getElementById('player-hp-text').innerText = `${Math.ceil(battleState.playerHp)} / ${battleState.playerMaxHp}`;
+        this.step++;
+      }
+    }
 
-            const shieldBadge = document.getElementById('player-shield-badge');
-            if (battleState.playerShield > 0) {
-                shieldBadge.classList.remove('hidden');
-                document.getElementById('player-shield-val').innerText = battleState.playerShield;
-            } else {
-                shieldBadge.classList.add('hidden');
-            }
+    const bgm = new RetroMidiEngine();
 
-            // Enemy
-            const mPct = Math.max(0, (battleState.monster.hp / battleState.monster.maxHp) * 100);
-            document.getElementById('enemy-hp-bar').style.width = `${mPct}%`;
-            document.getElementById('enemy-hp-text').innerText = `${Math.max(0, Math.ceil(battleState.monster.hp))} / ${battleState.monster.maxHp}`;
+    /* ==========================================================================
+       2. 遊戲資料模型 (三國名將、寶物庫、歷史事件、天下地圖)
+       ========================================================================== */
+    const GAME = {
+      lord: null,
+      year: 195,
+      seasonIdx: 0,
+      seasons: ['春', '夏', '秋', '冬'],
+      gold: 1500,
+      food: 2000,
+      troops: 8000,
+      techLevel: 1,
+      zhugeProgress: 0, // 三顧茅廬進度 0~3
 
-            // Energy
-            document.getElementById('player-energy-val').innerText = `${battleState.energy}/${battleState.maxEnergy}`;
-        }
+      // 玩家持有紙娃娃外觀裝備
+      equipment: {
+        weapon: { name: '青銅劍', war: 5, svgType: 'sword' },
+        armor:  { name: '鎖子甲', ldr: 5, color: '#4a4a4a' },
+        mount:  { name: '西涼馬', spd: 3, color: '#8b5a2b' }
+      },
 
-        function renderCombatHandCards() {
-            const container = document.getElementById('hand-cards-container');
-            container.innerHTML = '';
+      // 寶物庫存
+      treasury: [
+        { id: 't1', name: '青龍偃月刀', type: '神兵', val: 18, stat: 'war', desc: '武藝+18，猛將佩戴神威大顯', icon: '🗡️' },
+        { id: 't2', name: '赤兔神駒',   type: '名駒', val: 15, stat: 'ldr', desc: '統率+15，衝鋒突圍天下第一', icon: '🐎' },
+        { id: 't3', name: '孫子兵法',   type: '兵書', val: 20, stat: 'int', desc: '智力+20，謀略用兵出神入化', icon: '📜' },
+        { id: 't4', name: '杜康陳釀',   type: '佳釀', val: 25, stat: 'loyalty', desc: '忠誠直接提升25點，豪爽大飲', icon: '🍶' }
+      ],
 
-            COMBAT_SKILL_CARDS.forEach(card => {
-                const canPlay = battleState.energy >= card.cost && battleState.turn === 'player' && !battleState.isProcessing;
+      // 麾下已招募人員
+      officers: [],
 
-                const cardEl = document.createElement('div');
-                cardEl.className = `glass-panel p-2.5 rounded-xl border flex flex-col justify-between transition cursor-pointer ${
-                    canPlay 
-                        ? 'border-indigo-500/60 hover:border-amber-400 hover:-translate-y-1 shadow-md' 
-                        : 'opacity-40 border-slate-800 cursor-not-allowed'
-                }`;
+      // 在野武將池 (包含名將與巾幗女將)
+      wildOfficers: [
+        { id: 'zhaoyun', name: '趙雲', gender: 'M', war: 98, int: 76, ldr: 92, chr: 90, loyalty: 70, favLord: 'liubei', title: '常山趙子龍' },
+        { id: 'guanyu',  name: '關羽', gender: 'M', war: 97, int: 78, ldr: 95, chr: 93, loyalty: 80, favLord: 'liubei', title: '美髯公' },
+        { id: 'zhangfei',name: '張飛', gender: 'M', war: 98, int: 50, ldr: 88, chr: 65, loyalty: 80, favLord: 'liubei', title: '萬夫莫敵' },
+        { id: 'zhouyu',  name: '周瑜', gender: 'M', war: 72, int: 96, ldr: 96, chr: 94, loyalty: 75, favLord: 'sunquan', title: '美周郎' },
+        { id: 'sunshangxiang', name: '孫尚香', gender: 'F', war: 86, int: 70, ldr: 78, chr: 88, loyalty: 75, favLord: 'sunquan', title: '弓腰姬' },
+        { id: 'diaochan',name: '貂蟬', gender: 'F', war: 45, int: 84, ldr: 50, chr: 100, loyalty: 70, favLord: 'caocao', title: '絕代傾國' },
+        { id: 'huangyueying', name: '黃月英', gender: 'F', war: 52, int: 95, ldr: 65, chr: 82, loyalty: 80, favLord: 'liubei', title: '機巧賢妻' },
+        { id: 'xiahoudun', name: '夏侯惇', gender: 'M', war: 90, int: 62, ldr: 89, chr: 82, loyalty: 80, favLord: 'caocao', title: '拔矢啖睛' },
+        { id: 'guojia',   name: '郭嘉', gender: 'M', war: 30, int: 98, ldr: 60, chr: 85, loyalty: 75, favLord: 'caocao', title: '天生郭奉孝' },
+        { id: 'pangtong', name: '龐統', gender: 'M', war: 42, int: 97, ldr: 75, chr: 70, loyalty: 70, favLord: 'liubei', title: '鳳雛先生' }
+      ],
 
-                cardEl.onclick = () => {
-                    if (canPlay) playCombatCard(card);
-                };
+      // 中原八大主要州郡城池
+      cities: [
+        { id: 'c1', name: '平原 / 許昌 (初始)', owner: 'player', defense: 1000, troops: 5000, boss: '主公基業' },
+        { id: 'c2', name: '徐州 (陶謙/呂布遺部)', owner: 'enemy', defense: 1800, troops: 6000, boss: '高順', war: 84 },
+        { id: 'c3', name: '壽春 (袁術稱帝)', owner: 'enemy', defense: 2200, troops: 8000, boss: '紀靈', war: 83 },
+        { id: 'c4', name: '襄陽 (劉表荊襄)', owner: 'enemy', defense: 2600, troops: 9000, boss: '蔡瑁', war: 76 },
+        { id: 'c5', name: '建業 (東吳虎踞)', owner: 'enemy', defense: 3200, troops: 12000, boss: '甘寧', war: 94 },
+        { id: 'c6', name: '漢中 (張魯天師)', owner: 'enemy', defense: 3500, troops: 11000, boss: '張衛', war: 78 },
+        { id: 'c7', name: '成都 (益州天府)', owner: 'enemy', defense: 4200, troops: 15000, boss: '嚴顏', war: 86 },
+        { id: 'c8', name: '洛陽 · 長安 (天下至尊)', owner: 'enemy', defense: 5000, troops: 20000, boss: '董卓/呂布殘部', war: 99 }
+      ]
+    };
 
-                cardEl.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-center text-xs mb-1">
-                            <span class="text-base">${card.icon}</span>
-                            <span class="px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40 text-[10px]">
-                                ⚡ ${card.cost}
-                            </span>
-                        </div>
-                        <div class="font-bold text-xs text-white">${card.name}</div>
-                        <p class="text-[10px] text-slate-400 mt-0.5 leading-tight">${card.desc}</p>
-                    </div>
-                    <div class="mt-2 text-center">
-                        <span class="text-[9px] bg-slate-800/80 px-2 py-0.5 rounded text-amber-300 font-medium">點擊出牌</span>
-                    </div>
-                `;
-                container.appendChild(cardEl);
-            });
-        }
+    /* ==========================================================================
+       3. 核心邏輯：選擇君主、介面渲染、紙娃娃更新
+       ========================================================================== */
+    function chooseLord(type) {
+      GAME.lord = type;
+      document.getElementById('screen-lord-select').style.display = 'none';
+      document.getElementById('mainNav').style.display = 'flex';
+      document.getElementById('resBar').style.display = 'flex';
+      document.getElementById('btnNextTurn').style.display = 'inline-block';
+      document.getElementById('tab-city').classList.add('active');
 
-        function playCombatCard(card) {
-            if (battleState.energy < card.cost || battleState.turn !== 'player' || battleState.isProcessing) return;
+      if (type === 'liubei') {
+        document.getElementById('dollLordName').innerText = '主公：劉備 (玄德)';
+        addOfficer('關羽', 'M', 97, 78, 95, 93, 100, '桃園結義');
+        addOfficer('張飛', 'M', 98, 50, 88, 65, 100, '桃園結義');
+        GAME.cities[0].name = '平原 (劉備起家地)';
+        logMessage('主公【劉備】於平原立旗！關羽、張飛誓死相隨，初始忠誠達 100（潛能極致發揮）！');
+      } else if (type === 'caocao') {
+        document.getElementById('dollLordName').innerText = '主公：曹操 (孟德)';
+        addOfficer('夏侯惇', 'M', 90, 62, 89, 82, 95, '宗族心腹');
+        addOfficer('郭嘉',   'M', 30, 98, 60, 85, 90, '王佐知己');
+        GAME.gold += 800;
+        GAME.cities[0].name = '許昌 (曹操發跡地)';
+        logMessage('主公【曹操】雄踞許昌，挾天子令諸侯！得夏侯惇、郭嘉相助，內政儲備豐沛。');
+      } else {
+        document.getElementById('dollLordName').innerText = '主公：孫權 (仲謀)';
+        addOfficer('周泰',   'M', 91, 50, 84, 60, 95, '捨命護主');
+        addOfficer('孫尚香', 'F', 86, 70, 78, 88, 95, '江東郡主');
+        GAME.troops += 3000;
+        GAME.cities[0].name = '柴桑 (東吳門戶)';
+        logMessage('主公【孫權】坐鎮江東，舟師精銳，孫尚香與周泰提刀聽令！');
+      }
 
-            battleState.energy -= card.cost;
-            const stats = calculateStatsWithOverrides();
+      updateUI();
+      renderDoll();
+      renderCourt();
+      renderTreasury();
+      renderMap();
+      checkEvents();
 
-            if (card.type === 'attack') {
-                AudioEngine.playSlash();
-                const dmg = Math.round(stats.atk * card.power);
-                battleState.monster.hp -= dmg;
-                spawnDamageNumber(dmg, false);
-                shakeElement('enemy-container');
-                logBattle(`你打出了【${card.name}】，猛擊怪物造成 ${dmg} 點物理傷害！`);
-            } else if (card.type === 'defend') {
-                AudioEngine.playShield();
-                const shieldGain = Math.round(stats.def * card.power) + 15;
-                battleState.playerShield += shieldGain;
-                logBattle(`你打出了【${card.name}】，築起靈魂光盾獲得 ${shieldGain} 點防護！`);
-            } else if (card.type === 'heal') {
-                AudioEngine.playRareFanfare();
-                const heal = Math.round(battleState.playerMaxHp * 0.25);
-                battleState.playerHp = Math.min(battleState.playerMaxHp, battleState.playerHp + heal);
-                logBattle(`你打出了【${card.name}】，神聖甘霖恢復了 ${heal} 點生命值！`);
-            }
+      // 解鎖並播放背景音樂 (初次互動解鎖音訊上下文)
+      bgm.start();
+      bgm.setScene('city');
+    }
 
-            updateBattleStatusUI();
-            renderCombatHandCards();
+    function addOfficer(name, gender, war, int, ldr, chr, loyalty, title) {
+      GAME.officers.push({
+        id: 'off_' + Date.now() + Math.random(),
+        name, gender, war, int, ldr, chr, loyalty, title,
+        awaked: loyalty >= 100
+      });
+    }
 
-            // 判斷首領是否死亡
-            if (battleState.monster.hp <= 0) {
-                concludeBattle(true);
-            }
-        }
+    function updateUI() {
+      document.getElementById('uiDate').innerText = `西元${GAME.year}年 ${GAME.seasons[GAME.seasonIdx]}`;
+      document.getElementById('uiGold').innerText = GAME.gold;
+      document.getElementById('uiFood').innerText = GAME.food;
+      document.getElementById('uiTroops').innerText = GAME.troops;
+      const myCityCount = GAME.cities.filter(c => c.owner === 'player').length;
+      document.getElementById('uiCities').innerText = `${myCityCount}/${GAME.cities.length}`;
+      document.getElementById('officerCount').innerText = GAME.officers.length;
+    }
 
-        function endPlayerTurn() {
-            if (battleState.turn !== 'player' || battleState.isProcessing) return;
+    function renderDoll() {
+      // 坐騎渲染 (SVG)
+      const mountG = document.getElementById('slot-mount');
+      if (GAME.equipment.mount) {
+        mountG.innerHTML = `
+          <ellipse cx="100" cy="175" rx="70" ry="32" fill="${GAME.equipment.mount.color}"/>
+          <circle cx="160" cy="150" r="16" fill="${GAME.equipment.mount.color}"/>
+          <rect x="70" y="180" width="12" height="40" fill="#2b1a0d"/>
+          <rect x="120" y="180" width="12" height="40" fill="#2b1a0d"/>
+        `;
+      }
+      // 武器渲染 (SVG)
+      const weapG = document.getElementById('slot-weapon');
+      if (GAME.equipment.weapon) {
+        weapG.innerHTML = `
+          <line x1="130" y1="40" x2="165" y2="190" stroke="#d4af37" stroke-width="5" stroke-linecap="round"/>
+          <polygon points="125,30 140,42 120,45" fill="#e0e0e0"/>
+        `;
+      }
+      document.getElementById('slotWeapText').innerText = GAME.equipment.weapon.name;
+      document.getElementById('slotArmorText').innerText = GAME.equipment.armor.name;
+      document.getElementById('slotMountText').innerText = GAME.equipment.mount.name;
+    }
 
-            battleState.turn = 'enemy';
-            battleState.isProcessing = true;
-            document.getElementById('combat-turn-status').innerText = '敵方回合：魔物行動中...';
-            document.getElementById('btn-end-turn').disabled = true;
-            renderCombatHandCards();
+    /* ==========================================================================
+       4. 內政、四季流轉與歷史奇遇事件
+       ========================================================================== */
+    function doDomestic(type) {
+      if (type === 'farm') {
+        if (GAME.gold < 200) return alert('銀兩不足！');
+        GAME.gold -= 200;
+        GAME.food += 600;
+        logMessage('施行屯田開荒，增產糧草 600 石。');
+      } else if (type === 'commerce') {
+        if (GAME.food < 200) return alert('糧草不足！');
+        GAME.food -= 200;
+        GAME.gold += 500;
+        logMessage('通商通渠，商稅大豐收，國庫入帳 500 銀兩。');
+      } else if (type === 'recruit') {
+        if (GAME.gold < 300 || GAME.food < 300) return alert('糧餉不足以招兵！');
+        GAME.gold -= 300;
+        GAME.food -= 300;
+        GAME.troops += 1000;
+        logMessage('廣發招兵文牒，招募 1,000 名精壯勇士入伍。');
+      } else if (type === 'tech') {
+        if (GAME.gold < 500) return alert('研發銀兩不足！');
+        GAME.gold -= 500;
+        GAME.techLevel += 1;
+        logMessage(`工匠突破技藝，研發軍備科技【階級 ${GAME.techLevel}】！攻城戰力大幅增強。`);
+      }
+      updateUI();
+    }
 
-            setTimeout(() => {
-                executeEnemyTurn();
-            }, 750);
-        }
+    function nextSeason() {
+      GAME.seasonIdx++;
+      if (GAME.seasonIdx >= 4) {
+        GAME.seasonIdx = 0;
+        GAME.year++;
+        // 每年歲收
+        const cityNum = GAME.cities.filter(c => c.owner === 'player').length;
+        const incomeGold = cityNum * 400 + (GAME.lord === 'caocao' ? 300 : 0);
+        const incomeFood = cityNum * 600;
+        GAME.gold += incomeGold;
+        GAME.food += incomeFood;
+        logMessage(`【歲首結算】${GAME.year}年春到來，各州歲賦入庫：銀兩+${incomeGold}，糧草+${incomeFood}。`);
+      }
+      // 糧草維持軍隊耗損
+      const foodConsume = Math.floor(GAME.troops * 0.05);
+      GAME.food = Math.max(0, GAME.food - foodConsume);
+      logMessage(`季節更迭至【${GAME.year}年 ${GAME.seasons[GAME.seasonIdx]}】，軍隊食用糧草 ${foodConsume} 石。`);
 
-        function executeEnemyTurn() {
-            if (battleState.monster.hp <= 0) return;
+      checkEvents();
+      updateUI();
+    }
 
-            AudioEngine.playSlash();
-            shakeElement('player-combat-card');
-            let rawDmg = battleState.monster.atk;
+    function checkEvents() {
+      const container = document.getElementById('eventContainer');
+      container.innerHTML = '';
 
-            // 扣除護盾
-            if (battleState.playerShield > 0) {
-                if (battleState.playerShield >= rawDmg) {
-                    battleState.playerShield -= rawDmg;
-                    rawDmg = 0;
-                } else {
-                    rawDmg -= battleState.playerShield;
-                    battleState.playerShield = 0;
-                }
-            }
+      // 歷史事件 1: 三顧茅廬 (劉備專屬或擁有 2 座城以上)
+      const myCities = GAME.cities.filter(c => c.owner === 'player').length;
+      if (GAME.zhugeProgress < 3 && myCities >= 2) {
+        const step = GAME.zhugeProgress + 1;
+        const div = document.createElement('div');
+        div.className = 'event-card';
+        div.innerHTML = `
+          <b style="color:var(--accent-gold);">📜 歷史奇遇：南陽臥龍岡【三顧茅廬 第 ${step} 次】</b>
+          <p style="color:#d5c7b3; margin:6px 0;">探子回報，隆中隱士諸葛孔明有經天緯地之才，是否親往拜謁？</p>
+          <button class="btn" onclick="visitZhuge(${step})">親赴草廬訪賢 (消耗 300 銀)</button>
+        `;
+        container.appendChild(div);
+      } else if (GAME.zhugeProgress >= 3) {
+        const div = document.createElement('div');
+        div.className = 'event-card';
+        div.innerHTML = `<b style="color:#7ec8ff;">🌟 臥龍出山</b><p style="color:#a89b8a;">軍師諸葛孔明已坐鎮中樞，天下三分計已成！</p>`;
+        container.appendChild(div);
+      } else {
+        container.innerHTML = `<div class="event-card"><b>當前風平浪靜</b><p style="color:var(--text-muted);">攻下兩座以上城池即可開展天下名士奇遇。</p></div>`;
+      }
+    }
 
-            battleState.playerHp -= rawDmg;
-            spawnDamageNumber(battleState.monster.atk, true);
-            logBattle(`【${battleState.monster.name}】撲面襲來，對你造成了 ${rawDmg} 點真實創傷！`);
+    function visitZhuge(step) {
+      if (GAME.gold < 300) return alert('盤纏不足！');
+      GAME.gold -= 300;
+      if (step === 1) {
+        GAME.zhugeProgress = 1;
+        alert('【一顧草廬】童子曰先生出遊未歸，主公惆悵而返。');
+        logMessage('主公親謁臥龍岡，童子言孔明先生閒雲野鶴，未能謀面。');
+      } else if (step === 2) {
+        GAME.zhugeProgress = 2;
+        alert('【二顧草廬】冒風雪再至，僅見其弟諸葛均，留書一封慨嘆而歸。');
+        logMessage('二謁茅廬遇風雪，孔明依舊未返，主公留書寄意。');
+      } else if (step === 3) {
+        GAME.zhugeProgress = 3;
+        alert('【三顧茅廬】孔明先生感念主公三度屈尊，出示《隆中對》，慨然出山！');
+        addOfficer('諸葛亮', 'M', 38, 100, 98, 98, 100, '臥龍先生');
+        logMessage('🎉 諸葛孔明正式入幕！神機妙算，智力100極限覺醒！');
+        renderCourt();
+      }
+      checkEvents();
+      updateUI();
+    }
 
-            updateBattleStatusUI();
+    /* ==========================================================================
+       5. 酒館招攬、歷史羈絆加成
+       ========================================================================== */
+    function refreshTavern() {
+      if (GAME.gold < 150) return alert('銀兩不足，無法設宴！');
+      GAME.gold -= 150;
+      updateUI();
+      renderTavern();
+      logMessage('在酒館置辦杜康佳釀，引來數位在野名士落座。');
+    }
 
-            if (battleState.playerHp <= 0) {
-                concludeBattle(false);
-            } else {
-                // 重置回玩家回合
-                setTimeout(() => {
-                    battleState.turn = 'player';
-                    battleState.isProcessing = false;
-                    battleState.energy = battleState.maxEnergy; // 能量補滿
-                    document.getElementById('combat-turn-status').innerText = '你的回合：請打出卡牌';
-                    document.getElementById('btn-end-turn').disabled = false;
-                    renderCombatHandCards();
-                    updateBattleStatusUI();
-                }, 600);
-            }
-        }
+    function renderTavern() {
+      const list = document.getElementById('tavernList');
+      list.innerHTML = '';
+      if (GAME.wildOfficers.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted); padding:10px;">野無遺賢，所有名將皆已被各方招納！</p>';
+        return;
+      }
 
-        function concludeBattle(isVictory) {
-            battleState.turn = 'ended';
-            battleState.isProcessing = false;
-            battleState.inBattle = false;
+      // 隨機抽 3 員在野名將
+      const shuffled = [...GAME.wildOfficers].sort(() => 0.5 - Math.random()).slice(0, 3);
+      shuffled.forEach(gen => {
+        let chance = 45;
+        if (GAME.lord === gen.favLord) chance += 30; // 宿命好感提升
+        if (GAME.lord === 'liubei') chance += 15;   // 劉備仁德特性
 
-            document.getElementById('combat-actions-panel').classList.add('opacity-30', 'pointer-events-none');
-            const overlay = document.getElementById('battle-settlement-overlay');
-            const icon = document.getElementById('settlement-icon');
-            const title = document.getElementById('settlement-title');
-            const desc = document.getElementById('settlement-rewards');
-            const nextBtn = document.getElementById('btn-settle-next');
+        const card = document.createElement('div');
+        card.className = 'gen-card';
+        card.innerHTML = `
+          <div class="gen-header">
+            <span class="gen-name">${gen.name} <small style="color:var(--accent-gold);">(${gen.title})</small></span>
+            <span style="font-size:0.75rem; color:#8ec3ff;">招募率: ${Math.min(95, chance)}%</span>
+          </div>
+          <div class="gen-stats">
+            <span>武力: <b>${gen.war}</b></span>
+            <span>智力: <b>${gen.int}</b></span>
+            <span>統率: <b>${gen.ldr}</b></span>
+            <span>魅力: <b>${gen.chr}</b></span>
+          </div>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">性別: ${gen.gender === 'F' ? '巾幗女將 🌸' : '雄壯名將 ⚔️'}</p>
+          <button class="btn" style="width:100%;" onclick="recruitOfficer('${gen.id}', ${chance})">奉敬禮金 招攬 (300銀)</button>
+        `;
+        list.appendChild(card);
+      });
+    }
 
-            overlay.classList.remove('hidden');
+    function recruitOfficer(id, chance) {
+      if (GAME.gold < 300) return alert('禮金銀兩不足！');
+      GAME.gold -= 300;
 
-            if (isVictory) {
-                AudioEngine.playRareFanfare();
-                const m = battleState.monster;
-                playerState.gold += m.gold;
-                playerState.gems += m.gems;
-                playerState.level += 1;
+      const idx = GAME.wildOfficers.findIndex(o => o.id === id);
+      if (idx === -1) return;
+      const target = GAME.wildOfficers[idx];
 
-                // 解鎖下一關
-                if (battleState.currentStageIndex + 2 > playerState.maxClearedStage) {
-                    playerState.maxClearedStage = Math.min(STAGE_CATALOG.length, battleState.currentStageIndex + 2);
-                }
+      const roll = Math.random() * 100;
+      if (roll <= chance) {
+        alert(`【招攬大捷】${target.name} 被主公之至誠所感，納頭便拜！`);
+        logMessage(`成功招募賢才【${target.name}】加入勢力！`);
+        GAME.wildOfficers.splice(idx, 1);
+        addOfficer(target.name, target.gender, target.war, target.int, target.ldr, target.chr, target.loyalty, target.title);
+        renderTavern();
+        renderCourt();
+      } else {
+        alert(`【緣慳一面】${target.name} 婉拒了主公的金銀，飄然離去。`);
+        logMessage(`招撫【${target.name}】未果，其人尚在觀望天下大勢。`);
+      }
+      updateUI();
+    }
 
-                saveGame();
-                updateCurrencyUI();
-                renderRoadmapStages();
+    /* ==========================================================================
+       6. 賜予寶物、忠誠度 100% 極限發揮系統
+       ========================================================================== */
+    function renderTreasury() {
+      const list = document.getElementById('treasuryList');
+      list.innerHTML = '';
+      if (GAME.treasury.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">寶庫空虛，可透過攻城或探索尋得傳奇器物。</p>';
+        return;
+      }
+      GAME.treasury.forEach(t => {
+        const item = document.createElement('div');
+        item.style = 'background:#1a1511; border:1px solid #382b1f; padding:8px 12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;';
+        item.innerHTML = `
+          <div>
+            <b>${t.icon} ${t.name}</b> <span style="font-size:0.75rem; color:var(--accent-gold);">[${t.type}]</span>
+            <div style="font-size:0.78rem; color:var(--text-muted);">${t.desc}</div>
+          </div>
+          <button class="btn" style="padding:4px 8px; font-size:0.8rem;" onclick="openGiftModal('${t.id}')">賞賜部將</button>
+        `;
+        list.appendChild(item);
+      });
+    }
 
-                icon.innerText = "🏆";
-                title.innerText = "討伐大獲全勝！";
-                title.className = "text-2xl font-black text-amber-400 title-font mb-1";
-                desc.innerText = `獲得戰利品：🪙 +${m.gold} 金幣 | 💎 +${m.gems} 魂石！\n等級提升至 Lv.${playerState.level}！`;
+    function renderCourt() {
+      const list = document.getElementById('courtList');
+      list.innerHTML = '';
+      GAME.officers.forEach(off => {
+        const isFull = off.loyalty >= 100;
+        // 若忠誠 100 滿值，數值發揮極限 (+20%)
+        const multiplier = isFull ? 1.2 : (off.loyalty < 50 ? 0.7 : 1.0);
+        const curWar = Math.round(off.war * multiplier);
+        const curInt = Math.round(off.int * multiplier);
+        const curLdr = Math.round(off.ldr * multiplier);
 
-                // 檢查是否還有下一關
-                if (battleState.currentStageIndex + 1 < STAGE_CATALOG.length) {
-                    nextBtn.classList.remove('hidden');
-                } else {
-                    nextBtn.classList.add('hidden'); // 通關全章節
-                    desc.innerText += "\n👑 恭喜你已經擊潰世界之脊的滅世黑龍！";
-                }
-                showToast("🎉 勝利！成功領取討伐獎勵！");
-            } else {
-                AudioEngine.playSlash();
-                icon.innerText = "💀";
-                title.innerText = "戰鬥失利倒下...";
-                title.className = "text-2xl font-black text-rose-500 title-font mb-1";
-                desc.innerText = "受到致命重創，星辰護盾將你帶回營地。建議換上防禦更高的裝備再來！";
-                nextBtn.classList.add('hidden');
-                showToast("💀 挑戰失敗，請在衣櫃更換裝備後再次嘗試！");
-            }
-        }
+        const card = document.createElement('div');
+        card.className = `gen-card ${isFull ? 'awake' : ''}`;
+        card.innerHTML = `
+          ${isFull ? '<span class="awake-tag">🔥 潛能極限覺醒</span>' : ''}
+          <div class="gen-header">
+            <span class="gen-name">${off.name} <small style="color:var(--accent-gold);">(${off.title})</small></span>
+            <span style="font-size:0.8rem; color:${isFull ? '#ff4500' : '#d4af37'};">忠誠: ${off.loyalty}/100</span>
+          </div>
+          <div class="loyalty-bar">
+            <div class="loyalty-fill ${isFull ? 'full' : ''}" style="width:${Math.min(100, off.loyalty)}%;"></div>
+          </div>
+          <div class="gen-stats">
+            <span>武力: <b>${curWar}</b> ${isFull ? '<span style="color:#ff4500; font-size:0.75rem;">(+20%)</span>' : ''}</span>
+            <span>智力: <b>${curInt}</b></span>
+            <span>統率: <b>${curLdr}</b></span>
+            <span>職能: <b>${off.gender === 'F' ? '女名將' : '武將'}</b></span>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
 
-        function proceedToNextStage() {
-            if (battleState.currentStageIndex + 1 < STAGE_CATALOG.length) {
-                startBattleWithMonster(battleState.currentStageIndex + 1);
-            }
-        }
+    let selectedGiftId = null;
+    function openGiftModal(giftId) {
+      selectedGiftId = giftId;
+      const g = GAME.treasury.find(x => x.id === giftId);
+      document.getElementById('giftItemDesc').innerText = `欲將【${g.name}】賞賜給哪位心腹重臣？（大幅提升忠誠，滿100解鎖極致潛能）`;
+      const targetDiv = document.getElementById('giftTargetList');
+      targetDiv.innerHTML = '';
 
-        function retryCurrentStage() {
-            startBattleWithMonster(battleState.currentStageIndex);
-        }
+      GAME.officers.forEach(off => {
+        const row = document.createElement('div');
+        row.style = 'display:flex; justify-content:space-between; align-items:center; background:#291e15; padding:8px 12px; border-radius:4px;';
+        row.innerHTML = `
+          <span><b>${off.name}</b> (現有忠誠: ${off.loyalty})</span>
+          <button class="btn" onclick="confirmGift('${off.id}')">賜予</button>
+        `;
+        targetDiv.appendChild(row);
+      });
+      document.getElementById('giftModal').style.display = 'flex';
+    }
 
-        function logBattle(msg) {
-            document.getElementById('battle-log-text').innerText = msg;
-        }
+    function confirmGift(officerId) {
+      const gIdx = GAME.treasury.findIndex(x => x.id === selectedGiftId);
+      const off = GAME.officers.find(x => x.id === officerId);
+      if (gIdx === -1 || !off) return;
 
-        function spawnDamageNumber(num, isPlayerTarget) {
-            const container = document.getElementById('battle-arena');
-            const el = document.createElement('div');
-            el.className = `damage-number ${isPlayerTarget ? 'text-rose-400 text-2xl' : 'text-amber-300 text-3xl'}`;
-            el.innerText = `-${num}`;
-            el.style.left = isPlayerTarget ? '24%' : '74%';
-            el.style.top = '36%';
-            container.appendChild(el);
-            setTimeout(() => el.remove(), 900);
-        }
+      const gift = GAME.treasury[gIdx];
+      GAME.treasury.splice(gIdx, 1); // 消耗寶物
 
-        function shakeElement(id) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.classList.add('shake');
-            setTimeout(() => el.classList.remove('shake'), 380);
-        }
+      off.loyalty = Math.min(100, off.loyalty + 25);
+      if (gift.stat === 'war') off.war += gift.val;
+      if (gift.stat === 'int') off.int += gift.val;
+      if (gift.stat === 'ldr') off.ldr += gift.val;
 
-        /* -------------------------------------------------------------
-         * 8. 冒險主線對話推進
-         * -----------------------------------------------------------*/
-        function renderStoryUI() {
-            const cur = STORY_LINES[playerState.storyIndex % STORY_LINES.length];
-            document.getElementById('story-chapter-tag').innerText = cur.chapter;
-            document.getElementById('story-dialogue-speaker').innerText = cur.speaker;
-            document.getElementById('story-dialogue-text').innerText = cur.text;
-            document.getElementById('story-scene-bg').innerText = cur.bg;
-            document.getElementById('story-location-name').innerText = cur.loc;
-        }
+      alert(`主公將【${gift.name}】親手賜予 ${off.name}！\n忠誠度大幅攀升至 ${off.loyalty}！${off.loyalty >= 100 ? '\n🔥 忠誠度達 100！該將領正式解鎖【潛能極限發揮】全能力提升 20%！' : ''}`);
+      logMessage(`主公賜予【${gift.name}】予【${off.name}】，將士感激涕零，誓死效忠！`);
 
-        function advanceStory() {
-            AudioEngine.playClick();
-            playerState.storyIndex = (playerState.storyIndex + 1) % STORY_LINES.length;
-            playerState.gold += 150;
-            saveGame();
-            updateCurrencyUI();
-            renderStoryUI();
-            showToast("📖 推進劇情！獲得獎勵 🪙+150！");
-        }
+      closeGiftModal();
+      renderTreasury();
+      renderCourt();
+    }
 
-        function giveStarterGift() {
-            AudioEngine.playRareFanfare();
-            playerState.gold += 3000;
-            playerState.gems += 2000;
-            saveGame();
-            updateCurrencyUI();
-            showToast("🎁 成功領取冒險者補給：🪙+3,000, 💎+2,000！");
-        }
+    function closeGiftModal() {
+      document.getElementById('giftModal').style.display = 'none';
+      selectedGiftId = null;
+    }
 
-        // 啟動入口
-        window.addEventListener('load', () => {
-            loadGame();
-            // 在使用者首次互動後嘗試自動啟動 BGM
-            const startMusicOnFirstClick = () => {
-                AudioEngine.init();
-                AudioEngine.startBGM();
-                window.removeEventListener('click', startMusicOnFirstClick);
-            };
-            window.addEventListener('click', startMusicOnFirstClick);
+    /* ==========================================================================
+       7. 征戰天下 (攻城、即時戰鬥與破城凱旋 MIDI 音樂)
+       ========================================================================== */
+    function renderMap() {
+      const grid = document.getElementById('mapGrid');
+      grid.innerHTML = '';
+      GAME.cities.forEach(c => {
+        const isMine = c.owner === 'player';
+        const card = document.createElement('div');
+        card.className = `city-card ${isMine ? 'owned' : 'enemy'}`;
+        card.innerHTML = `
+          <h4>
+            <span>${c.name}</span>
+            <span class="city-tag ${isMine ? 'mine' : 'theirs'}">${isMine ? '我方州府' : '敵對割據'}</span>
+          </h4>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">守城軍備: <b>${c.defense}</b> | 駐軍: <b>${c.troops}</b></p>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">守備重臣: <b style="color:#eedcb2;">${c.boss}</b></p>
+          ${!isMine ? `<button class="btn btn-red" style="width:100%;" onclick="startSiege('${c.id}')">發兵征伐攻城</button>` : '<div style="color:var(--accent-green); font-size:0.85rem; font-weight:bold;">已納入主公版圖</div>'}
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    let activeBattleCity = null;
+    function startSiege(cityId) {
+      if (GAME.troops < 2000) return alert('我軍兵力少於 2,000 人，出兵形同送死！請先回城徵兵。');
+      activeBattleCity = GAME.cities.find(c => c.id === cityId);
+
+      // 選拔我方戰力最強的名將掛帥
+      let bestOfficer = GAME.officers[0];
+      GAME.officers.forEach(o => {
+        const p1 = o.war * (o.loyalty >= 100 ? 1.2 : 1.0);
+        const p2 = bestOfficer.war * (bestOfficer.loyalty >= 100 ? 1.2 : 1.0);
+        if (p1 > p2) bestOfficer = o;
+      });
+
+      const myPower = Math.round(
+        (bestOfficer.war * (bestOfficer.loyalty >= 100 ? 1.2 : 1.0) * 10) +
+        (GAME.troops * 0.4) +
+        (GAME.techLevel * 300)
+      );
+
+      const enemyPower = Math.round((activeBattleCity.war || 80) * 10 + (activeBattleCity.troops * 0.4));
+
+      document.getElementById('battleTitle').innerText = `征討【${activeBattleCity.name}】大會戰`;
+      document.getElementById('playerWarLead').innerText = `主將：${bestOfficer.name} ${bestOfficer.loyalty >= 100 ? '🔥' : ''}`;
+      document.getElementById('playerWarPower').innerText = `全軍戰力: ${myPower}`;
+      document.getElementById('enemyWarLead').innerText = `守將：${activeBattleCity.boss}`;
+      document.getElementById('enemyWarPower').innerText = `敵軍戰力: ${enemyPower}`;
+
+      document.getElementById('battleReport').innerHTML = `
+        我方前鋒軍臨城下！主將【${bestOfficer.name}】手持神兵列陣以待。<br>
+        敵將【${activeBattleCity.boss}】憑城固守，擂木滾石齊下！<br>
+        點擊下方擂鼓衝鋒，決一死戰！
+      `;
+
+      document.getElementById('btnConfirmBattle').style.display = 'inline-block';
+      document.getElementById('btnConfirmBattle').onclick = () => runBattleCalculation(myPower, enemyPower, bestOfficer);
+      document.getElementById('battleModal').style.display = 'flex';
+    }
+
+    function runBattleCalculation(myPower, enemyPower, officer) {
+      const reportDiv = document.getElementById('battleReport');
+      const win = myPower >= enemyPower * 0.85; // 具備一定戰略容錯率
+
+      if (win) {
+        // 切換為攻克城池凱旋 MIDI 配樂
+        bgm.setScene('conquest');
+
+        const troopLoss = Math.floor(GAME.troops * 0.25);
+        GAME.troops -= troopLoss;
+        activeBattleCity.owner = 'player';
+        GAME.gold += 800;
+        GAME.food += 1000;
+
+        // 繳獲一件新寶物
+        GAME.treasury.push({
+          id: 'loot_' + Date.now(),
+          name: '名邑繳獲印綬',
+          type: '珍寶',
+          val: 12,
+          stat: 'ldr',
+          desc: '破城繳獲之守城太守印綬，賞賜將領大幅提升忠誠',
+          icon: '👑'
         });
-    </script>
+
+        reportDiv.innerHTML = `
+          <b style="color:#7ef07e; font-size:1.1rem;">【大捷！城池陷落！】</b><br>
+          主將【${officer.name}】奮勇先登，親斬敵部防線！我軍精銳蜂擁入城！<br>
+          • 繳獲敵方庫存：銀兩 +800、糧草 +1000<br>
+          • 尋得戰利品【名邑繳獲印綬】已收歸主公寶庫<br>
+          • 我方陣亡將士: ${troopLoss} 人。
+        `;
+
+        document.getElementById('btnConfirmBattle').innerText = '凱旋收兵';
+        document.getElementById('btnConfirmBattle').onclick = () => {
+          document.getElementById('battleModal').style.display = 'none';
+          document.getElementById('btnConfirmBattle').innerText = '擂鼓衝鋒！';
+          renderMap();
+          renderTreasury();
+          updateUI();
+          checkVictoryCondition();
+          // 戰後過 3 秒切回內政和平曲風
+          setTimeout(() => {
+            bgm.setScene('city');
+          }, 3000);
+        };
+      } else {
+        const troopLoss = Math.floor(GAME.troops * 0.5);
+        GAME.troops = Math.max(500, GAME.troops - troopLoss);
+
+        reportDiv.innerHTML = `
+          <b style="color:#ff6b6b; font-size:1.1rem;">【攻城受阻！鳴金收兵】</b><br>
+          敵軍城池堅固，箭如雨下。我方主將【${officer.name}】力戰不支，率部突圍返回。<br>
+          • 我方部隊大折半數，折損 ${troopLoss} 兵員。<br>
+          請主公回城多加經營內政、賜寶覺醒更多良將再圖後計！
+        `;
+
+        document.getElementById('btnConfirmBattle').innerText = '敗退回營';
+        document.getElementById('btnConfirmBattle').onclick = () => {
+          document.getElementById('battleModal').style.display = 'none';
+          document.getElementById('btnConfirmBattle').innerText = '擂鼓衝鋒！';
+          updateUI();
+        };
+      }
+    }
+
+    function checkVictoryCondition() {
+      const owned = GAME.cities.filter(c => c.owner === 'player').length;
+      if (owned === GAME.cities.length) {
+        alert('👑【天下歸一 · 萬世盛朝】\n恭賀主公蕩平中原十三州，群雄納降，海內肅清！\n您已完成三國一統之無上千秋霸業！');
+        logMessage('👑 登基九五！海內一統，開創千秋盛世，天下歸心！');
+      }
+    }
+
+    function finishBattle() {
+      document.getElementById('battleModal').style.display = 'none';
+    }
+
+    /* ==========================================================================
+       8. 頁籤切換與音樂場景聯動
+       ========================================================================== */
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+
+      // 切換對應的場景背景配樂
+      if (tabId === 'tab-tavern') {
+        bgm.setScene('tavern');
+        renderTavern();
+      } else if (tabId === 'tab-city') {
+        bgm.setScene('city');
+      } else if (tabId === 'tab-court') {
+        bgm.setScene('city');
+        renderCourt();
+        renderTreasury();
+      } else if (tabId === 'tab-map') {
+        bgm.setScene('city');
+        renderMap();
+      }
+    }
+
+    // 音訊開關按鈕
+    document.getElementById('btnAudioToggle').addEventListener('click', () => {
+      if (bgm.isPlaying) {
+        bgm.stop();
+        document.getElementById('btnAudioToggle').textContent = '🔇 BGM: 已靜音';
+      } else {
+        bgm.start();
+        const names = {
+          city: '🎵 BGM: 內政主城',
+          tavern: '🍶 BGM: 酒館喧囂',
+          conquest: '⚔️ BGM: 拔寨破城'
+        };
+        document.getElementById('btnAudioToggle').textContent = names[bgm.currentScene];
+      }
+    });
+
+    function logMessage(msg) {
+      const logBox = document.getElementById('gameLog');
+      const item = document.createElement('div');
+      item.innerText = `[${GAME.year}年 ${GAME.seasons[GAME.seasonIdx]}] ${msg}`;
+      logBox.prepend(item);
+    }
+  </script>
 </body>
 </html>
