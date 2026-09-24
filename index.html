@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>三國志：天下歸一 (Chronicles of the Three Kingdoms)</title>
+  <title>三國志：英雄逐鹿 · 千秋霸業</title>
   <style>
     :root {
-      --bg-main: #141210;
-      --panel-bg: #221d18;
-      --panel-border: #4a3b2c;
-      --accent-gold: #d4af37;
-      --accent-red: #8b1e1e;
-      --accent-blue: #234c7a;
-      --accent-green: #2d5a27;
-      --text-main: #f0e6d2;
-      --text-muted: #a69886;
+      --bg-main: #14110e;
+      --panel-bg: #211a14;
+      --panel-border: #4d3b2b;
+      --accent-gold: #e2b744;
+      --accent-red: #9e2323;
+      --accent-blue: #225182;
+      --accent-green: #2d632a;
+      --text-main: #f5eedb;
+      --text-muted: #a69888;
       --loyalty-full: #ff4500;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC', 'Microsoft JhengHei', serif, sans-serif; }
     body {
       background-color: var(--bg-main);
       color: var(--text-main);
@@ -27,7 +27,7 @@
       user-select: none;
     }
     header {
-      background: linear-gradient(180deg, #2b170c 0%, #170d07 100%);
+      background: linear-gradient(180deg, #2c160a 0%, #150b05 100%);
       border-bottom: 2px solid var(--accent-gold);
       padding: 10px 20px;
       display: flex;
@@ -37,7 +37,7 @@
       gap: 10px;
     }
     .game-title {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: bold;
       color: var(--accent-gold);
       letter-spacing: 2px;
@@ -47,19 +47,20 @@
     }
     .res-bar {
       display: flex;
-      gap: 16px;
-      font-size: 0.95rem;
-      background: rgba(0,0,0,0.5);
+      gap: 14px;
+      font-size: 0.88rem;
+      background: rgba(0,0,0,0.6);
       padding: 6px 14px;
       border-radius: 6px;
       border: 1px solid var(--panel-border);
+      flex-wrap: wrap;
     }
     .res-item b { color: var(--accent-gold); margin-left: 4px; }
     .audio-ctrl {
-      background: #33261a;
+      background: #332417;
       border: 1px solid var(--accent-gold);
       color: var(--accent-gold);
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.85rem;
@@ -68,7 +69,7 @@
     .audio-ctrl:hover { background: var(--accent-gold); color: #000; }
 
     nav {
-      background: #191410;
+      background: #19130e;
       display: flex;
       border-bottom: 1px solid var(--panel-border);
     }
@@ -78,21 +79,21 @@
       background: none;
       border: none;
       color: var(--text-muted);
-      font-size: 1rem;
+      font-size: 0.95rem;
       cursor: pointer;
       border-bottom: 3px solid transparent;
       transition: all 0.2s;
-      font-weight: 500;
+      font-weight: bold;
     }
     .tab-btn.active {
       color: var(--accent-gold);
       border-bottom-color: var(--accent-gold);
-      background: rgba(212, 175, 55, 0.08);
+      background: rgba(226, 183, 68, 0.08);
     }
 
     main {
       flex: 1;
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
       width: 100%;
       padding: 16px;
@@ -117,7 +118,7 @@
       background: var(--panel-bg);
       border: 2px solid var(--panel-border);
       border-radius: 8px;
-      width: 280px;
+      width: 290px;
       padding: 20px;
       cursor: pointer;
       transition: 0.3s;
@@ -130,15 +131,15 @@
     }
     .lord-card h3 { color: var(--accent-gold); margin-bottom: 8px; }
     .lord-card .trait { color: #8ec3ff; font-size: 0.9rem; margin-bottom: 12px; }
-    .lord-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+    .lord-card p { font-size: 0.86rem; color: var(--text-muted); line-height: 1.6; }
 
-    /* 主畫面佈局 */
+    /* 主城網格 */
     .grid-2 {
       display: grid;
       grid-template-columns: 320px 1fr;
       gap: 16px;
     }
-    @media (max-width: 850px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
 
     .card {
       background: var(--panel-bg);
@@ -148,7 +149,7 @@
       margin-bottom: 16px;
     }
     .card h3 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--accent-gold);
       border-bottom: 1px solid var(--panel-border);
       padding-bottom: 8px;
@@ -161,12 +162,12 @@
     /* 內政按鈕 */
     .action-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 12px;
     }
     .action-box {
-      background: #2a221a;
-      border: 1px solid #3d3023;
+      background: #2b2118;
+      border: 1px solid #423223;
       padding: 12px;
       border-radius: 6px;
       display: flex;
@@ -174,14 +175,14 @@
       justify-content: space-between;
       gap: 8px;
     }
-    .action-box b { color: #eedcb2; }
+    .action-box b { color: #eedcb2; font-size: 0.92rem; }
     .action-box p { font-size: 0.8rem; color: var(--text-muted); }
     .btn {
-      background: linear-gradient(180deg, #443322 0%, #2b1f14 100%);
+      background: linear-gradient(180deg, #4d3824 0%, #2b1d12 100%);
       border: 1px solid var(--accent-gold);
       color: var(--accent-gold);
       padding: 8px 12px;
-      font-size: 0.9rem;
+      font-size: 0.86rem;
       border-radius: 4px;
       cursor: pointer;
       transition: 0.2s;
@@ -190,18 +191,20 @@
     .btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: #666; color: #888; }
     .btn-red { border-color: #e65c5c; color: #ff8c8c; }
     .btn-red:hover:not(:disabled) { background: #b02e2e; color: #fff; }
+    .btn-epic { border-color: #ff9900; color: #ffcc66; background: linear-gradient(180deg, #662b00 0%, #2b1200 100%); }
+    .btn-epic:hover:not(:disabled) { background: #ff9900; color: #000; }
 
-    /* 人才列表與卡片 */
+    /* 武將卡片 */
     .general-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
       gap: 12px;
-      max-height: 540px;
+      max-height: 520px;
       overflow-y: auto;
       padding-right: 4px;
     }
     .gen-card {
-      background: #1c1814;
+      background: #191410;
       border: 1px solid var(--panel-border);
       border-radius: 6px;
       padding: 12px;
@@ -222,6 +225,16 @@
       border-radius: 4px;
       font-weight: bold;
     }
+    .gen-quote {
+      font-style: italic;
+      font-size: 0.78rem;
+      color: #dfba86;
+      background: rgba(0,0,0,0.3);
+      padding: 5px 8px;
+      border-left: 3px solid var(--accent-gold);
+      margin-bottom: 8px;
+      border-radius: 0 4px 4px 0;
+    }
     .gen-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
     .gen-name { font-weight: bold; font-size: 1rem; color: #ffdca8; }
     .gen-stats {
@@ -234,7 +247,7 @@
     }
     .gen-stats span b { color: #fff; }
     .loyalty-bar {
-      height: 8px;
+      height: 7px;
       background: #332a22;
       border-radius: 4px;
       overflow: hidden;
@@ -247,19 +260,19 @@
     }
     .loyalty-fill.full { background: #ff4500; }
 
-    /* 紙娃娃裝備展示區 */
+    /* 紙娃娃立繪展示 */
     .doll-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: #16120e;
+      background: #17120e;
       border: 1px solid var(--panel-border);
       border-radius: 8px;
       padding: 16px;
     }
     .doll-svg {
       width: 200px;
-      height: 240px;
+      height: 230px;
       filter: drop-shadow(0 4px 10px rgba(0,0,0,0.7));
     }
     .doll-slots {
@@ -273,20 +286,32 @@
     .doll-slot {
       display: flex;
       justify-content: space-between;
-      background: #201a14;
+      background: #221b14;
       padding: 6px 10px;
       border-radius: 4px;
-      border: 1px solid #3a2e22;
+      border: 1px solid #3d2f21;
     }
 
-    /* 戰略地圖 */
+    /* 戰役與戰略地圖 */
+    .epic-battle-banner {
+      background: linear-gradient(90deg, #3d120a 0%, #1c0b06 100%);
+      border: 1px solid #b33927;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
     .map-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 14px;
     }
     .city-card {
-      background: #1c1712;
+      background: #1a1510;
       border: 1px solid var(--panel-border);
       border-radius: 6px;
       padding: 14px;
@@ -294,6 +319,7 @@
     }
     .city-card.owned { border-color: var(--accent-green); }
     .city-card.enemy { border-color: #8a3030; }
+    .city-card.locked { opacity: 0.6; border-color: #554433; }
     .city-card h4 {
       display: flex;
       justify-content: space-between;
@@ -307,12 +333,13 @@
     }
     .city-tag.mine { background: var(--accent-green); color: #fff; }
     .city-tag.theirs { background: #802020; color: #fff; }
+    .city-tag.lock { background: #443b30; color: #ccc; }
 
-    /* 戰鬥與結算彈窗 */
+    /* 對陣大彈窗與對話氣泡 */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.88);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -320,33 +347,75 @@
       padding: 20px;
     }
     .modal-box {
-      background: #1f1812;
+      background: #1c150f;
       border: 2px solid var(--accent-gold);
       border-radius: 8px;
-      max-width: 650px;
+      max-width: 720px;
       width: 100%;
       padding: 24px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.9);
       animation: popIn 0.3s ease-out;
     }
-    @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes popIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    /* 歷史事件彈窗 */
+    .dialogue-stage {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 18px 0;
+    }
+    .speaker-box {
+      background: #110d0a;
+      border: 1px solid #3d2d1f;
+      border-radius: 6px;
+      padding: 12px;
+      position: relative;
+    }
+    .speaker-name {
+      font-weight: bold;
+      color: var(--accent-gold);
+      margin-bottom: 6px;
+    }
+    .speaker-bubble {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #ffe8cc;
+      font-style: italic;
+    }
+    .tactic-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .tactic-btn {
+      background: #2a1e14;
+      border: 1px solid #553e2a;
+      color: #f0dfcb;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.84rem;
+      text-align: left;
+    }
+    .tactic-btn:hover { border-color: var(--accent-gold); background: #3d2c1e; }
+    .tactic-btn b { color: var(--accent-gold); display: block; }
+
     .event-card {
-      background: #2b1f14;
+      background: #291e14;
       border-left: 4px solid var(--accent-gold);
       padding: 12px;
       margin-bottom: 12px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
     .log-box {
-      background: #120e0b;
+      background: #100c09;
       border: 1px solid #33251a;
       border-radius: 6px;
       padding: 10px;
-      height: 120px;
+      height: 140px;
       overflow-y: auto;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: #a0907d;
       margin-top: 12px;
       display: flex;
@@ -360,18 +429,20 @@
   <!-- 頂部資訊列 -->
   <header>
     <div class="game-title">
-      <span>⚔️</span> 三國志：天下歸一
+      <span>⚔️</span> 三國志：英雄逐鹿 · 千秋霸業
     </div>
     <div class="res-bar" id="resBar" style="display:none;">
-      <div class="res-item">年份: <b id="uiDate">西元195年 春</b></div>
+      <div class="res-item">年代: <b id="uiDate">西元195年 春</b></div>
+      <div class="res-item">威名聲望: <b id="uiPrestige">100</b></div>
       <div class="res-item">銀兩: <b id="uiGold">1500</b></div>
       <div class="res-item">糧草: <b id="uiFood">2000</b></div>
-      <div class="res-item">總兵力: <b id="uiTroops">8000</b></div>
-      <div class="res-item">勢力城池: <b id="uiCities">1/8</b></div>
+      <div class="res-item">大軍兵力: <b id="uiTroops">8000</b></div>
+      <div class="res-item">要邑: <b id="uiCities">1/8</b></div>
+      <div class="res-item">每季稅賦: <b id="uiTaxIncome">+320</b></div>
     </div>
     <div style="display: flex; gap: 8px; align-items: center;">
       <button class="audio-ctrl" id="btnAudioToggle">🎵 BGM: 內政主城</button>
-      <button class="btn" id="btnNextTurn" style="display:none;" onclick="nextSeason()">進入下季 ➔</button>
+      <button class="btn" id="btnNextTurn" style="display:none;" onclick="nextSeason()">度過本季 ➔</button>
     </div>
   </header>
 
@@ -379,31 +450,32 @@
   <nav id="mainNav" style="display:none;">
     <button class="tab-btn active" onclick="switchTab('tab-city')">🏰 內政主城</button>
     <button class="tab-btn" onclick="switchTab('tab-tavern')">🍶 尋訪招賢</button>
-    <button class="tab-btn" onclick="switchTab('tab-court')">📜 人才賜寶</button>
-    <button class="tab-btn" onclick="switchTab('tab-map')">🗺️ 征戰天下</button>
+    <button class="tab-btn" onclick="switchTab('tab-court')">📜 名將賜寶</button>
+    <button class="tab-btn" onclick="switchTab('tab-campaign')">🔥 歷史名戰役</button>
+    <button class="tab-btn" onclick="switchTab('tab-map')">🗺️ 揮師州郡</button>
   </nav>
 
-  <!-- 主要內容區 -->
+  <!-- 主內容區 -->
   <main>
     <!-- 選擇初始君主 -->
     <div id="screen-lord-select" class="lord-select-screen">
-      <h2 style="color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 8px;">奉天應命 · 逐鹿中原</h2>
-      <p style="color: var(--text-muted);">請選擇您的起家君主，各勢力具備專屬歷史加成與初相遇人才：</p>
+      <h2 style="color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 8px;">奉天應命 · 萬里江山</h2>
+      <p style="color: var(--text-muted);">英雄者，胸懷大志，腹有良謀。請選擇您的鼎立起家之君：</p>
       <div class="lord-cards">
         <div class="lord-card" onclick="chooseLord('liubei')">
           <h3>劉備 · 玄德</h3>
           <div class="trait">🌟 特性【仁德聚義】</div>
-          <p>• 人才招募成功率 +30%<br>• 與關羽、張飛有誓死情誼（開局即忠誠100%）<br>• 起點：平原小城，民心最高。</p>
+          <p>「唯德唯賢，可以服人。」<br>• 人才招募成功率 +30%<br>• 關羽、張飛桃園誓盟忠誠 100% 潛能全開<br>• 巡查民情時更易獲天下士族奉獻金銀。</p>
         </div>
         <div class="lord-card" onclick="chooseLord('caocao')">
           <h3>曹操 · 孟德</h3>
-          <div class="trait">🌟 特性【雄才招賢】</div>
-          <p>• 內政銀兩與糧草收益 +25%<br>• 酒館刷新花費折半<br>• 開局猛將：夏侯惇、曹仁。</p>
+          <div class="trait">🌟 特性【唯才是舉】</div>
+          <p>「寧教我負天下人，休教天下人負我！」<br>• 每一季常態商稅收入 +35%<br>• 夏侯惇、郭嘉隨侍參謀，軍械科技速度加倍。</p>
         </div>
         <div class="lord-card" onclick="chooseLord('sunquan')">
           <h3>孫權 · 仲謀</h3>
-          <div class="trait">🌟 特性【坐斷東南】</div>
-          <p>• 守城戰鬥戰力 +35%<br>• 水鄉科技自帶加成，易招募江東名將與女將<br>• 開局猛將：周泰、黃蓋。</p>
+          <div class="trait">🌟 特性【江表虎臣】</div>
+          <p>「生子當如孫仲謀！」<br>• 守城戰鬥戰力 +40%<br>• 平準賣糧利潤更高，周泰、孫尚香誓死效忠。</p>
         </div>
       </div>
     </div>
@@ -412,200 +484,223 @@
     <div id="tab-city" class="view-panel">
       <div class="grid-2">
         <div>
-          <!-- 君主紙娃娃 -->
+          <!-- 君主紙娃娃展示 -->
           <div class="doll-container">
-            <h4 id="dollLordName" style="color:var(--accent-gold); margin-bottom:10px;">君主立繪</h4>
+            <h4 id="dollLordName" style="color:var(--accent-gold); margin-bottom:10px;">君主真容</h4>
             <svg class="doll-svg" viewBox="0 0 200 240" id="lordDollSvg">
-              <!-- 底層陰影 -->
-              <ellipse cx="100" cy="225" rx="55" ry="10" fill="#000" opacity="0.4"/>
-              <!-- 坐騎層 -->
               <g id="slot-mount"></g>
-              <!-- 披風/披甲 -->
               <path d="M60,90 Q100,160 50,210 L150,210 Q100,160 140,90 Z" fill="#4a1515" id="dollCape"/>
-              <!-- 身體/鎧甲 -->
               <rect x="75" y="80" width="50" height="75" rx="6" fill="#3a3a3a" id="slot-armor"/>
-              <!-- 頭部與臉 -->
               <circle cx="100" cy="55" r="22" fill="#eac086"/>
-              <!-- 五官簡約 -->
               <path d="M92,52 L98,52 M102,52 L108,52" stroke="#4a2e18" stroke-width="2" stroke-linecap="round"/>
               <path d="M95,65 Q100,70 105,65" stroke="#4a2e18" stroke-width="2" fill="none"/>
-              <!-- 鬍鬚 -->
               <path d="M95,67 Q100,85 105,67 Z" fill="#1a1410"/>
-              <!-- 頭盔/頭冠 -->
               <g id="slot-helm">
                 <path d="M78,50 Q100,20 122,50 Q100,42 78,50 Z" fill="#d4af37"/>
                 <circle cx="100" cy="28" r="4" fill="#ff4500"/>
               </g>
-              <!-- 主武器 -->
               <g id="slot-weapon"></g>
             </svg>
             <div class="doll-slots">
-              <div class="doll-slot"><span>佩劍/神兵</span><b id="slotWeapText">青銅劍 (+5武)</b></div>
-              <div class="doll-slot"><span>身著寶甲</span><b id="slotArmorText">鐵鱗甲 (+5統)</b></div>
-              <div class="doll-slot"><span>座下名駒</span><b id="slotMountText">宛馬 (+3行)</b></div>
+              <div class="doll-slot"><span>佩戴神兵</span><b id="slotWeapText">青銅利劍 (+5武)</b></div>
+              <div class="doll-slot"><span>披戴重鎧</span><b id="slotArmorText">鐵鱗札甲 (+5統)</b></div>
+              <div class="doll-slot"><span>乘御神駒</span><b id="slotMountText">宛城良馬 (+3行)</b></div>
             </div>
           </div>
 
           <div class="card" style="margin-top:16px;">
-            <h3>即時政務簡報</h3>
-            <p id="cityBrief" style="font-size:0.85rem; line-height:1.6; color:var(--text-muted);">
-              主公起兵平原，民心所向。當前糧草尚足，宜廣積糧、整軍備，待天時有變則定中原。
-            </p>
+            <h3>朝政軍務紀錄</h3>
             <div class="log-box" id="gameLog">
-              <div>[紀錄] 歲在甲子，群雄割據，霸業肇始。</div>
+              <div>[紀錄] 歲在甲子，天下大亂，群雄割據。</div>
             </div>
           </div>
         </div>
 
         <div>
-          <!-- 內政指令 -->
+          <!-- 內政多元操作 -->
           <div class="card">
-            <h3>政務廳 · 興邦立國</h3>
+            <h3>中樞府衙 · 興邦奠基</h3>
             <div class="action-grid">
               <div class="action-box">
-                <b>開墾荒田 (消耗 200銀)</b>
-                <p>指派文官興修水利，秋季糧草產出大幅提升。</p>
-                <button class="btn" onclick="doDomestic('farm')">施行開墾</button>
+                <b>開闢荒田 (150銀)</b>
+                <p>導引河渠，興修水利，糧草入庫 +700 石。</p>
+                <button class="btn" onclick="doDomestic('farm')">開墾屯田</button>
               </div>
               <div class="action-box">
-                <b>通商通渠 (消耗 200糧)</b>
-                <p>招徠商賈行會，每季銀兩稅收持續提升。</p>
-                <button class="btn" onclick="doDomestic('commerce')">整頓商市</button>
+                <b>商賈投資 (200銀)</b>
+                <p>修築商埠，全境所有要邑<b>每季常態稅賦永久 +45 銀兩</b>！</p>
+                <button class="btn" onclick="doDomestic('investCommerce')">繁榮商市</button>
               </div>
               <div class="action-box">
-                <b>廣募義勇 (消耗 300銀, 300糧)</b>
-                <p>響應主公號召，徵集 1,000 名精壯步卒。</p>
+                <b>平準售糧 (500糧 ➔ 460銀)</b>
+                <p>出脫官倉盈餘軍糧，快速回籠金銀銀兩。</p>
+                <button class="btn" onclick="doDomestic('sellFood')">市集售糧</button>
+              </div>
+              <div class="action-box">
+                <b>巡查剿寇 (無消耗)</b>
+                <p>遣將平定地方賊寇，收繳私銀 <b>220~450 兩</b>，提升威名！</p>
+                <button class="btn" onclick="doDomestic('patrol')">清剿山匪</button>
+              </div>
+              <div class="action-box">
+                <b>廣納勇卒 (300銀, 300糧)</b>
+                <p>頒布從軍令，募集 1,200 名精壯鐵騎步卒。</p>
                 <button class="btn" onclick="doDomestic('recruit')">發布徵兵</button>
               </div>
               <div class="action-box">
-                <b>軍器研發 (消耗 500銀)</b>
-                <p>研發攻城投石與床弩，提升全軍部隊戰鬥力。</p>
-                <button class="btn" onclick="doDomestic('tech')">研發軍械</button>
+                <b>軍械突破 (500銀)</b>
+                <p>研發攻城霹靂車與重連弩，戰陣殺傷顯著躍升。</p>
+                <button class="btn" onclick="doDomestic('tech')">研製軍械</button>
               </div>
             </div>
           </div>
 
-          <!-- 歷史事件觸發區 -->
+          <!-- 歷史事件與宿命 -->
           <div class="card">
-            <h3>名士奇遇與重大事件</h3>
-            <div id="eventContainer">
-              <div class="event-card">
-                <b>暫無特殊事件</b>
-                <p style="color:var(--text-muted);">隨四季流轉、勢力擴展，將有機會觸發「三顧茅廬」、「鳳雛出山」等名將宿命。</p>
-              </div>
-            </div>
+            <h3>名士奇遇與重大宿命篇章</h3>
+            <div id="eventContainer"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 2. 尋訪招募 (酒館) -->
+    <!-- 2. 尋訪招賢 (酒肆) -->
     <div id="tab-tavern" class="view-panel">
       <div class="card">
         <h3>
-          <span>🍶 洛陽酒館 / 集市求賢</span>
-          <button class="btn" onclick="refreshTavern()">重金招宴 (消耗 150 銀兩)</button>
+          <span>🍶 八方酒肆 / 市井名流</span>
+          <button class="btn" onclick="refreshTavern()">備辦杜康名宴 (消耗 120 銀兩)</button>
         </h3>
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
-          酒館內各路隱士雲集。主公魅力與專屬絆倒將大幅影響招納成敗。
+          隱逸大賢、巾幗女將皆隱於市井。唯有主公威望與推心置腹，方能使其俯首稱臣。
         </p>
-        <div class="general-list" id="tavernList">
-          <!-- 動態載入在野武將 -->
-        </div>
+        <div class="general-list" id="tavernList"></div>
       </div>
     </div>
 
-    <!-- 3. 人才庫與賜寶 -->
+    <!-- 3. 名將賜寶與名冊 -->
     <div id="tab-court" class="view-panel">
       <div class="grid-2">
         <div class="card">
-          <h3>主公寶庫 (賞賜重臣)</h3>
+          <h3>府庫重寶 (恩賜功臣)</h3>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">
-            將名器賜予武將可大幅激增其忠誠。當<b>忠誠度達 100</b> 時，將解鎖<b>【潛能極致發揮】</b>，全屬性提升 20% 並啟用專屬神技！
+            賜予寶物可激盪其忠勇。當<b>忠誠度達 100</b> 時，解鎖<b>【潛能極致發揮】</b>，全屬性提升 20% 並啟用專屬歷史戰吼！
           </p>
-          <div id="treasuryList" style="display:flex; flex-direction:column; gap:8px;">
-            <!-- 寶物列表 -->
-          </div>
+          <div id="treasuryList" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
         <div class="card">
-          <h3>麾下文武名冊 (<span id="officerCount">0</span>員)</h3>
-          <div class="general-list" id="courtList">
-            <!-- 動態載入麾下武將 -->
-          </div>
+          <h3>麾下文臣武將 (<span id="officerCount">0</span>員)</h3>
+          <div class="general-list" id="courtList"></div>
         </div>
       </div>
     </div>
 
-    <!-- 4. 征戰天下 (地圖) -->
+    <!-- 4. 歷史名戰役 (全新三大經典名場面) -->
+    <div id="tab-campaign" class="view-panel">
+      <div class="epic-battle-banner">
+        <div>
+          <h3 style="color:#ffcc66; font-size:1.2rem;">📜 三國千秋三大名場面戰役</h3>
+          <p style="font-size:0.85rem; color:#dfc7b0;">直面歷史滾滾巨浪，與呂布、曹操、周瑜陣前爭鋒！</p>
+        </div>
+      </div>
+      <div class="action-grid" id="campaignList"></div>
+    </div>
+
+    <!-- 5. 揮師州郡 (地圖) -->
     <div id="tab-map" class="view-panel">
       <div class="card">
-        <h3>🗺️ 中原十三州征戰</h3>
+        <h3>🗺️ 揮師中原 · 吞併割據</h3>
         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
-          調遣大將與兵馬攻伐鄰郡。一統八大要邑即可終結亂世，成就帝業！
+          天下名城各設守將與防務門檻，平定周邊後方能直搗洛陽帝京！
         </p>
-        <div class="map-grid" id="mapGrid">
-          <!-- 動態地圖 -->
-        </div>
+        <div class="map-grid" id="mapGrid"></div>
       </div>
     </div>
   </main>
 
-  <!-- 彈窗：賜寶選擇 -->
+  <!-- 彈窗：賜寶 -->
   <div id="giftModal" class="modal-overlay" style="display:none;">
     <div class="modal-box">
-      <h3 style="color:var(--accent-gold); margin-bottom:12px;">選擇賞賜對象</h3>
+      <h3 style="color:var(--accent-gold); margin-bottom:12px;">恩賜重寶以固軍心</h3>
       <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;" id="giftItemDesc"></p>
       <div id="giftTargetList" style="max-height:240px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
       <div style="text-align:right; margin-top:16px;">
-        <button class="btn" onclick="closeGiftModal()">取消</button>
+        <button class="btn" onclick="closeGiftModal()">罷黜收回</button>
       </div>
     </div>
   </div>
 
-  <!-- 彈窗：攻城對決 -->
+  <!-- 彈窗：陣前對壘與名將名言對白 -->
   <div id="battleModal" class="modal-overlay" style="display:none;">
     <div class="modal-box">
-      <h3 id="battleTitle" style="color:#ff6b6b; margin-bottom:12px;">攻城激戰！</h3>
-      <div style="display:flex; justify-content:space-around; margin:20px 0; text-align:center;">
-        <div>
-          <h4 id="playerWarLead" style="color:var(--accent-gold);">我方主將</h4>
-          <div id="playerWarPower" style="font-size:1.4rem; font-weight:bold; color:#7ec8ff;">戰力: 0</div>
+      <h3 id="battleTitle" style="color:#ff6b6b; margin-bottom:8px;">兩軍對壘 · 陣前論英雄</h3>
+      
+      <!-- 名將名言對話舞台 -->
+      <div class="dialogue-stage">
+        <div class="speaker-box" style="border-left:4px solid var(--accent-gold);">
+          <div class="speaker-name" id="playerSpeakerName">我方主帥</div>
+          <div class="speaker-bubble" id="playerSpeakerQuote">「誓隨主公平定中原！」</div>
         </div>
-        <div style="font-size:1.8rem; font-weight:bold; align-self:center; color:#ff4500;">VS</div>
-        <div>
-          <h4 id="enemyWarLead" style="color:#ff8585;">敵城守將</h4>
-          <div id="enemyWarPower" style="font-size:1.4rem; font-weight:bold; color:#ff8585;">戰力: 0</div>
+        <div class="speaker-box" style="border-left:4px solid #ff4500;">
+          <div class="speaker-name" id="enemySpeakerName">敵軍大將</div>
+          <div class="speaker-bubble" id="enemySpeakerQuote">「插標賣首之徒，也敢犯我界？」</div>
         </div>
       </div>
-      <div id="battleReport" style="background:#110d0a; padding:12px; border-radius:6px; font-size:0.88rem; min-height:80px; color:#e0d3c1; line-height:1.6;">
+
+      <div style="display:flex; justify-content:space-around; margin:16px 0; text-align:center;">
+        <div>
+          <div id="playerWarLead" style="color:var(--accent-gold); font-weight:bold;">我軍陣營</div>
+          <div id="playerWarPower" style="font-size:1.3rem; font-weight:bold; color:#7ec8ff;">全軍戰力: 0</div>
+        </div>
+        <div style="font-size:1.6rem; font-weight:bold; align-self:center; color:#ff4500;">VS</div>
+        <div>
+          <div id="enemyWarLead" style="color:#ff8585; font-weight:bold;">敵方雄師</div>
+          <div id="enemyWarPower" style="font-size:1.3rem; font-weight:bold; color:#ff8585;">守備戰力: 0</div>
+        </div>
       </div>
-      <div style="text-align:center; margin-top:20px;">
-        <button class="btn btn-red" id="btnConfirmBattle" onclick="finishBattle()">擂鼓衝鋒！</button>
+
+      <!-- 戰前計策抉擇 -->
+      <div id="tacticsArea">
+        <p style="font-size:0.8rem; color:var(--accent-gold); margin-bottom:6px;">⚔️ 軍師獻策（選擇臨陣計謀）：</p>
+        <div class="tactic-grid">
+          <button class="tactic-btn" onclick="selectTactic('front')">
+            <b>強攻破陣 (正面突刺)</b>
+            全軍士氣高昂，標準威力交鋒。
+          </button>
+          <button class="tactic-btn" onclick="selectTactic('fire')">
+            <b>火計燒營 (消耗 150 糧)</b>
+            文臣縱火亂敵陣腳，削弱敵軍 20% 戰力。
+          </button>
+        </div>
+      </div>
+
+      <div id="battleReport" style="background:#110d0a; padding:12px; border-radius:6px; font-size:0.88rem; min-height:70px; color:#e0d3c1; line-height:1.6; margin-top:10px;">
+      </div>
+
+      <div style="text-align:center; margin-top:18px;">
+        <button class="btn btn-red" id="btnConfirmBattle" onclick="executeBattle()">交鋒合戰！</button>
       </div>
     </div>
   </div>
 
   <script>
     /* ==========================================================================
-       1. 內建 Web Audio API - 多場景三首晶片 MIDI 配樂引擎
+       1. 經典 8-bit / MIDI Web Audio 配樂引擎 (三場景配樂)
        ========================================================================== */
     class RetroMidiEngine {
       constructor() {
         this.ctx = null;
-        this.currentScene = 'city'; // 'city', 'tavern', 'conquest'
+        this.currentScene = 'city';
         this.isPlaying = false;
         this.tempo = 140;
         this.step = 0;
         this.timer = null;
 
-        // 音符頻率映射 (Hz)
         this.N = {
           C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
           C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
           C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.00, rest: 0
         };
 
-        // 樂譜1: 內政主城 (悠揚古風五度循環)
         this.trackCityMelody = [
           'G4', 'rest', 'A4', 'C5', 'D5', 'rest', 'C5', 'A4',
           'G4', 'E4', 'G4', 'rest', 'A4', 'rest', 'G4', 'rest',
@@ -619,7 +714,6 @@
           'C3', 'G3', 'C3', 'G3', 'C3', 'rest', 'C3', 'rest'
         ];
 
-        // 樂譜2: 酒館招募 (輕快市井舞曲、切分音)
         this.trackTavernMelody = [
           'E4', 'G4', 'A4', 'G4', 'E4', 'D4', 'C4', 'D4',
           'E4', 'E4', 'G4', 'A4', 'C5', 'rest', 'A4', 'G4',
@@ -633,7 +727,6 @@
           'G3', 'rest', 'G3', 'rest', 'C3', 'G3', 'C3', 'rest'
         ];
 
-        // 樂譜3: 攻陷敵城 / 凱旋壯烈大捷 (雄壯號角和弦軍樂)
         this.trackConquestMelody = [
           'C4', 'E4', 'G4', 'C5', 'G4', 'C5', 'E5', 'rest',
           'D5', 'rest', 'C5', 'D5', 'E5', 'D5', 'C5', 'rest',
@@ -655,20 +748,17 @@
         }
       }
 
-      playTone(freq, type, duration, gainLevel = 0.1) {
+      playTone(freq, type, duration, gainLevel = 0.08) {
         if (!freq || freq <= 0 || !this.ctx) return;
         try {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = type;
           osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-
           gain.gain.setValueAtTime(gainLevel, this.ctx.currentTime);
           gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-
           osc.start();
           osc.stop(this.ctx.currentTime + duration);
         } catch(e) {}
@@ -680,7 +770,7 @@
         this.step = 0;
         const names = {
           city: '🎵 BGM: 內政主城 (清平調)',
-          tavern: '🍶 BGM: 酒館喧囂 (市井曲)',
+          tavern: '🍶 BGM: 酒肆喧囂 (市井曲)',
           conquest: '⚔️ BGM: 拔寨破城 (凱旋歌)'
         };
         const btn = document.getElementById('btnAudioToggle');
@@ -691,9 +781,7 @@
 
       start() {
         this.init();
-        if (this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
+        if (this.ctx.state === 'suspended') this.ctx.resume();
         this.isPlaying = true;
         this.step = 0;
         clearInterval(this.timer);
@@ -707,7 +795,6 @@
 
       tick() {
         if (!this.isPlaying) return;
-
         let melodyList, bassList;
         if (this.currentScene === 'tavern') {
           melodyList = this.trackTavernMelody;
@@ -720,16 +807,10 @@
           bassList = this.trackCityBass;
         }
 
-        const melodyNote = melodyList[this.step % melodyList.length];
-        const bassNote = bassList[this.step % bassList.length];
-
-        if (melodyNote && this.N[melodyNote]) {
-          this.playTone(this.N[melodyNote], 'triangle', 0.22, 0.08); // 輕柔木管感
-        }
-        if (bassNote && this.N[bassNote]) {
-          this.playTone(this.N[bassNote], 'square', 0.18, 0.04);   // 8-bit 低音底蘊
-        }
-
+        const mNote = melodyList[this.step % melodyList.length];
+        const bNote = bassList[this.step % bassList.length];
+        if (mNote && this.N[mNote]) this.playTone(this.N[mNote], 'triangle', 0.22, 0.08);
+        if (bNote && this.N[bNote]) this.playTone(this.N[bNote], 'square', 0.18, 0.04);
         this.step++;
       }
     }
@@ -737,67 +818,119 @@
     const bgm = new RetroMidiEngine();
 
     /* ==========================================================================
-       2. 遊戲資料模型 (三國名將、寶物庫、歷史事件、天下地圖)
+       2. 名將名言資料庫與戰役架構
        ========================================================================== */
     const GAME = {
       lord: null,
       year: 195,
       seasonIdx: 0,
       seasons: ['春', '夏', '秋', '冬'],
+      prestige: 100, // 威名聲望
       gold: 1500,
       food: 2000,
       troops: 8000,
       techLevel: 1,
-      zhugeProgress: 0, // 三顧茅廬進度 0~3
+      commerceBonus: 0,
+      zhugeProgress: 0,
 
-      // 玩家持有紙娃娃外觀裝備
       equipment: {
-        weapon: { name: '青銅劍', war: 5, svgType: 'sword' },
-        armor:  { name: '鎖子甲', ldr: 5, color: '#4a4a4a' },
-        mount:  { name: '西涼馬', spd: 3, color: '#8b5a2b' }
+        weapon: { name: '青銅利劍', war: 5 },
+        armor:  { name: '鐵鱗札甲', ldr: 5 },
+        mount:  { name: '宛城良馬', spd: 3, color: '#8b5a2b' }
       },
 
-      // 寶物庫存
       treasury: [
-        { id: 't1', name: '青龍偃月刀', type: '神兵', val: 18, stat: 'war', desc: '武藝+18，猛將佩戴神威大顯', icon: '🗡️' },
-        { id: 't2', name: '赤兔神駒',   type: '名駒', val: 15, stat: 'ldr', desc: '統率+15，衝鋒突圍天下第一', icon: '🐎' },
-        { id: 't3', name: '孫子兵法',   type: '兵書', val: 20, stat: 'int', desc: '智力+20，謀略用兵出神入化', icon: '📜' },
-        { id: 't4', name: '杜康陳釀',   type: '佳釀', val: 25, stat: 'loyalty', desc: '忠誠直接提升25點，豪爽大飲', icon: '🍶' }
+        { id: 't1', name: '青龍偃月刀', type: '神兵', val: 18, stat: 'war', desc: '武藝+18，猛將佩戴如虎添翼', icon: '🗡️' },
+        { id: 't2', name: '赤兔神駒',   type: '名駒', val: 15, stat: 'ldr', desc: '統率+15，追風逐電，天下無雙', icon: '🐎' },
+        { id: 't3', name: '孫子兵法',   type: '兵書', val: 20, stat: 'int', desc: '智力+20，奇正相生，安邦謀略', icon: '📜' },
+        { id: 't4', name: '杜康陳釀',   type: '佳釀', val: 25, stat: 'loyalty', desc: '忠誠直接暴漲25點，慷慨豪飲', icon: '🍶' }
       ],
 
-      // 麾下已招募人員
       officers: [],
 
-      // 在野武將池 (包含名將與巾幗女將)
+      // 在野名將（內含專屬經典名言名句）
       wildOfficers: [
-        { id: 'zhaoyun', name: '趙雲', gender: 'M', war: 98, int: 76, ldr: 92, chr: 90, loyalty: 70, favLord: 'liubei', title: '常山趙子龍' },
-        { id: 'guanyu',  name: '關羽', gender: 'M', war: 97, int: 78, ldr: 95, chr: 93, loyalty: 80, favLord: 'liubei', title: '美髯公' },
-        { id: 'zhangfei',name: '張飛', gender: 'M', war: 98, int: 50, ldr: 88, chr: 65, loyalty: 80, favLord: 'liubei', title: '萬夫莫敵' },
-        { id: 'zhouyu',  name: '周瑜', gender: 'M', war: 72, int: 96, ldr: 96, chr: 94, loyalty: 75, favLord: 'sunquan', title: '美周郎' },
-        { id: 'sunshangxiang', name: '孫尚香', gender: 'F', war: 86, int: 70, ldr: 78, chr: 88, loyalty: 75, favLord: 'sunquan', title: '弓腰姬' },
-        { id: 'diaochan',name: '貂蟬', gender: 'F', war: 45, int: 84, ldr: 50, chr: 100, loyalty: 70, favLord: 'caocao', title: '絕代傾國' },
-        { id: 'huangyueying', name: '黃月英', gender: 'F', war: 52, int: 95, ldr: 65, chr: 82, loyalty: 80, favLord: 'liubei', title: '機巧賢妻' },
-        { id: 'xiahoudun', name: '夏侯惇', gender: 'M', war: 90, int: 62, ldr: 89, chr: 82, loyalty: 80, favLord: 'caocao', title: '拔矢啖睛' },
-        { id: 'guojia',   name: '郭嘉', gender: 'M', war: 30, int: 98, ldr: 60, chr: 85, loyalty: 75, favLord: 'caocao', title: '天生郭奉孝' },
-        { id: 'pangtong', name: '龐統', gender: 'M', war: 42, int: 97, ldr: 75, chr: 70, loyalty: 70, favLord: 'liubei', title: '鳳雛先生' }
+        { id: 'zhaoyun', name: '趙雲', gender: 'M', war: 98, int: 76, ldr: 92, chr: 90, loyalty: 75, favLord: 'liubei', title: '常山趙子龍', quote: '「吾乃常山趙子龍也！單騎百萬，何懼之有！」' },
+        { id: 'guanyu',  name: '關羽', gender: 'M', war: 97, int: 78, ldr: 95, chr: 93, loyalty: 80, favLord: 'liubei', title: '美髯公', quote: '「吾觀爾等，如插標賣首耳！」' },
+        { id: 'zhangfei',name: '張飛', gender: 'M', war: 98, int: 50, ldr: 88, chr: 65, loyalty: 80, favLord: 'liubei', title: '萬夫莫敵', quote: '「燕人張翼德在此！誰敢與我決一死戰！」' },
+        { id: 'zhouyu',  name: '周瑜', gender: 'M', war: 72, int: 96, ldr: 96, chr: 94, loyalty: 75, favLord: 'sunquan', title: '美周郎', quote: '「大丈夫處世，當立功揚名，內撫社稷！」' },
+        { id: 'sunshangxiang', name: '孫尚香', gender: 'F', war: 86, int: 70, ldr: 78, chr: 88, loyalty: 75, favLord: 'sunquan', title: '弓腰姬', quote: '「男子若有不軌之心，休怪我手中良弓無情！」' },
+        { id: 'diaochan',name: '貂蟬', gender: 'F', war: 45, int: 84, ldr: 50, chr: 100, loyalty: 70, favLord: 'caocao', title: '絕代傾國', quote: '「妾身薄命，願憑三寸巧舌除國賊董卓！」' },
+        { id: 'huangyueying', name: '黃月英', gender: 'F', war: 52, int: 95, ldr: 65, chr: 82, loyalty: 80, favLord: 'liubei', title: '機巧賢妻', quote: '「木牛流馬之法已成，軍師大軍糧道無虞。」' },
+        { id: 'xiahoudun', name: '夏侯惇', gender: 'M', war: 90, int: 62, ldr: 89, chr: 82, loyalty: 80, favLord: 'caocao', title: '拔矢啖睛', quote: '「父精母血，不可棄也！納入腹中，殺敵更甚！」' },
+        { id: 'guojia',   name: '郭嘉', gender: 'M', war: 30, int: 98, ldr: 60, chr: 85, loyalty: 75, favLord: 'caocao', title: '天生郭奉孝', quote: '「主公兵貴神速，十勝十敗之論，定破袁紹！」' },
+        { id: 'pangtong', name: '龐統', gender: 'M', war: 42, int: 97, ldr: 75, chr: 70, loyalty: 70, favLord: 'liubei', title: '鳳雛先生', quote: '「若得荊益兩州，主公霸業乃可成矣。」' }
       ],
 
-      // 中原八大主要州郡城池
+      // 三大歷史著名戰役 (階梯門檻解鎖)
+      campaigns: [
+        {
+          id: 'camp_hulao',
+          name: '虎牢關大戰 · 鏖戰呂布',
+          desc: '十八路諸侯伐董卓，呂溫侯持方天畫戟坐鎮關前，萬夫莫開！',
+          reqPrestige: 150,
+          reqTroops: 10000,
+          bossName: '呂布 · 奉先',
+          bossQuote: '「人中呂布，馬中赤兔！爾等鼠輩，一齊上罷！」',
+          bossPower: 12000,
+          rewardGold: 1200,
+          rewardPrestige: 80,
+          rewardItem: { id: 'loot_fangtian', name: '方天畫戟', type: '神兵', val: 22, stat: 'war', desc: '鬼神呂布之神兵，武藝暴漲22！', icon: '🔱' },
+          completed: false
+        },
+        {
+          id: 'camp_guandu',
+          name: '官渡之戰 · 奇襲烏巢',
+          desc: '袁紹十萬精兵壓境，唯有星夜突襲烏巢燒盡其糧草，方能逆轉天下大勢！',
+          reqPrestige: 250,
+          reqTroops: 16000,
+          bossName: '袁紹 · 本初',
+          bossQuote: '「四世三公之威嚴，豈容爾等草芥撼動！」',
+          bossPower: 18000,
+          rewardGold: 1800,
+          rewardPrestige: 120,
+          rewardItem: { id: 'loot_mengde', name: '《孟德新書》', type: '兵書', val: 24, stat: 'int', desc: '治軍用兵之絕學，智力激增24！', icon: '📜' },
+          completed: false
+        },
+        {
+          id: 'camp_chibi',
+          name: '赤壁之戰 · 烈火燎原',
+          desc: '長江赤壁之畔，八十萬水軍鐵索連環，諸葛借東風、周瑜縱大火，千古名場面！',
+          reqPrestige: 400,
+          reqTroops: 24000,
+          bossName: '曹操/周瑜 雄兵',
+          bossQuote: '「談笑間，檣櫓灰飛煙滅！烈火將盡焚八百里江面！」',
+          bossPower: 26000,
+          rewardGold: 2600,
+          rewardPrestige: 200,
+          rewardItem: { id: 'loot_yuxi', name: '傳國玉璽', type: '傳世', val: 30, stat: 'ldr', desc: '受命於天，既壽永昌！象徵天命大統', icon: '👑' },
+          completed: false
+        }
+      ],
+
+      // 八大名城割據 (帶有解鎖階梯與防守前置)
       cities: [
-        { id: 'c1', name: '平原 / 許昌 (初始)', owner: 'player', defense: 1000, troops: 5000, boss: '主公基業' },
-        { id: 'c2', name: '徐州 (陶謙/呂布遺部)', owner: 'enemy', defense: 1800, troops: 6000, boss: '高順', war: 84 },
-        { id: 'c3', name: '壽春 (袁術稱帝)', owner: 'enemy', defense: 2200, troops: 8000, boss: '紀靈', war: 83 },
-        { id: 'c4', name: '襄陽 (劉表荊襄)', owner: 'enemy', defense: 2600, troops: 9000, boss: '蔡瑁', war: 76 },
-        { id: 'c5', name: '建業 (東吳虎踞)', owner: 'enemy', defense: 3200, troops: 12000, boss: '甘寧', war: 94 },
-        { id: 'c6', name: '漢中 (張魯天師)', owner: 'enemy', defense: 3500, troops: 11000, boss: '張衛', war: 78 },
-        { id: 'c7', name: '成都 (益州天府)', owner: 'enemy', defense: 4200, troops: 15000, boss: '嚴顏', war: 86 },
-        { id: 'c8', name: '洛陽 · 長安 (天下至尊)', owner: 'enemy', defense: 5000, troops: 20000, boss: '董卓/呂布殘部', war: 99 }
+        { id: 'c1', name: '平原/許昌 (主公基業)', owner: 'player', defense: 1000, troops: 5000, boss: '興邦之基', quote: '「保境安民，修政振兵。」', minPrestige: 0 },
+        { id: 'c2', name: '徐州 (陶謙/呂布部曲)', owner: 'enemy', defense: 1800, troops: 6000, boss: '高順', quote: '「陷陣營所向披靡，攻無不克！」', war: 86, minPrestige: 100 },
+        { id: 'c3', name: '壽春 (袁術稱帝僭號)', owner: 'enemy', defense: 2500, troops: 8500, boss: '紀靈', quote: '「三尖兩刃刀下，不留無名之鬼！」', war: 84, minPrestige: 160 },
+        { id: 'c4', name: '襄陽 (劉表九郡之表)', owner: 'enemy', defense: 3200, troops: 11000, boss: '蔡瑁', quote: '「荊襄水寨堅如磐石，舟師無懼陸戰之師。」', war: 80, minPrestige: 220 },
+        { id: 'c5', name: '建業 (東吳虎踞要塞)', owner: 'enemy', defense: 3800, troops: 14000, boss: '甘寧', quote: '「百騎劫魏營，且看錦帆賊之威！」', war: 94, minPrestige: 300 },
+        { id: 'c6', name: '漢中 (天師道屏障)', owner: 'enemy', defense: 4200, troops: 13000, boss: '張衛', quote: '「鬼卒道法護佑，蜀道之難難於上青天。」', war: 82, minPrestige: 360 },
+        { id: 'c7', name: '成都 (益州天府雄都)', owner: 'enemy', defense: 4800, troops: 16000, boss: '嚴顏', quote: '「我州但有斷頭將軍，無有降將軍也！」', war: 87, minPrestige: 420 },
+        { id: 'c8', name: '洛陽 · 長安 (漢家至尊帝闕)', owner: 'enemy', defense: 6000, troops: 24000, boss: '董卓/天下西涼鐵騎', quote: '「天子在我手，誰敢不服！逆我者亡！」', war: 98, minPrestige: 500 }
       ]
     };
 
     /* ==========================================================================
-       3. 核心邏輯：選擇君主、介面渲染、紙娃娃更新
+       3. 核心數值計算與介面更新
        ========================================================================== */
+    function getQuarterlyTax() {
+      const cityCount = GAME.cities.filter(c => c.owner === 'player').length;
+      let base = cityCount * (280 + GAME.commerceBonus);
+      if (GAME.lord === 'caocao') base = Math.floor(base * 1.35);
+      return base;
+    }
+
     function chooseLord(type) {
       GAME.lord = type;
       document.getElementById('screen-lord-select').style.display = 'none';
@@ -808,58 +941,60 @@
 
       if (type === 'liubei') {
         document.getElementById('dollLordName').innerText = '主公：劉備 (玄德)';
-        addOfficer('關羽', 'M', 97, 78, 95, 93, 100, '桃園結義');
-        addOfficer('張飛', 'M', 98, 50, 88, 65, 100, '桃園結義');
+        addOfficer('關羽', 'M', 97, 78, 95, 93, 100, '美髯公', '「吾觀爾等如插標賣首耳！」');
+        addOfficer('張飛', 'M', 98, 50, 88, 65, 100, '萬夫莫敵', '「燕人張翼德在此，誰敢與我決一死戰！」');
         GAME.cities[0].name = '平原 (劉備起家地)';
-        logMessage('主公【劉備】於平原立旗！關羽、張飛誓死相隨，初始忠誠達 100（潛能極致發揮）！');
+        logMessage('主公【劉備】誓師起兵！關羽、張飛桃園誓盟忠誠 100% 潛能極限覺醒！');
       } else if (type === 'caocao') {
         document.getElementById('dollLordName').innerText = '主公：曹操 (孟德)';
-        addOfficer('夏侯惇', 'M', 90, 62, 89, 82, 95, '宗族心腹');
-        addOfficer('郭嘉',   'M', 30, 98, 60, 85, 90, '王佐知己');
+        addOfficer('夏侯惇', 'M', 90, 62, 89, 82, 95, '拔矢啖睛', '「父精母血不可棄也！殺敵更烈！」');
+        addOfficer('郭嘉',   'M', 30, 98, 60, 85, 90, '天生鬼才', '「兵貴神速，主公天下莫敵！」');
         GAME.gold += 800;
         GAME.cities[0].name = '許昌 (曹操發跡地)';
-        logMessage('主公【曹操】雄踞許昌，挾天子令諸侯！得夏侯惇、郭嘉相助，內政儲備豐沛。');
+        logMessage('主公【曹操】雄踞許昌，唯才是舉！國庫每季商稅增長 35%！');
       } else {
         document.getElementById('dollLordName').innerText = '主公：孫權 (仲謀)';
-        addOfficer('周泰',   'M', 91, 50, 84, 60, 95, '捨命護主');
-        addOfficer('孫尚香', 'F', 86, 70, 78, 88, 95, '江東郡主');
+        addOfficer('周泰',   'M', 91, 50, 84, 60, 95, '百戰金剛', '「主公在前，周泰以身作盾！」');
+        addOfficer('孫尚香', 'F', 86, 70, 78, 88, 95, '弓腰姬', '「莫道紅顏無殺意，百步穿楊！」');
         GAME.troops += 3000;
-        GAME.cities[0].name = '柴桑 (東吳門戶)';
-        logMessage('主公【孫權】坐鎮江東，舟師精銳，孫尚香與周泰提刀聽令！');
+        GAME.cities[0].name = '柴桑 (東吳要塞)';
+        logMessage('主公【孫權】坐鎮江東，舟師嚴整，周泰與郡主孫尚香執兵聽令！');
       }
 
       updateUI();
       renderDoll();
       renderCourt();
       renderTreasury();
+      renderCampaigns();
       renderMap();
       checkEvents();
 
-      // 解鎖並播放背景音樂 (初次互動解鎖音訊上下文)
       bgm.start();
       bgm.setScene('city');
     }
 
-    function addOfficer(name, gender, war, int, ldr, chr, loyalty, title) {
+    function addOfficer(name, gender, war, int, ldr, chr, loyalty, title, quote) {
       GAME.officers.push({
         id: 'off_' + Date.now() + Math.random(),
         name, gender, war, int, ldr, chr, loyalty, title,
+        quote: quote || '「當提三尺劍，立不世之功！」',
         awaked: loyalty >= 100
       });
     }
 
     function updateUI() {
       document.getElementById('uiDate').innerText = `西元${GAME.year}年 ${GAME.seasons[GAME.seasonIdx]}`;
+      document.getElementById('uiPrestige').innerText = GAME.prestige;
       document.getElementById('uiGold').innerText = GAME.gold;
       document.getElementById('uiFood').innerText = GAME.food;
       document.getElementById('uiTroops').innerText = GAME.troops;
       const myCityCount = GAME.cities.filter(c => c.owner === 'player').length;
       document.getElementById('uiCities').innerText = `${myCityCount}/${GAME.cities.length}`;
+      document.getElementById('uiTaxIncome').innerText = `+${getQuarterlyTax()}`;
       document.getElementById('officerCount').innerText = GAME.officers.length;
     }
 
     function renderDoll() {
-      // 坐騎渲染 (SVG)
       const mountG = document.getElementById('slot-mount');
       if (GAME.equipment.mount) {
         mountG.innerHTML = `
@@ -869,7 +1004,6 @@
           <rect x="120" y="180" width="12" height="40" fill="#2b1a0d"/>
         `;
       }
-      // 武器渲染 (SVG)
       const weapG = document.getElementById('slot-weapon');
       if (GAME.equipment.weapon) {
         weapG.innerHTML = `
@@ -883,30 +1017,42 @@
     }
 
     /* ==========================================================================
-       4. 內政、四季流轉與歷史奇遇事件
+       4. 四季流轉、內政與宿命奇遇
        ========================================================================== */
     function doDomestic(type) {
       if (type === 'farm') {
-        if (GAME.gold < 200) return alert('銀兩不足！');
+        if (GAME.gold < 150) return alert('國庫銀兩不足 150！');
+        GAME.gold -= 150;
+        const addFood = (GAME.lord === 'sunquan' ? 850 : 700);
+        GAME.food += addFood;
+        logMessage(`開闢良田大修堤防，入庫糧草 ${addFood} 石。`);
+      } else if (type === 'investCommerce') {
+        if (GAME.gold < 200) return alert('繁榮商埠需 200 銀兩！');
         GAME.gold -= 200;
-        GAME.food += 600;
-        logMessage('施行屯田開荒，增產糧草 600 石。');
-      } else if (type === 'commerce') {
-        if (GAME.food < 200) return alert('糧草不足！');
-        GAME.food -= 200;
-        GAME.gold += 500;
-        logMessage('通商通渠，商稅大豐收，國庫入帳 500 銀兩。');
+        GAME.commerceBonus += 45;
+        logMessage(`頒布互市安商令，全境每季常態稅收永久增長 45 銀兩！`);
+      } else if (type === 'sellFood') {
+        if (GAME.food < 500) return alert('官倉儲糧不足 500 石！');
+        GAME.food -= 500;
+        const earn = (GAME.lord === 'sunquan' ? 520 : 460);
+        GAME.gold += earn;
+        logMessage(`在平準市集出脫 500 石糧草，換回 ${earn} 銀兩。`);
+      } else if (type === 'patrol') {
+        const reward = 220 + Math.floor(Math.random() * 200);
+        GAME.gold += reward;
+        GAME.prestige += 10;
+        logMessage(`差遣大將鐵腕蕩平境內黑山賊寇，繳獲軍餉 ${reward} 兩，主公威名聲望 +10！`);
       } else if (type === 'recruit') {
-        if (GAME.gold < 300 || GAME.food < 300) return alert('糧餉不足以招兵！');
+        if (GAME.gold < 300 || GAME.food < 300) return alert('糧餉不足以募兵！');
         GAME.gold -= 300;
         GAME.food -= 300;
-        GAME.troops += 1000;
-        logMessage('廣發招兵文牒，招募 1,000 名精壯勇士入伍。');
+        GAME.troops += 1200;
+        logMessage('頒布求賢從軍檄文，募得 1,200 名精銳武卒入營。');
       } else if (type === 'tech') {
         if (GAME.gold < 500) return alert('研發銀兩不足！');
         GAME.gold -= 500;
         GAME.techLevel += 1;
-        logMessage(`工匠突破技藝，研發軍備科技【階級 ${GAME.techLevel}】！攻城戰力大幅增強。`);
+        logMessage(`工巧大突破！軍備研製提升至【階級 ${GAME.techLevel}】，攻城戰力激增。`);
       }
       updateUI();
     }
@@ -916,65 +1062,65 @@
       if (GAME.seasonIdx >= 4) {
         GAME.seasonIdx = 0;
         GAME.year++;
-        // 每年歲收
-        const cityNum = GAME.cities.filter(c => c.owner === 'player').length;
-        const incomeGold = cityNum * 400 + (GAME.lord === 'caocao' ? 300 : 0);
-        const incomeFood = cityNum * 600;
-        GAME.gold += incomeGold;
-        GAME.food += incomeFood;
-        logMessage(`【歲首結算】${GAME.year}年春到來，各州歲賦入庫：銀兩+${incomeGold}，糧草+${incomeFood}。`);
       }
-      // 糧草維持軍隊耗損
-      const foodConsume = Math.floor(GAME.troops * 0.05);
-      GAME.food = Math.max(0, GAME.food - foodConsume);
-      logMessage(`季節更迭至【${GAME.year}年 ${GAME.seasons[GAME.seasonIdx]}】，軍隊食用糧草 ${foodConsume} 石。`);
 
+      const tax = getQuarterlyTax();
+      GAME.gold += tax;
+      const foodConsume = Math.floor(GAME.troops * 0.025);
+      GAME.food = Math.max(0, GAME.food - foodConsume);
+
+      logMessage(`【${GAME.year}年 ${GAME.seasons[GAME.seasonIdx]}】各州郡商稅押解入庫，銀兩 +${tax}，大軍支領軍糧 ${foodConsume} 石。`);
       checkEvents();
       updateUI();
+      renderCampaigns();
+      renderMap();
     }
 
     function checkEvents() {
       const container = document.getElementById('eventContainer');
       container.innerHTML = '';
-
-      // 歷史事件 1: 三顧茅廬 (劉備專屬或擁有 2 座城以上)
       const myCities = GAME.cities.filter(c => c.owner === 'player').length;
+
       if (GAME.zhugeProgress < 3 && myCities >= 2) {
         const step = GAME.zhugeProgress + 1;
         const div = document.createElement('div');
         div.className = 'event-card';
         div.innerHTML = `
           <b style="color:var(--accent-gold);">📜 歷史奇遇：南陽臥龍岡【三顧茅廬 第 ${step} 次】</b>
-          <p style="color:#d5c7b3; margin:6px 0;">探子回報，隆中隱士諸葛孔明有經天緯地之才，是否親往拜謁？</p>
-          <button class="btn" onclick="visitZhuge(${step})">親赴草廬訪賢 (消耗 300 銀)</button>
+          <p style="color:#d5c7b3; margin:6px 0;">探得孔明先生高臥隆中，主公是否親率關張前往參謁？</p>
+          <button class="btn" onclick="visitZhuge(${step})">親赴草廬聘請 (消耗 200 銀)</button>
         `;
         container.appendChild(div);
       } else if (GAME.zhugeProgress >= 3) {
         const div = document.createElement('div');
         div.className = 'event-card';
-        div.innerHTML = `<b style="color:#7ec8ff;">🌟 臥龍出山</b><p style="color:#a89b8a;">軍師諸葛孔明已坐鎮中樞，天下三分計已成！</p>`;
+        div.innerHTML = `
+          <b style="color:#7ec8ff;">🌟 臥龍先生坐鎮中樞</b>
+          <p style="color:#a89b8a;">「臣鞠躬盡瘁，死而後已！」諸葛孔明智力 100 極限覺醒，定鼎天下！</p>
+        `;
         container.appendChild(div);
       } else {
-        container.innerHTML = `<div class="event-card"><b>當前風平浪靜</b><p style="color:var(--text-muted);">攻下兩座以上城池即可開展天下名士奇遇。</p></div>`;
+        container.innerHTML = `<div class="event-card"><b>天下大勢安穩</b><p style="color:var(--text-muted);">攻下兩座以上要邑後，將開展諸葛孔明出山之歷史大奇遇。</p></div>`;
       }
     }
 
     function visitZhuge(step) {
-      if (GAME.gold < 300) return alert('盤纏不足！');
-      GAME.gold -= 300;
+      if (GAME.gold < 200) return alert('盤纏不足！');
+      GAME.gold -= 200;
       if (step === 1) {
         GAME.zhugeProgress = 1;
-        alert('【一顧草廬】童子曰先生出遊未歸，主公惆悵而返。');
-        logMessage('主公親謁臥龍岡，童子言孔明先生閒雲野鶴，未能謀面。');
+        alert('【一顧草廬】童子告曰先生訪友未歸，主公望著遠山慨然嘆息。');
+        logMessage('主公一謁草廬，未見其人，留敬意而歸。');
       } else if (step === 2) {
         GAME.zhugeProgress = 2;
-        alert('【二顧草廬】冒風雪再至，僅見其弟諸葛均，留書一封慨嘆而歸。');
-        logMessage('二謁茅廬遇風雪，孔明依舊未返，主公留書寄意。');
+        alert('【二顧草廬】風雪載道，只見其弟諸葛均。主公留尺牘一封，懇切陳明救民之志。');
+        logMessage('二謁草廬冒雪而往，留書以明赤誠之心。');
       } else if (step === 3) {
         GAME.zhugeProgress = 3;
-        alert('【三顧茅廬】孔明先生感念主公三度屈尊，出示《隆中對》，慨然出山！');
-        addOfficer('諸葛亮', 'M', 38, 100, 98, 98, 100, '臥龍先生');
-        logMessage('🎉 諸葛孔明正式入幕！神機妙算，智力100極限覺醒！');
+        alert('【三顧茅廬】孔明感念主公三度紆尊降貴，於草堂手繪天下形勢，獻上《隆中對》，慨然出山！\n諸葛亮：「主公不棄鄙賤，願隨明公驅馳！」');
+        addOfficer('諸葛亮', 'M', 38, 100, 98, 98, 100, '臥龍先生', '「臣鞠躬盡瘁，死而後已！」');
+        GAME.prestige += 100;
+        logMessage('🎉 諸葛孔明出山拜相！智力 100 極限覺醒，主公威名聲望暴漲 100！');
         renderCourt();
       }
       checkEvents();
@@ -982,93 +1128,93 @@
     }
 
     /* ==========================================================================
-       5. 酒館招攬、歷史羈絆加成
+       5. 酒肆招賢與名將台詞
        ========================================================================== */
     function refreshTavern() {
-      if (GAME.gold < 150) return alert('銀兩不足，無法設宴！');
-      GAME.gold -= 150;
+      const cost = (GAME.lord === 'caocao' ? 60 : 120);
+      if (GAME.gold < cost) return alert('銀兩不足設宴！');
+      GAME.gold -= cost;
       updateUI();
       renderTavern();
-      logMessage('在酒館置辦杜康佳釀，引來數位在野名士落座。');
+      logMessage('在市肆擺下名宴，引來四方隱士英雄落座相談。');
     }
 
     function renderTavern() {
       const list = document.getElementById('tavernList');
       list.innerHTML = '';
       if (GAME.wildOfficers.length === 0) {
-        list.innerHTML = '<p style="color:var(--text-muted); padding:10px;">野無遺賢，所有名將皆已被各方招納！</p>';
+        list.innerHTML = '<p style="color:var(--text-muted); padding:10px;">野無遺賢，當世名將皆已入幕投效！</p>';
         return;
       }
 
-      // 隨機抽 3 員在野名將
       const shuffled = [...GAME.wildOfficers].sort(() => 0.5 - Math.random()).slice(0, 3);
       shuffled.forEach(gen => {
         let chance = 45;
-        if (GAME.lord === gen.favLord) chance += 30; // 宿命好感提升
-        if (GAME.lord === 'liubei') chance += 15;   // 劉備仁德特性
+        if (GAME.lord === gen.favLord) chance += 30;
+        if (GAME.lord === 'liubei') chance += 15;
+        if (GAME.prestige >= 300) chance += 15;
 
         const card = document.createElement('div');
         card.className = 'gen-card';
         card.innerHTML = `
           <div class="gen-header">
             <span class="gen-name">${gen.name} <small style="color:var(--accent-gold);">(${gen.title})</small></span>
-            <span style="font-size:0.75rem; color:#8ec3ff;">招募率: ${Math.min(95, chance)}%</span>
+            <span style="font-size:0.75rem; color:#8ec3ff;">投誠率: ${Math.min(95, chance)}%</span>
           </div>
+          <div class="gen-quote">${gen.quote}</div>
           <div class="gen-stats">
             <span>武力: <b>${gen.war}</b></span>
             <span>智力: <b>${gen.int}</b></span>
             <span>統率: <b>${gen.ldr}</b></span>
             <span>魅力: <b>${gen.chr}</b></span>
           </div>
-          <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">性別: ${gen.gender === 'F' ? '巾幗女將 🌸' : '雄壯名將 ⚔️'}</p>
-          <button class="btn" style="width:100%;" onclick="recruitOfficer('${gen.id}', ${chance})">奉敬禮金 招攬 (300銀)</button>
+          <button class="btn" style="width:100%;" onclick="recruitOfficer('${gen.id}', ${chance})">奉敬厚禮 聘請 (250銀)</button>
         `;
         list.appendChild(card);
       });
     }
 
     function recruitOfficer(id, chance) {
-      if (GAME.gold < 300) return alert('禮金銀兩不足！');
-      GAME.gold -= 300;
-
+      if (GAME.gold < 250) return alert('禮金銀兩不足！');
+      GAME.gold -= 250;
       const idx = GAME.wildOfficers.findIndex(o => o.id === id);
       if (idx === -1) return;
       const target = GAME.wildOfficers[idx];
 
       const roll = Math.random() * 100;
       if (roll <= chance) {
-        alert(`【招攬大捷】${target.name} 被主公之至誠所感，納頭便拜！`);
-        logMessage(`成功招募賢才【${target.name}】加入勢力！`);
+        alert(`【名士俯首】${target.name} 慨然拔劍拜道：\n${target.quote}`);
+        logMessage(`喜獲名臣【${target.name}】投效麾下！`);
         GAME.wildOfficers.splice(idx, 1);
-        addOfficer(target.name, target.gender, target.war, target.int, target.ldr, target.chr, target.loyalty, target.title);
+        addOfficer(target.name, target.gender, target.war, target.int, target.ldr, target.chr, target.loyalty, target.title, target.quote);
         renderTavern();
         renderCourt();
       } else {
-        alert(`【緣慳一面】${target.name} 婉拒了主公的金銀，飄然離去。`);
-        logMessage(`招撫【${target.name}】未果，其人尚在觀望天下大勢。`);
+        alert(`【緣法未至】${target.name} 飲罷杯中杜康，婉謝道：「天下英雄甚多，容某再觀之。」`);
+        logMessage(`招募【${target.name}】未果，其人飄然辭行。`);
       }
       updateUI();
     }
 
     /* ==========================================================================
-       6. 賜予寶物、忠誠度 100% 極限發揮系統
+       6. 名將賜寶與 100% 忠誠潛能發揮
        ========================================================================== */
     function renderTreasury() {
       const list = document.getElementById('treasuryList');
       list.innerHTML = '';
       if (GAME.treasury.length === 0) {
-        list.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">寶庫空虛，可透過攻城或探索尋得傳奇器物。</p>';
+        list.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">府庫珍寶已盡數賞賜，可透過歷史戰役或攻陷名都獲取至寶。</p>';
         return;
       }
       GAME.treasury.forEach(t => {
         const item = document.createElement('div');
-        item.style = 'background:#1a1511; border:1px solid #382b1f; padding:8px 12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;';
+        item.style = 'background:#191410; border:1px solid #382c1f; padding:8px 12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;';
         item.innerHTML = `
           <div>
             <b>${t.icon} ${t.name}</b> <span style="font-size:0.75rem; color:var(--accent-gold);">[${t.type}]</span>
             <div style="font-size:0.78rem; color:var(--text-muted);">${t.desc}</div>
           </div>
-          <button class="btn" style="padding:4px 8px; font-size:0.8rem;" onclick="openGiftModal('${t.id}')">賞賜部將</button>
+          <button class="btn" style="padding:4px 8px; font-size:0.8rem;" onclick="openGiftModal('${t.id}')">賜予重臣</button>
         `;
         list.appendChild(item);
       });
@@ -1079,7 +1225,6 @@
       list.innerHTML = '';
       GAME.officers.forEach(off => {
         const isFull = off.loyalty >= 100;
-        // 若忠誠 100 滿值，數值發揮極限 (+20%)
         const multiplier = isFull ? 1.2 : (off.loyalty < 50 ? 0.7 : 1.0);
         const curWar = Math.round(off.war * multiplier);
         const curInt = Math.round(off.int * multiplier);
@@ -1088,19 +1233,20 @@
         const card = document.createElement('div');
         card.className = `gen-card ${isFull ? 'awake' : ''}`;
         card.innerHTML = `
-          ${isFull ? '<span class="awake-tag">🔥 潛能極限覺醒</span>' : ''}
+          ${isFull ? '<span class="awake-tag">🔥 潛能極致覺醒</span>' : ''}
           <div class="gen-header">
             <span class="gen-name">${off.name} <small style="color:var(--accent-gold);">(${off.title})</small></span>
             <span style="font-size:0.8rem; color:${isFull ? '#ff4500' : '#d4af37'};">忠誠: ${off.loyalty}/100</span>
           </div>
+          <div class="gen-quote">${off.quote}</div>
           <div class="loyalty-bar">
             <div class="loyalty-fill ${isFull ? 'full' : ''}" style="width:${Math.min(100, off.loyalty)}%;"></div>
           </div>
           <div class="gen-stats">
-            <span>武力: <b>${curWar}</b> ${isFull ? '<span style="color:#ff4500; font-size:0.75rem;">(+20%)</span>' : ''}</span>
+            <span>武力: <b>${curWar}</b> ${isFull ? '<span style="color:#ff4500; font-size:0.72rem;">(+20%)</span>' : ''}</span>
             <span>智力: <b>${curInt}</b></span>
             <span>統率: <b>${curLdr}</b></span>
-            <span>職能: <b>${off.gender === 'F' ? '女名將' : '武將'}</b></span>
+            <span>職銜: <b>${off.gender === 'F' ? '巾幗名將' : '良將賢相'}</b></span>
           </div>
         `;
         list.appendChild(card);
@@ -1111,7 +1257,7 @@
     function openGiftModal(giftId) {
       selectedGiftId = giftId;
       const g = GAME.treasury.find(x => x.id === giftId);
-      document.getElementById('giftItemDesc').innerText = `欲將【${g.name}】賞賜給哪位心腹重臣？（大幅提升忠誠，滿100解鎖極致潛能）`;
+      document.getElementById('giftItemDesc').innerText = `欲將【${g.name}】賞賜何人？（滿100解鎖全能力+20%極限覺醒）`;
       const targetDiv = document.getElementById('giftTargetList');
       targetDiv.innerHTML = '';
 
@@ -1119,8 +1265,8 @@
         const row = document.createElement('div');
         row.style = 'display:flex; justify-content:space-between; align-items:center; background:#291e15; padding:8px 12px; border-radius:4px;';
         row.innerHTML = `
-          <span><b>${off.name}</b> (現有忠誠: ${off.loyalty})</span>
-          <button class="btn" onclick="confirmGift('${off.id}')">賜予</button>
+          <span><b>${off.name}</b> (當前忠誠: ${off.loyalty})</span>
+          <button class="btn" onclick="confirmGift('${off.id}')">賞賜</button>
         `;
         targetDiv.appendChild(row);
       });
@@ -1133,15 +1279,15 @@
       if (gIdx === -1 || !off) return;
 
       const gift = GAME.treasury[gIdx];
-      GAME.treasury.splice(gIdx, 1); // 消耗寶物
+      GAME.treasury.splice(gIdx, 1);
 
       off.loyalty = Math.min(100, off.loyalty + 25);
       if (gift.stat === 'war') off.war += gift.val;
       if (gift.stat === 'int') off.int += gift.val;
       if (gift.stat === 'ldr') off.ldr += gift.val;
 
-      alert(`主公將【${gift.name}】親手賜予 ${off.name}！\n忠誠度大幅攀升至 ${off.loyalty}！${off.loyalty >= 100 ? '\n🔥 忠誠度達 100！該將領正式解鎖【潛能極限發揮】全能力提升 20%！' : ''}`);
-      logMessage(`主公賜予【${gift.name}】予【${off.name}】，將士感激涕零，誓死效忠！`);
+      alert(`主公親賜重器【${gift.name}】予 ${off.name}！\n忠誠度飆升至 ${off.loyalty}！\n${off.name} 慷慨長嘯：\n${off.quote}${off.loyalty >= 100 ? '\n\n🔥 忠誠度達 100！解鎖【潛能極致發揮】，全四維屬性全面暴增 20%！' : ''}`);
+      logMessage(`主公賜【${gift.name}】予【${off.name}】，全軍將士豪情萬丈！`);
 
       closeGiftModal();
       renderTreasury();
@@ -1154,137 +1300,214 @@
     }
 
     /* ==========================================================================
-       7. 征戰天下 (攻城、即時戰鬥與破城凱旋 MIDI 音樂)
+       7. 歷史名戰役三大篇章 (虎牢關、官渡、赤壁)
+       ========================================================================== */
+    function renderCampaigns() {
+      const list = document.getElementById('campaignList');
+      list.innerHTML = '';
+
+      GAME.campaigns.forEach(c => {
+        const canFight = GAME.prestige >= c.reqPrestige && GAME.troops >= c.reqTroops;
+        const box = document.createElement('div');
+        box.className = 'action-box';
+        box.style = `border:1px solid ${c.completed ? 'var(--accent-green)' : '#663322'};`;
+        box.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b style="color:${c.completed ? 'var(--accent-green)' : '#ffbb55'}; font-size:1rem;">${c.name}</b>
+            <span style="font-size:0.75rem; color:${c.completed ? 'var(--accent-green)' : '#ff8888'};">
+              ${c.completed ? '【名留青史 · 大捷】' : '【宿命未完】'}
+            </span>
+          </div>
+          <p style="color:#d5c2af; margin:6px 0;">${c.desc}</p>
+          <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
+            • 敵首領袖: <b style="color:#ff8888;">${c.bossName}</b><br>
+            • 解鎖門檻: 威名 <b>${c.reqPrestige}</b> (現有:${GAME.prestige}) | 大軍 <b>${c.reqTroops}</b><br>
+            • 戰役大功: 繳獲傳世珍寶【${c.rewardItem.name}】、大量軍資
+          </div>
+          ${!c.completed ? `
+            <button class="btn btn-epic" ${canFight ? '' : 'disabled'} style="margin-top:8px;" onclick="startCampaign('${c.id}')">
+              ${canFight ? '親臨戰場 · 決戰名場面！' : '威名或兵力尚未齊備'}
+            </button>
+          ` : '<div style="color:var(--accent-green); font-size:0.85rem; font-weight:bold; margin-top:8px;">✅ 已定鼎該場戰役</div>'}
+        `;
+        list.appendChild(box);
+      });
+    }
+
+    let battleType = 'city'; // 'city' or 'campaign'
+    let currentBattleTarget = null;
+    let chosenTactic = 'front';
+
+    function startCampaign(campId) {
+      battleType = 'campaign';
+      currentBattleTarget = GAME.campaigns.find(x => x.id === campId);
+      openBattleModal(currentBattleTarget.bossName, currentBattleTarget.bossQuote, currentBattleTarget.bossPower, currentBattleTarget.name);
+    }
+
+    /* ==========================================================================
+       8. 州郡地圖、攻城與名將名言陣前對話系統
        ========================================================================== */
     function renderMap() {
       const grid = document.getElementById('mapGrid');
       grid.innerHTML = '';
       GAME.cities.forEach(c => {
         const isMine = c.owner === 'player';
+        const isLocked = !isMine && GAME.prestige < c.minPrestige;
         const card = document.createElement('div');
-        card.className = `city-card ${isMine ? 'owned' : 'enemy'}`;
+        card.className = `city-card ${isMine ? 'owned' : (isLocked ? 'locked' : 'enemy')}`;
         card.innerHTML = `
           <h4>
             <span>${c.name}</span>
-            <span class="city-tag ${isMine ? 'mine' : 'theirs'}">${isMine ? '我方州府' : '敵對割據'}</span>
+            <span class="city-tag ${isMine ? 'mine' : (isLocked ? 'lock' : 'theirs')}">
+              ${isMine ? '我方州府' : (isLocked ? `需威名 ${c.minPrestige}` : '割據勢力')}
+            </span>
           </h4>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">守城軍備: <b>${c.defense}</b> | 駐軍: <b>${c.troops}</b></p>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">守備重臣: <b style="color:#eedcb2;">${c.boss}</b></p>
-          ${!isMine ? `<button class="btn btn-red" style="width:100%;" onclick="startSiege('${c.id}')">發兵征伐攻城</button>` : '<div style="color:var(--accent-green); font-size:0.85rem; font-weight:bold;">已納入主公版圖</div>'}
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">城防堅固: <b>${c.defense}</b> | 守軍: <b>${c.troops}</b></p>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">守備主帥: <b style="color:#eedcb2;">${c.boss}</b></p>
+          ${!isMine ? `
+            <button class="btn btn-red" ${isLocked ? 'disabled' : ''} style="width:100\%;" onclick="startCitySiege('${c.id}')">
+              ${isLocked ? `威名不足 (${GAME.prestige}/${c.minPrestige})` : '引大軍征伐攻城'}
+            </button>
+          ` : '<div style="color:var(--accent-green); font-size:0.85rem; font-weight:bold;">已納入萬世版圖</div>'}
         `;
         grid.appendChild(card);
       });
     }
 
-    let activeBattleCity = null;
-    function startSiege(cityId) {
-      if (GAME.troops < 2000) return alert('我軍兵力少於 2,000 人，出兵形同送死！請先回城徵兵。');
-      activeBattleCity = GAME.cities.find(c => c.id === cityId);
+    function startCitySiege(cityId) {
+      battleType = 'city';
+      currentBattleTarget = GAME.cities.find(x => x.id === cityId);
+      const enemyPower = Math.round((currentBattleTarget.war || 80) * 12 + (currentBattleTarget.troops * 0.45));
+      openBattleModal(currentBattleTarget.boss, currentBattleTarget.quote, enemyPower, `克復【${currentBattleTarget.name}】大會戰`);
+    }
 
-      // 選拔我方戰力最強的名將掛帥
-      let bestOfficer = GAME.officers[0];
+    function openBattleModal(bossName, bossQuote, enemyPower, title) {
+      chosenTactic = 'front';
+      // 選拔我方戰力最強的武將為主帥
+      let bestOff = GAME.officers[0];
       GAME.officers.forEach(o => {
         const p1 = o.war * (o.loyalty >= 100 ? 1.2 : 1.0);
-        const p2 = bestOfficer.war * (bestOfficer.loyalty >= 100 ? 1.2 : 1.0);
-        if (p1 > p2) bestOfficer = o;
+        const p2 = bestOff.war * (bestOff.loyalty >= 100 ? 1.2 : 1.0);
+        if (p1 > p2) bestOff = o;
       });
 
       const myPower = Math.round(
-        (bestOfficer.war * (bestOfficer.loyalty >= 100 ? 1.2 : 1.0) * 10) +
-        (GAME.troops * 0.4) +
-        (GAME.techLevel * 300)
+        (bestOff.war * (bestOff.loyalty >= 100 ? 1.2 : 1.0) * 11) +
+        (GAME.troops * 0.45) +
+        (GAME.techLevel * 350)
       );
 
-      const enemyPower = Math.round((activeBattleCity.war || 80) * 10 + (activeBattleCity.troops * 0.4));
+      document.getElementById('battleTitle').innerText = title;
+      document.getElementById('playerSpeakerName').innerText = `我軍大將 · ${bestOff.name} ${bestOff.loyalty >= 100 ? '🔥' : ''}`;
+      document.getElementById('playerSpeakerQuote').innerText = bestOff.quote;
 
-      document.getElementById('battleTitle').innerText = `征討【${activeBattleCity.name}】大會戰`;
-      document.getElementById('playerWarLead').innerText = `主將：${bestOfficer.name} ${bestOfficer.loyalty >= 100 ? '🔥' : ''}`;
+      document.getElementById('enemySpeakerName').innerText = `敵軍雄主 · ${bossName}`;
+      document.getElementById('enemySpeakerQuote').innerText = bossQuote;
+
+      document.getElementById('playerWarLead').innerText = `主帥: ${bestOff.name}`;
       document.getElementById('playerWarPower').innerText = `全軍戰力: ${myPower}`;
-      document.getElementById('enemyWarLead').innerText = `守將：${activeBattleCity.boss}`;
-      document.getElementById('enemyWarPower').innerText = `敵軍戰力: ${enemyPower}`;
+      document.getElementById('enemyWarLead').innerText = `敵酋: ${bossName}`;
+      document.getElementById('enemyWarPower').innerText = `守御戰力: ${enemyPower}`;
 
       document.getElementById('battleReport').innerHTML = `
-        我方前鋒軍臨城下！主將【${bestOfficer.name}】手持神兵列陣以待。<br>
-        敵將【${activeBattleCity.boss}】憑城固守，擂木滾石齊下！<br>
-        點擊下方擂鼓衝鋒，決一死戰！
+        金鼓齊鳴，兩軍對圓！雙方名將橫槍躍馬，陣前厲聲對峙！<br>
+        請主公審奪局勢，於上方指派臨陣計策後，下達總攻號令。
       `;
 
       document.getElementById('btnConfirmBattle').style.display = 'inline-block';
-      document.getElementById('btnConfirmBattle').onclick = () => runBattleCalculation(myPower, enemyPower, bestOfficer);
+      document.getElementById('btnConfirmBattle').innerText = '交鋒合戰！';
       document.getElementById('battleModal').style.display = 'flex';
+
+      // 儲存臨時戰鬥數值供計算
+      window.curFight = { myPower, enemyPower, bestOff };
     }
 
-    function runBattleCalculation(myPower, enemyPower, officer) {
+    function selectTactic(type) {
+      chosenTactic = type;
+      if (type === 'fire') {
+        if (GAME.food < 150) return alert('軍糧不足 150 石，難以備辦火油蘆葦！');
+        alert('【軍師授計 · 火攻燒營】\n安排精騎夜行放火，敵軍防線大亂，守御戰力削減 20%！');
+        window.curFight.enemyPower = Math.round(window.curFight.enemyPower * 0.8);
+        document.getElementById('enemyWarPower').innerText = `守御戰力: ${window.curFight.enemyPower} (火計已削弱)`;
+      } else {
+        alert('【全軍突擊】三軍聽令，鐵騎齊發，堂堂之陣決戰！');
+      }
+    }
+
+    function executeBattle() {
+      const { myPower, enemyPower, bestOff } = window.curFight;
       const reportDiv = document.getElementById('battleReport');
-      const win = myPower >= enemyPower * 0.85; // 具備一定戰略容錯率
+      const win = myPower >= enemyPower * 0.88;
 
       if (win) {
-        // 切換為攻克城池凱旋 MIDI 配樂
         bgm.setScene('conquest');
+        const loss = Math.floor(GAME.troops * 0.22);
+        GAME.troops -= loss;
 
-        const troopLoss = Math.floor(GAME.troops * 0.25);
-        GAME.troops -= troopLoss;
-        activeBattleCity.owner = 'player';
-        GAME.gold += 800;
-        GAME.food += 1000;
+        if (battleType === 'campaign') {
+          currentBattleTarget.completed = true;
+          GAME.gold += currentBattleTarget.rewardGold;
+          GAME.prestige += currentBattleTarget.rewardPrestige;
+          GAME.treasury.push(currentBattleTarget.rewardItem);
 
-        // 繳獲一件新寶物
-        GAME.treasury.push({
-          id: 'loot_' + Date.now(),
-          name: '名邑繳獲印綬',
-          type: '珍寶',
-          val: 12,
-          stat: 'ldr',
-          desc: '破城繳獲之守城太守印綬，賞賜將領大幅提升忠誠',
-          icon: '👑'
-        });
+          reportDiv.innerHTML = `
+            <b style="color:#7ef07e; font-size:1.1rem;">【千古名場面 · 大捷全勝！】</b><br>
+            主帥【${bestOff.name}】親冒鏑矢立下奇功！名震天下！<br>
+            • 戰獲封賞：銀兩 +${currentBattleTarget.rewardGold}，主公威名聲望暴增 +${currentBattleTarget.rewardPrestige}！<br>
+            • 繳獲傳世重器【${currentBattleTarget.rewardItem.name}】收歸府庫！<br>
+            • 我方陣亡將士: ${loss} 人。
+          `;
+        } else {
+          currentBattleTarget.owner = 'player';
+          GAME.gold += 850;
+          GAME.food += 1000;
+          GAME.prestige += 30;
 
-        reportDiv.innerHTML = `
-          <b style="color:#7ef07e; font-size:1.1rem;">【大捷！城池陷落！】</b><br>
-          主將【${officer.name}】奮勇先登，親斬敵部防線！我軍精銳蜂擁入城！<br>
-          • 繳獲敵方庫存：銀兩 +800、糧草 +1000<br>
-          • 尋得戰利品【名邑繳獲印綬】已收歸主公寶庫<br>
-          • 我方陣亡將士: ${troopLoss} 人。
-        `;
+          reportDiv.innerHTML = `
+            <b style="color:#7ef07e; font-size:1.1rem;">【大破要邑 · 城池陷落！】</b><br>
+            主帥【${bestOff.name}】先登破門，三軍雲從，插上主公旌旗！<br>
+            • 破城犒賞：銀兩 +850、糧草 +1000、威名聲望 +30<br>
+            • 各州郡常態商稅全線提升！<br>
+            • 我方陣亡勇士: ${loss} 人。
+          `;
+        }
 
         document.getElementById('btnConfirmBattle').innerText = '凱旋收兵';
         document.getElementById('btnConfirmBattle').onclick = () => {
           document.getElementById('battleModal').style.display = 'none';
-          document.getElementById('btnConfirmBattle').innerText = '擂鼓衝鋒！';
           renderMap();
+          renderCampaigns();
           renderTreasury();
           updateUI();
-          checkVictoryCondition();
-          // 戰後過 3 秒切回內政和平曲風
-          setTimeout(() => {
-            bgm.setScene('city');
-          }, 3000);
+          checkFinalVictory();
+          setTimeout(() => bgm.setScene('city'), 3500);
         };
       } else {
-        const troopLoss = Math.floor(GAME.troops * 0.5);
-        GAME.troops = Math.max(500, GAME.troops - troopLoss);
+        const loss = Math.floor(GAME.troops * 0.4);
+        GAME.troops = Math.max(800, GAME.troops - loss);
 
         reportDiv.innerHTML = `
-          <b style="color:#ff6b6b; font-size:1.1rem;">【攻城受阻！鳴金收兵】</b><br>
-          敵軍城池堅固，箭如雨下。我方主將【${officer.name}】力戰不支，率部突圍返回。<br>
-          • 我方部隊大折半數，折損 ${troopLoss} 兵員。<br>
-          請主公回城多加經營內政、賜寶覺醒更多良將再圖後計！
+          <b style="color:#ff6b6b; font-size:1.1rem;">【衝鋒受挫 · 鳴金退守】</b><br>
+          敵陣固若金湯，將士死傷慘重。主帥【${bestOff.name}】不得不率殘部突圍歸營。<br>
+          • 大軍折損精銳: ${loss} 人。<br>
+          請主公積攢糧餉、多做巡查招募良將，將臣屬忠誠賞至 100% 覺醒再來一戰！
         `;
 
-        document.getElementById('btnConfirmBattle').innerText = '敗退回營';
+        document.getElementById('btnConfirmBattle').innerText = '退回大本營';
         document.getElementById('btnConfirmBattle').onclick = () => {
           document.getElementById('battleModal').style.display = 'none';
-          document.getElementById('btnConfirmBattle').innerText = '擂鼓衝鋒！';
           updateUI();
         };
       }
     }
 
-    function checkVictoryCondition() {
+    function checkFinalVictory() {
       const owned = GAME.cities.filter(c => c.owner === 'player').length;
-      if (owned === GAME.cities.length) {
-        alert('👑【天下歸一 · 萬世盛朝】\n恭賀主公蕩平中原十三州，群雄納降，海內肅清！\n您已完成三國一統之無上千秋霸業！');
-        logMessage('👑 登基九五！海內一統，開創千秋盛世，天下歸心！');
+      const camps = GAME.campaigns.filter(c => c.completed).length;
+
+      if (owned === GAME.cities.length && camps === GAME.campaigns.length) {
+        alert('👑【千秋鼎革 · 四海歸一】\n恭賀主公平定三大歷史名戰役，席捲中原十三州！\n萬民景仰，名將俯首，千秋不朽之帝業自此鼎定！');
+        logMessage('👑 登基定鼎洛陽！天下一統，群雄納降，盛世綿延萬載！');
       }
     }
 
@@ -1293,7 +1516,7 @@
     }
 
     /* ==========================================================================
-       8. 頁籤切換與音樂場景聯動
+       9. 分頁切換與場景音樂同步
        ========================================================================== */
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1302,7 +1525,6 @@
       event.target.classList.add('active');
       document.getElementById(tabId).classList.add('active');
 
-      // 切換對應的場景背景配樂
       if (tabId === 'tab-tavern') {
         bgm.setScene('tavern');
         renderTavern();
@@ -1312,13 +1534,15 @@
         bgm.setScene('city');
         renderCourt();
         renderTreasury();
+      } else if (tabId === 'tab-campaign') {
+        bgm.setScene('city');
+        renderCampaigns();
       } else if (tabId === 'tab-map') {
         bgm.setScene('city');
         renderMap();
       }
     }
 
-    // 音訊開關按鈕
     document.getElementById('btnAudioToggle').addEventListener('click', () => {
       if (bgm.isPlaying) {
         bgm.stop();
@@ -1327,7 +1551,7 @@
         bgm.start();
         const names = {
           city: '🎵 BGM: 內政主城',
-          tavern: '🍶 BGM: 酒館喧囂',
+          tavern: '🍶 BGM: 酒肆喧囂',
           conquest: '⚔️ BGM: 拔寨破城'
         };
         document.getElementById('btnAudioToggle').textContent = names[bgm.currentScene];
