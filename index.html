@@ -90,7 +90,7 @@
       background: radial-gradient(circle, #ff8c00 0%, #cc3300 100%);
     }
 
-    /* 手機按鈕：左下角主動召喚「友軍支援」 */
+    /* 手機按鈕：左下角「友軍支援」 */
     #mobileAllyBtn {
       position: absolute;
       bottom: 24px;
@@ -262,9 +262,9 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演 ｜ 版本：v3.5 滾木天火版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v3.8 凱旋定鼎版</div>
       <p style="font-size:13px; color:#bbb; line-height:1.6; max-width:320px;">
-        行軍小心「巨型滾木」（佔寬15%需大幅閃避，可用天火清除）！追蹤彈移交由 Boss 僚機釋放！
+        【挑戰彩蛋】連續無傷擊破 30 架敵機可召喚稀有「加命戰機」！討滅赤壁終極曹操，平步登榜立傳！
       </p>
       
       <div style="margin: 10px 0;">
@@ -282,15 +282,16 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:20px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v3.5 滾木天火版】(當前版本)</b><br>
-        • 新增一般流程「巨型滾木」：寬度佔螢幕15%，需大幅走位，可被天火大招擊碎！<br>
-        • 彈道平衡：小兵移除追蹤彈回歸常態射擊；追蹤彈專屬移交給 Boss 護衛僚機！<br>
-        • 通關瞬間全場敵彈與滾木完全清除，確保軍力分數公平。<br>
-        • 製作群名單：創作者【八雲】、特級測試【導演】。<br><br>
+        <b>【v3.8 凱旋定鼎版】(當前版本)</b><br>
+        • 徹底排查修復通關結算：終極曹操擊破後絕對平滑直達英雄榜輸入！<br>
+        • 新增加命神物「機」：連續無傷擊落 30 機可觸發，每關上限 1 次。<br>
+        • 製作群名單更新：創作者【八雲】、特級測試【導演】、【丘比】。<br><br>
+        <b>【v3.5 滾木天火版】</b><br>
+        • 新增一般流程「巨型滾木」，需大幅閃避，可用天火直接震碎！<br>
+        • 追蹤彈專屬移交 Boss 僚機釋放。<br><br>
         <b>【v3.0~v3.2】</b><br>
-        • 援軍改為主動儲備令（隨時按 C 鍵或按鈕釋放）。<br>
-        • 修復通關卡死 BUG，平穩進入英雄榜結算。<br>
-        • Boss 血量全面翻倍，終極曹操 1100 HP。
+        • 援軍改為主動儲備令（按 C 鍵或按鈕自選釋放時機）。<br>
+        • Boss 翻倍血量與全屏狂暴彈雨。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -417,6 +418,23 @@
           gain.connect(this.ctx.destination);
           osc.start();
           osc.stop(this.ctx.currentTime + 0.2);
+        } catch(e) {}
+      }
+      playExtraLifeSound() { // 獲得額外戰機特別音效
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+          osc.frequency.setValueAtTime(660, this.ctx.currentTime + 0.1);
+          osc.frequency.setValueAtTime(880, this.ctx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.35);
         } catch(e) {}
       }
     }
@@ -564,7 +582,7 @@
     let bullets = [];
     let enemyBullets = [];
     let enemies = [];
-    let rollingLogs = []; // 新增：一般流程中出現的巨型滾木
+    let rollingLogs = [];
     let items = [];
     let particles = [];
     let boss = null;
@@ -576,6 +594,10 @@
 
     let bombsDroppedInStage = 0;
     let allyDroppedInStage = false;
+
+    // 【新增】：連續無傷擊殺計數器 與 每關加命道具掉落旗標
+    let flawlessKillStreak = 0;
+    let extraLifeDroppedInStage = false;
 
     /* ==========================================================================
        4. 操控事件
@@ -651,7 +673,7 @@
     }
 
     /* ==========================================================================
-       5. 技能釋放 (天火可消除全螢幕子彈、雜兵、僚機與滾木)
+       5. 技能釋放
        ========================================================================== */
     function triggerAllySupport() {
       if (gameState !== 'PLAYING' || player.allyStock <= 0 || ally.active) return;
@@ -671,7 +693,6 @@
       flashAlpha = 1.0;
       enemyBullets = [];
 
-      // 天火將所有滾木擊碎成木屑
       rollingLogs.forEach(log => {
         createExplosion(log.x + log.w / 2, log.y + log.h / 2, '#8d6e63', 15);
         score += 200;
@@ -712,7 +733,7 @@
     }
 
     /* ==========================================================================
-       6. 遊戲流程控制 (通關完全清屏與過渡)
+       6. 遊戲流程控制 (徹底解決終極 Boss 擊破卡死)
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
@@ -738,6 +759,7 @@
       player.invincibleTimer = 0;
       player.overloadTimer = 0;
       ally.active = false;
+      flawlessKillStreak = 0;
 
       loadStage(0);
       gameState = 'PLAYING';
@@ -763,26 +785,30 @@
       flashAlpha = 0;
       bombsDroppedInStage = 0;
       allyDroppedInStage = false;
+      extraLifeDroppedInStage = false; // 每關重置加命道具掉落旗標
 
       document.getElementById('hudStage').innerText = STAGES[idx].name.split('：')[0];
       updateHud();
     }
 
     function handleStageClear() {
-      // 關鍵清屏：敵彈、滾木、僚機瞬間肅清，並給予防傷護盾
+      // 關鍵修復：完全清除所有可能造成重複判定死循環的物件
       enemyBullets = [];
       rollingLogs = [];
       bossMinions = [];
-      player.invincibleTimer = 180;
+      boss = null; // 徹底清空 boss 物件
+      player.invincibleTimer = 999; // 結算過渡期絕對無敵
 
       const isFinal = (currentStageIdx === STAGES.length - 1);
 
       if (isFinal) {
+        // 最終 BOSS 通關：強制切斷動畫主循環，直接展示大捷與輸入榜單
         gameState = 'VICTORY';
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        setTimeout(() => {
-          showVictoryScreen();
-        }, 800);
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+        showVictoryScreen();
       } else {
         gameState = 'TRANSITION';
         const nextStageName = STAGES[currentStageIdx + 1].name;
@@ -801,7 +827,7 @@
     }
 
     /* ==========================================================================
-       7. 總分結算與英雄榜
+       7. 總分結算與英雄榜 (含最新名單：八雲、導演、丘比)
        ========================================================================== */
     let finalCalculatedScore = 0;
 
@@ -832,9 +858,10 @@
 
     function getLeaderboard() {
       try {
-        return JSON.parse(localStorage.getItem('hero_1943_rank_v2')) || [
-          { name: '八雲 (創作者)', score: 88800, stage: '一統天下' },
-          { name: '導演 (特級測試)', score: 76500, stage: '一統天下' },
+        return JSON.parse(localStorage.getItem('hero_1943_rank_v3')) || [
+          { name: '八雲 (創作者)', score: 92000, stage: '一統天下' },
+          { name: '導演 (特級測試)', score: 79800, stage: '一統天下' },
+          { name: '丘比 (先鋒測試)', score: 71500, stage: '一統天下' },
           { name: '常山趙子龍', score: 62000, stage: '一統天下' }
         ];
       } catch(e) { return []; }
@@ -845,7 +872,7 @@
       list.push({ name, score: sc, stage: st });
       list.sort((a, b) => b.score - a.score);
       const top5 = list.slice(0, 5);
-      localStorage.setItem('hero_1943_rank_v2', JSON.stringify(top5));
+      localStorage.setItem('hero_1943_rank_v3', JSON.stringify(top5));
     }
 
     function showLeaderboardScreen() {
@@ -878,7 +905,7 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新與主循環 (巨型滾木 + Boss 僚機追蹤彈)
+       8. 物理更新與主循環 (連續無傷30殺加命機制)
        ========================================================================== */
     function gameLoop() {
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
@@ -932,17 +959,15 @@
         }
       }
 
-      // 一般流程：刷出小兵與偶爾出現的「巨型滾木」
       if (!boss && gameState === 'PLAYING') {
         if (Math.random() < 0.045) spawnEnemyWave();
-        // 偶爾滾下佔螢幕 15% 寬度的巨型滾木
         if (Math.random() < 0.007) spawnRollingLog();
       }
 
       bullets.forEach(b => { b.y -= b.vy; b.x += b.vx; });
       bullets = bullets.filter(b => b.y > -20 && b.x > 0 && b.x < canvas.width);
 
-      // 敵彈更新 (追蹤彈專屬於僚機發射)
+      // 敵彈更新 (僚機專屬追蹤彈)
       enemyBullets.forEach(b => {
         if (b.isHoming) {
           if (b.y <= player.y + 10) {
@@ -957,12 +982,11 @@
       });
       enemyBullets = enemyBullets.filter(b => b.y < canvas.height + 20 && b.x > 0 && b.x < canvas.width);
 
-      // 巨型滾木更新 (堅硬無法被普通子彈擊穿，撞到玩家扣血)
+      // 巨型滾木
       rollingLogs.forEach(log => {
         log.y += log.vy;
         log.rotation += 0.05;
 
-        // 阻擋並吸收普通玩家子彈
         bullets.forEach((b, bIdx) => {
           if (checkHit(b, { x: log.x, y: log.y, w: log.w, h: log.h })) {
             bullets.splice(bIdx, 1);
@@ -970,7 +994,6 @@
           }
         });
 
-        // 碰撞玩家
         if (player.invincibleTimer <= 0 && checkHit(log, player)) {
           damagePlayer(20);
           createExplosion(player.x, player.y, '#ff0000', 8);
@@ -978,7 +1001,7 @@
       });
       rollingLogs = rollingLogs.filter(log => log.y < canvas.height + 50);
 
-      // 一般小兵 (回歸標準射擊，無追蹤彈)
+      // 小兵行動
       enemies.forEach((en) => {
         en.y += en.vy;
         en.x += Math.sin(en.y * 0.035 + en.seed) * 2.2;
@@ -998,6 +1021,14 @@
               snd.playBoom();
               createExplosion(en.x, en.y, '#ffaa00', 8);
               score += 150;
+              
+              // 【核心加命判定】：無傷連續擊殺累積
+              flawlessKillStreak++;
+              if (flawlessKillStreak >= 30 && !extraLifeDroppedInStage) {
+                spawnExtraLifeItem(en.x, en.y);
+                extraLifeDroppedInStage = true;
+              }
+
               if (Math.random() < 0.25) spawnItem(en.x, en.y);
             }
           }
@@ -1115,7 +1146,7 @@
         });
       }
 
-      // Boss 僚機更新：此處發射「半追蹤導引箭」！
+      // 僚機更新
       bossMinions.forEach((m) => {
         m.x += m.vx;
         if (m.x < 20 || m.x > canvas.width - 45) m.vx *= -1;
@@ -1127,7 +1158,7 @@
             vx: (player.x + 16 > m.x + 10) ? 0.8 : -0.8,
             vy: 3.3,
             color: '#d500f9',
-            isHoming: true // 僚機配備追蹤彈
+            isHoming: true
           });
           m.shootTimer = m.isEnraged ? 45 : 65;
         }
@@ -1179,6 +1210,12 @@
           } else if (it.type === 'ally') {
             player.allyStock += 1;
             score += 500;
+          } else if (it.type === 'life') {
+            // 拾取加命寶物「機」
+            player.lives += 1;
+            snd.playExtraLifeSound();
+            flashAlpha = 0.6;
+            score += 1000;
           }
           items.splice(itIdx, 1);
         }
@@ -1195,6 +1232,9 @@
 
     function damagePlayer(amount) {
       player.hp -= amount;
+      // 【一旦中彈受傷，無傷連殺計數立即歸零！】
+      flawlessKillStreak = 0;
+
       if (player.hp <= 0) {
         player.lives--;
         snd.playBoom();
@@ -1243,9 +1283,8 @@
       }
     }
 
-    // 生成巨型滾木 (寬度佔畫面約 15%，約 68 像素寬)
     function spawnRollingLog() {
-      const logWidth = Math.round(canvas.width * 0.15); // 約 68px
+      const logWidth = Math.round(canvas.width * 0.15);
       const logHeight = 24;
       const startX = 20 + Math.random() * (canvas.width - logWidth - 40);
       rollingLogs.push({
@@ -1311,6 +1350,11 @@
       items.push({ x, y, type, w: 18, h: 18 });
     }
 
+    // 【新增】：生成稀有加命道具「機」
+    function spawnExtraLifeItem(x, y) {
+      items.push({ x, y, type: 'life', w: 20, h: 20 });
+    }
+
     function createExplosion(x, y, color, count) {
       for (let i = 0; i < count; i++) {
         particles.push({
@@ -1330,7 +1374,7 @@
     }
 
     /* ==========================================================================
-       9. 畫面繪製 (含巨型滾木與僚機追蹤彈渲染)
+       9. 畫面繪製
        ========================================================================== */
     function draw() {
       const curStage = STAGES[currentStageIdx];
@@ -1357,15 +1401,13 @@
       ctx.lineTo(110 + Math.sin(waveOffset + 2) * 30, canvas.height);
       ctx.fill();
 
-      // 繪製巨型滾木擂石 (寬約 15% 畫面，帶有旋轉木紋)
+      // 巨型滾木
       rollingLogs.forEach(log => {
         ctx.save();
         ctx.translate(log.x + log.w / 2, log.y + log.h / 2);
         ctx.rotate(log.rotation);
-        // 原木本體
         ctx.fillStyle = '#6d4c41';
         ctx.fillRect(-log.w / 2, -log.h / 2, log.w, log.h);
-        // 鐵箍包邊與鉚釘
         ctx.fillStyle = '#bcaaa4';
         ctx.fillRect(-log.w / 2, -log.h / 2, 6, log.h);
         ctx.fillRect(log.w / 2 - 6, -log.h / 2, 6, log.h);
@@ -1375,21 +1417,26 @@
         ctx.restore();
       });
 
-      // 道具
+      // 道具繪製 (包含稀有「機」道具)
       items.forEach(it => {
         if (it.type === 'weapon') ctx.fillStyle = '#ffd700';
         else if (it.type === 'heal') ctx.fillStyle = '#44ff44';
         else if (it.type === 'bomb') ctx.fillStyle = '#ff5722';
         else if (it.type === 'ally') ctx.fillStyle = '#00e5ff';
+        else if (it.type === 'life') ctx.fillStyle = '#ff1744'; // 耀眼紅色「機」
         
-        ctx.fillRect(it.x, it.y, 16, 16);
+        ctx.fillRect(it.x, it.y, it.w || 16, it.h || 16);
         ctx.fillStyle = '#000';
         ctx.font = 'bold 11px sans-serif';
         let label = '劍';
         if (it.type === 'heal') label = '藥';
         if (it.type === 'bomb') label = '火';
         if (it.type === 'ally') label = '友';
-        ctx.fillText(label, it.x + 3, it.y + 12);
+        if (it.type === 'life') {
+          label = '機';
+          ctx.fillStyle = '#fff';
+        }
+        ctx.fillText(label, it.x + 3, it.y + 13);
       });
 
       // 戰機
@@ -1445,7 +1492,7 @@
         ctx.fill();
       });
 
-      // Boss 僚機 (紫光重裝型)
+      // Boss 僚機
       bossMinions.forEach(m => {
         ctx.fillStyle = m.isEnraged ? '#880022' : '#552288';
         ctx.fillRect(m.x, m.y, 24, 22);
@@ -1502,7 +1549,7 @@
         }
       });
 
-      // 敵方子彈 (僚機追蹤彈為紫光菱形)
+      // 敵方子彈
       enemyBullets.forEach(b => {
         ctx.fillStyle = b.color || '#ff4444';
         if (b.isHoming) {
