@@ -61,7 +61,7 @@
       cursor: pointer;
     }
 
-    /* 手機專屬按鈕：右下角「天火大招」 */
+    /* 手機按鈕：右下角「天火大招」 */
     #mobileBombBtn {
       position: absolute;
       bottom: 24px;
@@ -90,7 +90,7 @@
       background: radial-gradient(circle, #ff8c00 0%, #cc3300 100%);
     }
 
-    /* 手機專屬按鈕：左下角主動召喚「友軍支援」 */
+    /* 手機按鈕：左下角主動召喚「友軍支援」 */
     #mobileAllyBtn {
       position: absolute;
       bottom: 24px;
@@ -243,7 +243,7 @@
       <button id="btnPause" onclick="togglePause()">⏸️</button>
     </div>
 
-    <!-- 手機觸控按鈕：左下角友軍支援、右下角天火大招 -->
+    <!-- 手機觸控按鈕 -->
     <div id="mobileAllyBtn" style="display: none;">
       <span>援軍</span>
       <small id="mobileAllyCount" style="font-size: 10px; color:#e0f7fa;">剩0次</small>
@@ -262,9 +262,9 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演 ｜ 版本：v3.0 赤壁決戰定鼎版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演 ｜ 版本：v3.2 決勝赤壁版</div>
       <p style="font-size:13px; color:#bbb; line-height:1.6; max-width:320px;">
-        吃到「友」可儲備援軍次數，保留至 Boss 戰再主動召喚！擊破赤壁終極曹操即可登頂英雄榜！
+        小心精銳連弩兵的「半追蹤導引箭」！過關時全彈自動肅清，保存實力直取赤壁！
       </p>
       
       <div style="margin: 10px 0;">
@@ -282,14 +282,14 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:20px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v3.0 赤壁決戰定鼎版】(當前版本)</b><br>
-        • 修復第五關通關卡死 BUG，確保擊破曹操後平穩進入萬世英雄榜！<br>
-        • 「友軍援護」改為主動技能：可自由存留至 Boss 戰按 C 鍵或左下角按鈕釋放！<br>
-        • 創作者【八雲】、測試者【導演】特級陣容維護。<br><br>
-        <b>【v2.8 血戰赤壁版】</b><br>
-        • Boss 血量全線翻倍，終極曹操 1100 HP，大幅強化狂暴行為。<br><br>
-        <b>【v2.0~v2.5】</b><br>
-        • 引入劍氣超載暴擊、預判狙擊彈、僚機協同與綜合戰略評分。
+        <b>【v3.2 決勝赤壁版】(當前版本)</b><br>
+        • 過關自動肅清全場彈幕：各關擊破 Boss 時瞬間清空敵彈並免傷，確保分數不被偷扣。<br>
+        • 新增精銳連弩手：具備半追蹤導引箭矢（超過水平線即無法回頭追擊）。<br>
+        • 援軍改為主動儲備令：可自由留至 Boss 戰釋放。<br>
+        • 製作群名單：創作者【八雲】、特級測試【導演】。<br><br>
+        <b>【v2.8~v3.0】</b><br>
+        • Boss 血量全面翻倍，終極曹操 1100 HP。<br>
+        • 修復通關卡死 BUG，平穩進入英雄榜結算。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -550,7 +550,7 @@
       shotCooldown: 0,
       weaponLevel: 1,
       bombs: 1,
-      allyStock: 0, // 儲備的友軍召喚次數 (可自行選擇釋放時機)
+      allyStock: 0,
       overloadTimer: 0
     };
 
@@ -576,7 +576,7 @@
     let allyDroppedInStage = false;
 
     /* ==========================================================================
-       4. 操控事件 (新增 C 鍵與左下角按鈕主動召喚友軍)
+       4. 操控事件
        ========================================================================== */
     window.addEventListener('keydown', e => {
       keys[e.key] = true;
@@ -628,7 +628,6 @@
 
     canvas.addEventListener('touchend', () => { isTouching = false; });
 
-    // 手機按鈕監聽
     const mobileBombBtn = document.getElementById('mobileBombBtn');
     mobileBombBtn.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); useUltimateBomb(); });
     mobileBombBtn.addEventListener('click', e => { e.preventDefault(); useUltimateBomb(); });
@@ -650,13 +649,13 @@
     }
 
     /* ==========================================================================
-       5. 技能釋放：主動召喚友軍 & 天火大招
+       5. 技能釋放
        ========================================================================== */
     function triggerAllySupport() {
       if (gameState !== 'PLAYING' || player.allyStock <= 0 || ally.active) return;
       player.allyStock--;
       ally.active = true;
-      ally.timer = 180; // 3 秒 (60幀 * 3)
+      ally.timer = 180;
       ally.shotCooldown = 0;
       snd.playAllySound();
       updateHud();
@@ -704,7 +703,7 @@
     }
 
     /* ==========================================================================
-       6. 遊戲流程控制 (徹底修復通關結算卡住問題)
+       6. 遊戲流程控制 (通關清屏防扣血 + 完美過渡)
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
@@ -760,11 +759,14 @@
     }
 
     function handleStageClear() {
+      // 關鍵清屏：擊破魔王當下立即清空所有敵彈，並給予 3 秒免傷護盾，絕不偷扣血！
+      enemyBullets = [];
       bossMinions = [];
+      player.invincibleTimer = 180;
+
       const isFinal = (currentStageIdx === STAGES.length - 1);
 
       if (isFinal) {
-        // 關鍵修復：第五關通關後立即停止動畫更新，避免主迴圈反覆重入導致卡死
         gameState = 'VICTORY';
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
         setTimeout(() => {
@@ -788,7 +790,7 @@
     }
 
     /* ==========================================================================
-       7. 總分結算與英雄榜 (localStorage)
+       7. 總分結算與英雄榜
        ========================================================================== */
     let finalCalculatedScore = 0;
 
@@ -865,7 +867,7 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新與主循環
+       8. 物理更新與主循環 (新型導引連弩手 + 限制追蹤角度)
        ========================================================================== */
     function gameLoop() {
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
@@ -926,7 +928,24 @@
       bullets.forEach(b => { b.y -= b.vy; b.x += b.vx; });
       bullets = bullets.filter(b => b.y > -20 && b.x > 0 && b.x < canvas.width);
 
-      enemyBullets.forEach(b => { b.y += b.vy; b.x += b.vx; });
+      /* ==============================================================
+         敵彈邏輯：半追蹤導引彈（超過玩家水平線後不可回頭）
+         ============================================================== */
+      enemyBullets.forEach(b => {
+        if (b.isHoming) {
+          // 若子彈在玩家上方 (y <= player.y + 10)，則進行微調導引
+          if (b.y <= player.y + 10) {
+            const targetX = player.x + 16;
+            if (b.x < targetX - 5) b.vx += 0.15;
+            else if (b.x > targetX + 5) b.vx -= 0.15;
+            // 限制水平轉向速度
+            b.vx = Math.max(-2.5, Math.min(2.5, b.vx));
+          }
+          // 一旦穿過玩家水平線 (y > player.y + 10)，不再追蹤，保持原定慣性直線前衝！
+        }
+        b.y += b.vy;
+        b.x += b.vx;
+      });
       enemyBullets = enemyBullets.filter(b => b.y < canvas.height + 20 && b.x > 0 && b.x < canvas.width);
 
       // 小兵更新
@@ -935,8 +954,21 @@
         en.x += Math.sin(en.y * 0.035 + en.seed) * 2.2;
         en.shootTimer--;
         if (en.shootTimer <= 0) {
-          enemyBullets.push({ x: en.x + 12, y: en.y + 20, vx: 0, vy: 3.5, color: '#ff6666' });
-          en.shootTimer = 70 + Math.random() * 45;
+          if (en.type === 'archer') {
+            // 新型「精銳連弩手」發射紫光半追蹤導引箭
+            enemyBullets.push({
+              x: en.x + 12,
+              y: en.y + 20,
+              vx: (player.x + 16 > en.x + 12) ? 0.8 : -0.8,
+              vy: 3.2,
+              color: '#d500f9',
+              isHoming: true
+            });
+            en.shootTimer = 85 + Math.random() * 30;
+          } else {
+            enemyBullets.push({ x: en.x + 12, y: en.y + 20, vx: 0, vy: 3.5, color: '#ff6666' });
+            en.shootTimer = 70 + Math.random() * 45;
+          }
         }
 
         bullets.forEach((b, bIdx) => {
@@ -947,8 +979,8 @@
             createExplosion(b.x, b.y, '#fff', 3);
             if (en.hp <= 0) {
               snd.playBoom();
-              createExplosion(en.x, en.y, '#ffaa00', 8);
-              score += 150;
+              createExplosion(en.x, en.y, en.type === 'archer' ? '#e040fb' : '#ffaa00', 8);
+              score += en.type === 'archer' ? 220 : 150;
               if (Math.random() < 0.25) spawnItem(en.x, en.y);
             }
           }
@@ -1091,7 +1123,7 @@
       });
       bossMinions = bossMinions.filter(m => m.hp > 0);
 
-      // 玩家中彈
+      // 玩家中彈判定
       if (player.invincibleTimer <= 0) {
         enemyBullets.forEach((eb, ebIdx) => {
           if (checkHit(eb, { x: player.x + 6, y: player.y + 6, w: 20, h: 24 })) {
@@ -1102,7 +1134,7 @@
         });
       }
 
-      // 道具拾取 (吃到「友」現在會存入儲備，不直接耗用)
+      // 道具拾取
       items.forEach((it, itIdx) => {
         it.y += 1.2;
         if (checkHit(it, player)) {
@@ -1121,7 +1153,7 @@
             player.bombs += 1;
             score += 300;
           } else if (it.type === 'ally') {
-            player.allyStock += 1; // 儲備次數 +1，留待玩家關鍵時機主動施放
+            player.allyStock += 1;
             score += 500;
           }
           items.splice(itIdx, 1);
@@ -1175,12 +1207,15 @@
 
     function spawnEnemyWave() {
       const startX = 40 + Math.random() * (canvas.width - 110);
+      const isArcherWave = Math.random() < 0.35; // 35% 機率刷出精銳連弩隊
+
       for (let i = 0; i < 3; i++) {
         enemies.push({
           x: startX + i * 24,
           y: -30 - i * 36,
-          vy: 2.1 + Math.random() * 0.7,
-          hp: 20,
+          vy: 2.0 + Math.random() * 0.6,
+          hp: isArcherWave ? 28 : 20,
+          type: isArcherWave ? 'archer' : 'normal',
           shootTimer: 45 + i * 20,
           seed: Math.random() * 10
         });
@@ -1346,14 +1381,18 @@
         ctx.restore();
       }
 
-      // 小兵
+      // 小兵 (精銳連弩兵以深紫塗裝呈現)
       enemies.forEach(en => {
-        ctx.fillStyle = '#aa3333';
+        ctx.fillStyle = en.type === 'archer' ? '#7b1fa2' : '#aa3333';
         ctx.beginPath();
         ctx.moveTo(en.x + 12, en.y + 24);
         ctx.lineTo(en.x, en.y);
         ctx.lineTo(en.x + 24, en.y);
         ctx.fill();
+        if (en.type === 'archer') {
+          ctx.fillStyle = '#e1bee7';
+          ctx.fillRect(en.x + 8, en.y + 4, 8, 4);
+        }
       });
 
       // Boss 僚機
@@ -1401,7 +1440,7 @@
         }
       }
 
-      // 子彈
+      // 玩家子彈
       bullets.forEach(b => {
         if (b.isAlly) {
           ctx.fillStyle = '#00ffcc';
@@ -1413,11 +1452,20 @@
         }
       });
 
+      // 敵方子彈 (半追蹤導引箭為紫色稜形)
       enemyBullets.forEach(b => {
         ctx.fillStyle = b.color || '#ff4444';
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, 3.5, 0, Math.PI * 2);
-        ctx.fill();
+        if (b.isHoming) {
+          ctx.save();
+          ctx.translate(b.x, b.y);
+          ctx.rotate(Math.atan2(b.vy, b.vx) - Math.PI / 2);
+          ctx.fillRect(-2, -6, 4, 12);
+          ctx.restore();
+        } else {
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
       });
 
       particles.forEach(p => {
