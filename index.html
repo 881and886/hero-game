@@ -262,9 +262,9 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演 ｜ 版本：v3.2 決勝赤壁版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演 ｜ 版本：v3.5 滾木天火版</div>
       <p style="font-size:13px; color:#bbb; line-height:1.6; max-width:320px;">
-        小心精銳連弩兵的「半追蹤導引箭」！過關時全彈自動肅清，保存實力直取赤壁！
+        行軍小心「巨型滾木」（佔寬15%需大幅閃避，可用天火清除）！追蹤彈移交由 Boss 僚機釋放！
       </p>
       
       <div style="margin: 10px 0;">
@@ -282,14 +282,15 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:20px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v3.2 決勝赤壁版】(當前版本)</b><br>
-        • 過關自動肅清全場彈幕：各關擊破 Boss 時瞬間清空敵彈並免傷，確保分數不被偷扣。<br>
-        • 新增精銳連弩手：具備半追蹤導引箭矢（超過水平線即無法回頭追擊）。<br>
-        • 援軍改為主動儲備令：可自由留至 Boss 戰釋放。<br>
+        <b>【v3.5 滾木天火版】(當前版本)</b><br>
+        • 新增一般流程「巨型滾木」：寬度佔螢幕15%，需大幅走位，可被天火大招擊碎！<br>
+        • 彈道平衡：小兵移除追蹤彈回歸常態射擊；追蹤彈專屬移交給 Boss 護衛僚機！<br>
+        • 通關瞬間全場敵彈與滾木完全清除，確保軍力分數公平。<br>
         • 製作群名單：創作者【八雲】、特級測試【導演】。<br><br>
-        <b>【v2.8~v3.0】</b><br>
-        • Boss 血量全面翻倍，終極曹操 1100 HP。<br>
-        • 修復通關卡死 BUG，平穩進入英雄榜結算。
+        <b>【v3.0~v3.2】</b><br>
+        • 援軍改為主動儲備令（隨時按 C 鍵或按鈕釋放）。<br>
+        • 修復通關卡死 BUG，平穩進入英雄榜結算。<br>
+        • Boss 血量全面翻倍，終極曹操 1100 HP。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -563,6 +564,7 @@
     let bullets = [];
     let enemyBullets = [];
     let enemies = [];
+    let rollingLogs = []; // 新增：一般流程中出現的巨型滾木
     let items = [];
     let particles = [];
     let boss = null;
@@ -649,7 +651,7 @@
     }
 
     /* ==========================================================================
-       5. 技能釋放
+       5. 技能釋放 (天火可消除全螢幕子彈、雜兵、僚機與滾木)
        ========================================================================== */
     function triggerAllySupport() {
       if (gameState !== 'PLAYING' || player.allyStock <= 0 || ally.active) return;
@@ -668,6 +670,13 @@
 
       flashAlpha = 1.0;
       enemyBullets = [];
+
+      // 天火將所有滾木擊碎成木屑
+      rollingLogs.forEach(log => {
+        createExplosion(log.x + log.w / 2, log.y + log.h / 2, '#8d6e63', 15);
+        score += 200;
+      });
+      rollingLogs = [];
 
       enemies.forEach(en => {
         createExplosion(en.x, en.y, '#ffaa00', 10);
@@ -703,7 +712,7 @@
     }
 
     /* ==========================================================================
-       6. 遊戲流程控制 (通關清屏防扣血 + 完美過渡)
+       6. 遊戲流程控制 (通關完全清屏與過渡)
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
@@ -746,6 +755,7 @@
       bossQuoteTimer = 0;
       bossSpiralAngle = 0;
       enemies = [];
+      rollingLogs = [];
       bullets = [];
       enemyBullets = [];
       items = [];
@@ -759,8 +769,9 @@
     }
 
     function handleStageClear() {
-      // 關鍵清屏：擊破魔王當下立即清空所有敵彈，並給予 3 秒免傷護盾，絕不偷扣血！
+      // 關鍵清屏：敵彈、滾木、僚機瞬間肅清，並給予防傷護盾
       enemyBullets = [];
+      rollingLogs = [];
       bossMinions = [];
       player.invincibleTimer = 180;
 
@@ -867,7 +878,7 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新與主循環 (新型導引連弩手 + 限制追蹤角度)
+       8. 物理更新與主循環 (巨型滾木 + Boss 僚機追蹤彈)
        ========================================================================== */
     function gameLoop() {
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
@@ -921,54 +932,60 @@
         }
       }
 
-      if (!boss && gameState === 'PLAYING' && Math.random() < 0.045) {
-        spawnEnemyWave();
+      // 一般流程：刷出小兵與偶爾出現的「巨型滾木」
+      if (!boss && gameState === 'PLAYING') {
+        if (Math.random() < 0.045) spawnEnemyWave();
+        // 偶爾滾下佔螢幕 15% 寬度的巨型滾木
+        if (Math.random() < 0.007) spawnRollingLog();
       }
 
       bullets.forEach(b => { b.y -= b.vy; b.x += b.vx; });
       bullets = bullets.filter(b => b.y > -20 && b.x > 0 && b.x < canvas.width);
 
-      /* ==============================================================
-         敵彈邏輯：半追蹤導引彈（超過玩家水平線後不可回頭）
-         ============================================================== */
+      // 敵彈更新 (追蹤彈專屬於僚機發射)
       enemyBullets.forEach(b => {
         if (b.isHoming) {
-          // 若子彈在玩家上方 (y <= player.y + 10)，則進行微調導引
           if (b.y <= player.y + 10) {
             const targetX = player.x + 16;
             if (b.x < targetX - 5) b.vx += 0.15;
             else if (b.x > targetX + 5) b.vx -= 0.15;
-            // 限制水平轉向速度
             b.vx = Math.max(-2.5, Math.min(2.5, b.vx));
           }
-          // 一旦穿過玩家水平線 (y > player.y + 10)，不再追蹤，保持原定慣性直線前衝！
         }
         b.y += b.vy;
         b.x += b.vx;
       });
       enemyBullets = enemyBullets.filter(b => b.y < canvas.height + 20 && b.x > 0 && b.x < canvas.width);
 
-      // 小兵更新
+      // 巨型滾木更新 (堅硬無法被普通子彈擊穿，撞到玩家扣血)
+      rollingLogs.forEach(log => {
+        log.y += log.vy;
+        log.rotation += 0.05;
+
+        // 阻擋並吸收普通玩家子彈
+        bullets.forEach((b, bIdx) => {
+          if (checkHit(b, { x: log.x, y: log.y, w: log.w, h: log.h })) {
+            bullets.splice(bIdx, 1);
+            createExplosion(b.x, b.y, '#d7ccc8', 2);
+          }
+        });
+
+        // 碰撞玩家
+        if (player.invincibleTimer <= 0 && checkHit(log, player)) {
+          damagePlayer(20);
+          createExplosion(player.x, player.y, '#ff0000', 8);
+        }
+      });
+      rollingLogs = rollingLogs.filter(log => log.y < canvas.height + 50);
+
+      // 一般小兵 (回歸標準射擊，無追蹤彈)
       enemies.forEach((en) => {
         en.y += en.vy;
         en.x += Math.sin(en.y * 0.035 + en.seed) * 2.2;
         en.shootTimer--;
         if (en.shootTimer <= 0) {
-          if (en.type === 'archer') {
-            // 新型「精銳連弩手」發射紫光半追蹤導引箭
-            enemyBullets.push({
-              x: en.x + 12,
-              y: en.y + 20,
-              vx: (player.x + 16 > en.x + 12) ? 0.8 : -0.8,
-              vy: 3.2,
-              color: '#d500f9',
-              isHoming: true
-            });
-            en.shootTimer = 85 + Math.random() * 30;
-          } else {
-            enemyBullets.push({ x: en.x + 12, y: en.y + 20, vx: 0, vy: 3.5, color: '#ff6666' });
-            en.shootTimer = 70 + Math.random() * 45;
-          }
+          enemyBullets.push({ x: en.x + 12, y: en.y + 20, vx: 0, vy: 3.5, color: '#ff6666' });
+          en.shootTimer = 70 + Math.random() * 45;
         }
 
         bullets.forEach((b, bIdx) => {
@@ -979,8 +996,8 @@
             createExplosion(b.x, b.y, '#fff', 3);
             if (en.hp <= 0) {
               snd.playBoom();
-              createExplosion(en.x, en.y, en.type === 'archer' ? '#e040fb' : '#ffaa00', 8);
-              score += en.type === 'archer' ? 220 : 150;
+              createExplosion(en.x, en.y, '#ffaa00', 8);
+              score += 150;
               if (Math.random() < 0.25) spawnItem(en.x, en.y);
             }
           }
@@ -1098,14 +1115,21 @@
         });
       }
 
-      // 僚機更新
+      // Boss 僚機更新：此處發射「半追蹤導引箭」！
       bossMinions.forEach((m) => {
         m.x += m.vx;
         if (m.x < 20 || m.x > canvas.width - 45) m.vx *= -1;
         m.shootTimer--;
         if (m.shootTimer <= 0) {
-          enemyBullets.push({ x: m.x + 10, y: m.y + 20, vx: 0, vy: m.isEnraged ? 4.8 : 4.0, color: '#ff7733' });
-          m.shootTimer = m.isEnraged ? 40 : 60;
+          enemyBullets.push({
+            x: m.x + 10,
+            y: m.y + 20,
+            vx: (player.x + 16 > m.x + 10) ? 0.8 : -0.8,
+            vy: 3.3,
+            color: '#d500f9',
+            isHoming: true // 僚機配備追蹤彈
+          });
+          m.shootTimer = m.isEnraged ? 45 : 65;
         }
 
         bullets.forEach((b, bIdx) => {
@@ -1207,19 +1231,31 @@
 
     function spawnEnemyWave() {
       const startX = 40 + Math.random() * (canvas.width - 110);
-      const isArcherWave = Math.random() < 0.35; // 35% 機率刷出精銳連弩隊
-
       for (let i = 0; i < 3; i++) {
         enemies.push({
           x: startX + i * 24,
           y: -30 - i * 36,
-          vy: 2.0 + Math.random() * 0.6,
-          hp: isArcherWave ? 28 : 20,
-          type: isArcherWave ? 'archer' : 'normal',
+          vy: 2.1 + Math.random() * 0.7,
+          hp: 20,
           shootTimer: 45 + i * 20,
           seed: Math.random() * 10
         });
       }
+    }
+
+    // 生成巨型滾木 (寬度佔畫面約 15%，約 68 像素寬)
+    function spawnRollingLog() {
+      const logWidth = Math.round(canvas.width * 0.15); // 約 68px
+      const logHeight = 24;
+      const startX = 20 + Math.random() * (canvas.width - logWidth - 40);
+      rollingLogs.push({
+        x: startX,
+        y: -40,
+        w: logWidth,
+        h: logHeight,
+        vy: 2.3 + Math.random() * 0.8,
+        rotation: 0
+      });
     }
 
     function spawnBoss(bConfig) {
@@ -1294,7 +1330,7 @@
     }
 
     /* ==========================================================================
-       9. 畫面繪製
+       9. 畫面繪製 (含巨型滾木與僚機追蹤彈渲染)
        ========================================================================== */
     function draw() {
       const curStage = STAGES[currentStageIdx];
@@ -1320,6 +1356,24 @@
       ctx.lineTo(200 + Math.sin(waveOffset + 2) * 30, canvas.height);
       ctx.lineTo(110 + Math.sin(waveOffset + 2) * 30, canvas.height);
       ctx.fill();
+
+      // 繪製巨型滾木擂石 (寬約 15% 畫面，帶有旋轉木紋)
+      rollingLogs.forEach(log => {
+        ctx.save();
+        ctx.translate(log.x + log.w / 2, log.y + log.h / 2);
+        ctx.rotate(log.rotation);
+        // 原木本體
+        ctx.fillStyle = '#6d4c41';
+        ctx.fillRect(-log.w / 2, -log.h / 2, log.w, log.h);
+        // 鐵箍包邊與鉚釘
+        ctx.fillStyle = '#bcaaa4';
+        ctx.fillRect(-log.w / 2, -log.h / 2, 6, log.h);
+        ctx.fillRect(log.w / 2 - 6, -log.h / 2, 6, log.h);
+        ctx.strokeStyle = '#3e2723';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(-log.w / 2, -log.h / 2, log.w, log.h);
+        ctx.restore();
+      });
 
       // 道具
       items.forEach(it => {
@@ -1381,25 +1435,21 @@
         ctx.restore();
       }
 
-      // 小兵 (精銳連弩兵以深紫塗裝呈現)
+      // 小兵
       enemies.forEach(en => {
-        ctx.fillStyle = en.type === 'archer' ? '#7b1fa2' : '#aa3333';
+        ctx.fillStyle = '#aa3333';
         ctx.beginPath();
         ctx.moveTo(en.x + 12, en.y + 24);
         ctx.lineTo(en.x, en.y);
         ctx.lineTo(en.x + 24, en.y);
         ctx.fill();
-        if (en.type === 'archer') {
-          ctx.fillStyle = '#e1bee7';
-          ctx.fillRect(en.x + 8, en.y + 4, 8, 4);
-        }
       });
 
-      // Boss 僚機
+      // Boss 僚機 (紫光重裝型)
       bossMinions.forEach(m => {
         ctx.fillStyle = m.isEnraged ? '#880022' : '#552288';
         ctx.fillRect(m.x, m.y, 24, 22);
-        ctx.fillStyle = '#ff9900';
+        ctx.fillStyle = '#d500f9';
         ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
       });
 
@@ -1452,7 +1502,7 @@
         }
       });
 
-      // 敵方子彈 (半追蹤導引箭為紫色稜形)
+      // 敵方子彈 (僚機追蹤彈為紫光菱形)
       enemyBullets.forEach(b => {
         ctx.fillStyle = b.color || '#ff4444';
         if (b.isHoming) {
