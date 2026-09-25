@@ -61,13 +61,13 @@
       cursor: pointer;
     }
 
-    /* 手機專屬大招按鈕 */
+    /* 手機專屬按鈕：右下角「天火大招」 */
     #mobileBombBtn {
       position: absolute;
       bottom: 24px;
-      right: 20px;
-      width: 68px;
-      height: 68px;
+      right: 18px;
+      width: 66px;
+      height: 66px;
       border-radius: 50%;
       background: radial-gradient(circle, #ff5722 0%, #8a1900 100%);
       border: 3px solid #ffd700;
@@ -88,6 +88,35 @@
     #mobileBombBtn:active {
       transform: scale(0.9);
       background: radial-gradient(circle, #ff8c00 0%, #cc3300 100%);
+    }
+
+    /* 手機專屬按鈕：左下角主動召喚「友軍支援」 */
+    #mobileAllyBtn {
+      position: absolute;
+      bottom: 24px;
+      left: 18px;
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #00b0ff 0%, #004d80 100%);
+      border: 3px solid #80d8ff;
+      color: #fff;
+      font-weight: bold;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(0, 176, 255, 0.7);
+      cursor: pointer;
+      z-index: 20;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s;
+    }
+    #mobileAllyBtn:active {
+      transform: scale(0.9);
+      background: radial-gradient(circle, #40c4ff 0%, #0077c2 100%);
     }
 
     .overlay-screen {
@@ -196,7 +225,6 @@
 </head>
 <body>
 
-  <!-- 音樂播放器 (讀取同目錄下的 bgm.mp3) -->
   <audio id="externalBgm" loop preload="auto">
     <source src="bgm.mp3" type="audio/mpeg">
   </audio>
@@ -209,12 +237,17 @@
       <div><span id="hudLives">✈️✈️✈️</span></div>
       <div><b id="hudStage">第1關</b></div>
       <div>軍力:<b id="hudHp">100%</b></div>
-      <div>大招:<b id="hudBombs">1</b></div>
+      <div>天火:<b id="hudBombs">1</b></div>
+      <div>援軍:<b id="hudAllies">0</b></div>
       <div>分:<b id="hudScore">0</b></div>
       <button id="btnPause" onclick="togglePause()">⏸️</button>
     </div>
 
-    <!-- 手機觸控大招按鈕 -->
+    <!-- 手機觸控按鈕：左下角友軍支援、右下角天火大招 -->
+    <div id="mobileAllyBtn" style="display: none;">
+      <span>援軍</span>
+      <small id="mobileAllyCount" style="font-size: 10px; color:#e0f7fa;">剩0次</small>
+    </div>
     <div id="mobileBombBtn" style="display: none;">
       <span>天火</span>
       <small id="mobileBombCount" style="font-size: 10px; color:#ffeb3b;">剩1次</small>
@@ -229,9 +262,9 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演 ｜ 版本：v2.8 血戰赤壁版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演 ｜ 版本：v3.0 赤壁決戰定鼎版</div>
       <p style="font-size:13px; color:#bbb; line-height:1.6; max-width:320px;">
-        Boss 戰力全面翻倍暴走！掌握「友」軍援護與「天火」滅頂時機，直搗終極曹操千血連環艦！
+        吃到「友」可儲備援軍次數，保留至 Boss 戰再主動召喚！擊破赤壁終極曹操即可登頂英雄榜！
       </p>
       
       <div style="margin: 10px 0;">
@@ -241,7 +274,7 @@
       </div>
 
       <div style="font-size: 12px; color: #888; margin-top: 8px;">
-        鍵盤：WASD移動 / 空白鍵大招 / P暫停<br>手機：單指滑動戰機 / 點右下角大招按鈕
+        電腦：WASD移動 / 空白鍵天火 / <b>C鍵召喚援軍</b> / P暫停<br>手機：單指滑動 / 右下角天火 / <b>左下角召喚援軍</b>
       </div>
     </div>
 
@@ -249,17 +282,14 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:20px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v2.8 血戰赤壁版】(當前版本)</b><br>
-        • 製作群名單更新：創作者【八雲】、測試者【導演】。<br>
-        • Boss 血量全線翻倍！終極曹操突破 1100 HP，耐打度與挑戰性拉滿。<br>
-        • Boss 狂暴招式升級：加入全螢幕交錯彈雨、交叉突進與狂暴僚機突刺！<br><br>
-        <b>【v2.5 名將暴走版】</b><br>
-        • Boss 引入預判狙擊彈、螺旋波紋與護衛僚機協防。<br><br>
-        <b>【v2.0 街機終極版】</b><br>
-        • 加入「友」援軍協戰 3 秒、「劍」滿級超載雷霆暴擊。<br>
-        • 綜合計分公式與本地英雄榜。<br><br>
-        <b>【v1.8 街機 1943 模式】</b><br>
-        • 轉為縱向捲軸射擊，新增 3 架戰機與暫停功能。
+        <b>【v3.0 赤壁決戰定鼎版】(當前版本)</b><br>
+        • 修復第五關通關卡死 BUG，確保擊破曹操後平穩進入萬世英雄榜！<br>
+        • 「友軍援護」改為主動技能：可自由存留至 Boss 戰按 C 鍵或左下角按鈕釋放！<br>
+        • 創作者【八雲】、測試者【導演】特級陣容維護。<br><br>
+        <b>【v2.8 血戰赤壁版】</b><br>
+        • Boss 血量全線翻倍，終極曹操 1100 HP，大幅強化狂暴行為。<br><br>
+        <b>【v2.0~v2.5】</b><br>
+        • 引入劍氣超載暴擊、預判狙擊彈、僚機協同與綜合戰略評分。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -392,7 +422,7 @@
     const snd = new SoundController();
 
     /* ==========================================================================
-       2. 五大關卡設定 (Boss 血量翻倍、狂暴機制升級)
+       2. 五大關卡設定
        ========================================================================== */
     const STAGES = [
       {
@@ -406,7 +436,7 @@
         boss: {
           name: '猛將 · 華雄',
           quote: '「關東群鼠，誰敢與我華雄一戰！」',
-          hp: 300, // 翻倍
+          hp: 300,
           maxHp: 300,
           color: '#b83b23',
           bulletColor: '#ff6644',
@@ -424,7 +454,7 @@
         boss: {
           name: '高順 · 陷陣營',
           quote: '「陷陣之志，有死無生！」',
-          hp: 440, // 翻倍
+          hp: 440,
           maxHp: 440,
           color: '#346633',
           bulletColor: '#77dd77',
@@ -442,7 +472,7 @@
         boss: {
           name: '先鋒 · 夏侯惇',
           quote: '「父精母血不可棄也！納命來！」',
-          hp: 640, // 翻倍
+          hp: 640,
           maxHp: 640,
           color: '#2a5a99',
           bulletColor: '#6bb3ff',
@@ -462,7 +492,7 @@
         boss: {
           name: '大將 · 張遼',
           quote: '「威震逍遙津，且教江南小兒止啼！」',
-          hp: 840, // 翻倍
+          hp: 840,
           maxHp: 840,
           color: '#7a2266',
           bulletColor: '#e066ff',
@@ -482,7 +512,7 @@
         boss: {
           name: '【終極BOSS】丞相 · 曹操 (連環樓船)',
           quote: '「寧教我負天下人，休教天下人負我！萬弩齊發！」',
-          hp: 1100, // 突破千血
+          hp: 1100,
           maxHp: 1100,
           color: '#a61c1c',
           bulletColor: '#ff2222',
@@ -520,6 +550,7 @@
       shotCooldown: 0,
       weaponLevel: 1,
       bombs: 1,
+      allyStock: 0, // 儲備的友軍召喚次數 (可自行選擇釋放時機)
       overloadTimer: 0
     };
 
@@ -545,13 +576,17 @@
     let allyDroppedInStage = false;
 
     /* ==========================================================================
-       4. 操控事件
+       4. 操控事件 (新增 C 鍵與左下角按鈕主動召喚友軍)
        ========================================================================== */
     window.addEventListener('keydown', e => {
       keys[e.key] = true;
       if (e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar') {
         e.preventDefault();
         useUltimateBomb();
+      }
+      if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        triggerAllySupport();
       }
       if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
         togglePause();
@@ -593,9 +628,14 @@
 
     canvas.addEventListener('touchend', () => { isTouching = false; });
 
-    const mobileBtn = document.getElementById('mobileBombBtn');
-    mobileBtn.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); useUltimateBomb(); });
-    mobileBtn.addEventListener('click', e => { e.preventDefault(); useUltimateBomb(); });
+    // 手機按鈕監聽
+    const mobileBombBtn = document.getElementById('mobileBombBtn');
+    mobileBombBtn.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); useUltimateBomb(); });
+    mobileBombBtn.addEventListener('click', e => { e.preventDefault(); useUltimateBomb(); });
+
+    const mobileAllyBtn = document.getElementById('mobileAllyBtn');
+    mobileAllyBtn.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); triggerAllySupport(); });
+    mobileAllyBtn.addEventListener('click', e => { e.preventDefault(); triggerAllySupport(); });
 
     function togglePause() {
       if (gameState === 'PLAYING') {
@@ -610,8 +650,18 @@
     }
 
     /* ==========================================================================
-       5. 天火與戰局更新
+       5. 技能釋放：主動召喚友軍 & 天火大招
        ========================================================================== */
+    function triggerAllySupport() {
+      if (gameState !== 'PLAYING' || player.allyStock <= 0 || ally.active) return;
+      player.allyStock--;
+      ally.active = true;
+      ally.timer = 180; // 3 秒 (60幀 * 3)
+      ally.shotCooldown = 0;
+      snd.playAllySound();
+      updateHud();
+    }
+
     function useUltimateBomb() {
       if (gameState !== 'PLAYING' || player.bombs <= 0) return;
       player.bombs--;
@@ -644,7 +694,9 @@
       document.getElementById('hudHp').innerText = Math.max(0, player.hp) + '%';
       document.getElementById('hudScore').innerText = score;
       document.getElementById('hudBombs').innerText = player.bombs;
+      document.getElementById('hudAllies').innerText = player.allyStock;
       document.getElementById('mobileBombCount').innerText = `剩${player.bombs}次`;
+      document.getElementById('mobileAllyCount').innerText = `剩${player.allyStock}次`;
       
       let livesIcons = '';
       for (let i = 0; i < player.lives; i++) livesIcons += '✈️';
@@ -652,7 +704,7 @@
     }
 
     /* ==========================================================================
-       6. 遊戲流程控制
+       6. 遊戲流程控制 (徹底修復通關結算卡住問題)
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
@@ -665,12 +717,14 @@
 
       document.getElementById('hud').style.display = 'flex';
       document.getElementById('mobileBombBtn').style.display = 'flex';
+      document.getElementById('mobileAllyBtn').style.display = 'flex';
       
       score = 0;
       player.lives = 3;
       player.hp = 100;
       player.weaponLevel = 1;
       player.bombs = 1;
+      player.allyStock = 0;
       player.x = 210;
       player.y = 540;
       player.invincibleTimer = 0;
@@ -706,15 +760,18 @@
     }
 
     function handleStageClear() {
-      gameState = 'TRANSITION';
       bossMinions = [];
       const isFinal = (currentStageIdx === STAGES.length - 1);
 
       if (isFinal) {
+        // 關鍵修復：第五關通關後立即停止動畫更新，避免主迴圈反覆重入導致卡死
+        gameState = 'VICTORY';
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
         setTimeout(() => {
           showVictoryScreen();
-        }, 1200);
+        }, 800);
       } else {
+        gameState = 'TRANSITION';
         const nextStageName = STAGES[currentStageIdx + 1].name;
         document.getElementById('bannerNextText').innerText = `部隊乘勝追擊，即將挺進【${nextStageName}】...`;
         document.getElementById('stageClearBanner').style.display = 'block';
@@ -731,13 +788,13 @@
     }
 
     /* ==========================================================================
-       7. 總分結算與英雄榜 (更新預設創作者 八雲、測試者 導演)
+       7. 總分結算與英雄榜 (localStorage)
        ========================================================================== */
     let finalCalculatedScore = 0;
 
     function showVictoryScreen() {
-      gameState = 'VICTORY';
       document.getElementById('mobileBombBtn').style.display = 'none';
+      document.getElementById('mobileAllyBtn').style.display = 'none';
 
       const baseScore = score;
       const hpBonus = player.hp * 20;
@@ -808,7 +865,7 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新與主循環 (強化狂暴機制與雙倍血量 Boss AI)
+       8. 物理更新與主循環
        ========================================================================== */
     function gameLoop() {
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
@@ -905,9 +962,7 @@
       });
       enemies = enemies.filter(en => en.y < canvas.height + 30 && en.hp > 0);
 
-      /* ==============================================================
-         Boss 行動更新 (狂暴強化：血量小於 40% 時狂暴)
-         ============================================================== */
+      // Boss 行動更新
       if (boss && boss.hp > 0) {
         bossQuoteTimer++;
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
@@ -916,7 +971,6 @@
         if (boss.y < 85) boss.y += 1.2;
         boss.x += Math.sin(Date.now() * 0.002) * moveSpeedFactor;
 
-        // 狂暴特殊動作：週期性短暫俯衝逼退玩家
         if (isEnraged) {
           boss.diveTimer++;
           if (boss.diveTimer % 180 > 140) {
@@ -926,7 +980,6 @@
           }
         }
 
-        // 僚機召喚 (狂暴時補充更快)
         if (curStage.boss.hasMinions) {
           boss.minionSpawnTimer--;
           const spawnRate = isEnraged ? 240 : 350;
@@ -942,7 +995,6 @@
           const bossCenterX = boss.x + (curStage.boss.isFinal ? 45 : 35);
           const bossCenterY = boss.y + 50;
 
-          // 招式 1: 預判狙擊彈 (狂暴時升級為雙重交叉狙擊)
           if (curStage.boss.pattern === 'spread_snipe' || Math.random() < 0.4) {
             const dx = (player.x + 16) - bossCenterX;
             const dy = (player.y + 16) - bossCenterY;
@@ -960,7 +1012,6 @@
             });
           }
 
-          // 招式 2: 旋轉螺旋風暴 (狂暴時雙向對衝螺旋)
           if (curStage.boss.pattern === 'spiral' || curStage.boss.pattern === 'spiral_dive') {
             bossSpiralAngle += 0.45;
             const arms = isEnraged ? 6 : 4;
@@ -976,7 +1027,6 @@
             }
           }
 
-          // 招式 3: 終極曹操 · 萬弩千血大波浪
           if (curStage.boss.pattern === 'final_barrage') {
             const bulletCount = isEnraged ? 11 : 8;
             const spreadWidth = isEnraged ? 1.05 : 0.8;
@@ -996,7 +1046,6 @@
           boss.shootTimer = isEnraged ? 24 : (curStage.boss.isFinal ? 32 : 42);
         }
 
-        // 玩家擊中 Boss
         const bW = curStage.boss.isFinal ? 90 : 70;
         const bH = curStage.boss.isFinal ? 65 : 50;
 
@@ -1017,7 +1066,7 @@
         });
       }
 
-      // 僚機更新 (狂暴僚機會加速擺動與連射)
+      // 僚機更新
       bossMinions.forEach((m) => {
         m.x += m.vx;
         if (m.x < 20 || m.x > canvas.width - 45) m.vx *= -1;
@@ -1053,7 +1102,7 @@
         });
       }
 
-      // 道具拾取
+      // 道具拾取 (吃到「友」現在會存入儲備，不直接耗用)
       items.forEach((it, itIdx) => {
         it.y += 1.2;
         if (checkHit(it, player)) {
@@ -1072,10 +1121,7 @@
             player.bombs += 1;
             score += 300;
           } else if (it.type === 'ally') {
-            ally.active = true;
-            ally.timer = 180;
-            ally.shotCooldown = 0;
-            snd.playAllySound();
+            player.allyStock += 1; // 儲備次數 +1，留待玩家關鍵時機主動施放
             score += 500;
           }
           items.splice(itIdx, 1);
@@ -1175,7 +1221,7 @@
       const rand = Math.random();
       let type = 'weapon';
 
-      if (!allyDroppedInStage && Math.random() < 0.25) {
+      if (!allyDroppedInStage && Math.random() < 0.3) {
         type = 'ally';
         allyDroppedInStage = true;
       } else if (rand < 0.5) {
@@ -1318,7 +1364,7 @@
         ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
       });
 
-      // Boss 繪製 (狂暴烈焰血光)
+      // Boss 繪製
       if (boss && boss.hp > 0) {
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
         const bW = boss.isFinal ? 90 : 70;
