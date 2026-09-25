@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>三國1943：赤壁烽火 (Vertical Arcade Shooter)</title>
+  <title>三國1943：赤壁烽火 (修正版)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; }
     body {
@@ -52,6 +52,7 @@
       justify-content: center;
       padding: 24px;
       text-align: center;
+      z-index: 10;
     }
     .overlay-screen h1 {
       color: #d4af37;
@@ -93,6 +94,11 @@
 </head>
 <body>
 
+  <!-- 外部音樂播放器（預設尋找同目錄下的 bgm.mp3） -->
+  <audio id="externalBgm" loop preload="auto">
+    <source src="bgm.mp3" type="audio/mpeg">
+  </audio>
+
   <div id="gameWrapper">
     <canvas id="gameCanvas" width="450" height="600"></canvas>
     
@@ -103,7 +109,7 @@
       <div>得分: <b id="hudScore">0</b></div>
     </div>
 
-    <!-- 啟動選角畫面 -->
+    <!-- 啟動畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
       <p>操作三國名將單騎衝陣！地圖由下往上挺進，擊破迎面而來的水陸敵軍，斬殺關底名將，踏平三大歷史名戰役！</p>
@@ -129,89 +135,110 @@
     </div>
   </div>
 
-  <div class="instructions">支援鍵盤：WASD 或 方向鍵移動，空白鍵自動連續射擊，B鍵全螢幕大招</div>
+  <div class="instructions">支援鍵盤：WASD 或 方向鍵移動，空白鍵發射，B鍵全螢幕大招</div>
 
   <script>
     /* ==========================================================================
-       1. 經典街機 8-bit / MIDI 音效與背景音樂合成器
+       1. 音效與音樂系統（優先播放 bgm.mp3，無檔案時自動切換合成音效）
        ========================================================================== */
-    class ArcadeSound {
+    class SoundController {
       constructor() {
+        this.audioElement = document.getElementById('externalBgm');
         this.ctx = null;
-        this.timer = null;
-        this.step = 0;
-        this.notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+        this.useSynth = false;
       }
       init() {
         if (!this.ctx) {
           const AC = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AC();
         }
-        if (this.ctx.state === 'suspended') this.ctx.resume();
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
       }
-      playPew() { // 射擊音效
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(150, this.ctx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.08);
-      }
-      playBoom() { // 爆炸音效
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(120, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.25);
-        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.25);
-      }
-      startBgm() { // 循環 1943 緊湊戰鬥背景音
+      playBgm() {
         this.init();
-        clearInterval(this.timer);
-        this.timer = setInterval(() => {
+        if (this.audioElement) {
+          this.audioElement.play().catch(() => {
+            // 若找不到外部 mp3 或被瀏覽器阻擋，切換為合成晶片音
+            this.useSynth = true;
+            this.startSynthBgm();
+          });
+        }
+      }
+      stopBgm() {
+        if (this.audioElement) {
+          this.audioElement.pause();
+          this.audioElement.currentTime = 0;
+        }
+        if (this.synthTimer) clearInterval(this.synthTimer);
+      }
+      startSynthBgm() {
+        const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+        let step = 0;
+        clearInterval(this.synthTimer);
+        this.synthTimer = setInterval(() => {
           if (!this.ctx) return;
+          try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(notes[step % notes.length] / 2, this.ctx.currentTime);
+            gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.14);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.14);
+            step++;
+          } catch(e) {}
+        }, 160);
+      }
+      playPew() {
+        if (!this.ctx) return;
+        try {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-          osc.type = 'triangle';
-          const freq = this.notes[this.step % this.notes.length];
-          osc.frequency.setValueAtTime(freq / 2, this.ctx.currentTime);
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(150, this.ctx.currentTime + 0.08);
           gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.14);
+          gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start();
-          osc.stop(this.ctx.currentTime + 0.14);
-          this.step++;
-        }, 160);
+          osc.stop(this.ctx.currentTime + 0.08);
+        } catch(e) {}
       }
-      stopBgm() { clearInterval(this.timer); }
+      playBoom() {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.25);
+          gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.25);
+        } catch(e) {}
+      }
     }
-    const snd = new ArcadeSound();
+    const snd = new SoundController();
 
     /* ==========================================================================
-       2. 地圖關卡設定 (由下往上捲動的三大歷史戰場)
+       2. 地圖關卡設定
        ========================================================================== */
     const STAGES = [
       {
         id: 1,
         name: '第一關：虎牢關前 · 萬木成灰',
-        bgColor: '#2b1d0c', // 荒土黃沙地貌
+        bgColor: '#2b1d0c',
         gridColor: '#3d2b14',
         riverColor: '#362410',
         scrollSpeed: 1.5,
-        targetDistance: 1200, // 捲動此距離後 Boss 現身
+        targetDistance: 1000,
         boss: {
           name: '飛將 · 呂布',
           quote: '「人中呂布，馬中赤兔！爾等鼠輩一齊上罷！」',
@@ -224,11 +251,11 @@
       {
         id: 2,
         name: '第二關：長坂坡野 · 白馬銀槍',
-        bgColor: '#0c2411', // 青翠山林與原野
+        bgColor: '#0c2411',
         gridColor: '#16381d',
         riverColor: '#0a303a',
         scrollSpeed: 2.0,
-        targetDistance: 1500,
+        targetDistance: 1300,
         boss: {
           name: '先鋒 · 夏侯惇',
           quote: '「父精母血不可棄也！休走，留下首級！」',
@@ -241,11 +268,11 @@
       {
         id: 3,
         name: '第三關：赤壁江面 · 烈火戰船',
-        bgColor: '#081726', // 幽暗長江波濤
+        bgColor: '#081726',
         gridColor: '#102e4d',
         riverColor: '#050f1a',
         scrollSpeed: 2.5,
-        targetDistance: 1800,
+        targetDistance: 1600,
         boss: {
           name: '丞相 · 曹操 (連環樓船)',
           quote: '「寧教我負天下人，休教天下人負我！」',
@@ -258,7 +285,7 @@
     ];
 
     /* ==========================================================================
-       3. 遊戲核心狀態與物件
+       3. 核心邏輯與狀態機
        ========================================================================== */
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -266,10 +293,10 @@
     let currentStageIdx = 0;
     let stageDistance = 0;
     let score = 0;
-    let gameState = 'START'; // START, PLAYING, CLEAR, GAMEOVER
+    let gameState = 'START';
     let keys = {};
+    let animationFrameId = null;
 
-    // 玩家武將 (主角：趙雲/關羽之英姿)
     const player = {
       x: 210,
       y: 520,
@@ -279,7 +306,7 @@
       hp: 100,
       maxHp: 100,
       shotCooldown: 0,
-      weaponLevel: 1, // 1: 單發, 2: 雙發散射, 3: 三向無雙
+      weaponLevel: 1,
       bombs: 2
     };
 
@@ -290,8 +317,8 @@
     let particles = [];
     let boss = null;
     let bossQuoteTimer = 0;
+    let bgScrollY = 0;
 
-    // 鍵盤監聽
     window.addEventListener('keydown', e => {
       keys[e.key] = true;
       if (e.key === ' ' || e.key === 'Spacebar') keys['Space'] = true;
@@ -306,46 +333,44 @@
       if (gameState !== 'PLAYING' || player.bombs <= 0) return;
       player.bombs--;
       snd.playBoom();
-      // 全螢幕天火借東風
       enemyBullets = [];
-      enemies.forEach(en => { en.hp -= 20; createExplosion(en.x, en.y, '#ffaa00', 10); });
+      enemies.forEach(en => { en.hp -= 25; createExplosion(en.x, en.y, '#ffaa00', 10); });
       if (boss) boss.hp -= 30;
-      // 全畫面震動與閃白
       ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    /* ==========================================================================
-       4. 遊戲主循環與關卡控制
-       ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('stageClearScreen').style.display = 'none';
+      document.getElementById('gameOverScreen').style.display = 'none';
       document.getElementById('hud').style.display = 'flex';
-      currentStageIdx = 0;
+      
       score = 0;
-      resetPlayer();
-      loadStage(0);
-      gameState = 'PLAYING';
-      snd.startBgm();
-      requestAnimationFrame(gameLoop);
-    }
-
-    function resetPlayer() {
-      player.x = 210;
-      player.y = 520;
       player.hp = 100;
       player.weaponLevel = 1;
       player.bombs = 2;
+      player.x = 210;
+      player.y = 520;
+
+      loadStage(0);
+      gameState = 'PLAYING';
+      snd.playBgm();
+      
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(gameLoop);
     }
 
     function loadStage(idx) {
       currentStageIdx = idx;
       stageDistance = 0;
       boss = null;
+      bossQuoteTimer = 0;
       enemies = [];
       bullets = [];
       enemyBullets = [];
       items = [];
+      particles = [];
       document.getElementById('hudStage').innerText = STAGES[idx].name.split('：')[0];
     }
 
@@ -353,12 +378,16 @@
       document.getElementById('stageClearScreen').style.display = 'none';
       if (currentStageIdx + 1 < STAGES.length) {
         loadStage(currentStageIdx + 1);
-        player.hp = Math.min(100, player.hp + 40); // 過關回血
+        player.hp = Math.min(100, player.hp + 40);
         player.x = 210;
         player.y = 520;
         gameState = 'PLAYING';
+        
+        // 關鍵修復：重新啟動動畫迴圈
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(gameLoop);
       } else {
-        alert('👑【天下歸一】恭喜閣下通關赤壁三大戰役，威震九州！');
+        alert('👑【千秋鼎盛】恭喜閣下通關赤壁三大名戰役，一統九州！');
         document.getElementById('startScreen').style.display = 'flex';
         gameState = 'START';
       }
@@ -370,65 +399,58 @@
     }
 
     /* ==========================================================================
-       5. 畫面渲染與物理邏輯 (60 FPS)
+       4. 物理與更新邏輯
        ========================================================================== */
-    let bgScrollY = 0;
-
     function gameLoop() {
-      update();
-      draw();
-      if (gameState === 'PLAYING') requestAnimationFrame(gameLoop);
+      if (gameState === 'PLAYING') {
+        update();
+        draw();
+        animationFrameId = requestAnimationFrame(gameLoop);
+      }
     }
 
     function update() {
       const curStage = STAGES[currentStageIdx];
 
-      // 1. 地圖由下往上捲動推進
       bgScrollY += curStage.scrollSpeed;
       if (!boss) {
         stageDistance += curStage.scrollSpeed;
-        // 到達終點召喚 Boss
         if (stageDistance >= curStage.targetDistance) {
           spawnBoss(curStage.boss);
         }
       }
 
-      // 2. 玩家操控與移動約束
       if ((keys['ArrowLeft'] || keys['a'] || keys['A']) && player.x > 10) player.x -= player.speed;
       if ((keys['ArrowRight'] || keys['d'] || keys['D']) && player.x < canvas.width - player.w - 10) player.x += player.speed;
       if ((keys['ArrowUp'] || keys['w'] || keys['W']) && player.y > 20) player.y -= player.speed;
       if ((keys['ArrowDown'] || keys['s'] || keys['S']) && player.y < canvas.height - player.h - 10) player.y += player.speed;
 
-      // 3. 自動射擊
       if (player.shotCooldown > 0) player.shotCooldown--;
       if (player.shotCooldown <= 0) {
         firePlayerBullet();
-        player.shotCooldown = 9; // 射擊頻率
+        player.shotCooldown = 9;
       }
 
-      // 4. 生成小怪巡邏隊伍 (像 1943 般成隊從上方俯衝)
       if (!boss && Math.random() < 0.04) {
         spawnEnemyWave();
       }
 
-      // 5. 更新子彈
       bullets.forEach(b => { b.y -= b.vy; b.x += b.vx; });
       bullets = bullets.filter(b => b.y > -20 && b.x > 0 && b.x < canvas.width);
 
       enemyBullets.forEach(b => { b.y += b.vy; b.x += b.vx; });
       enemyBullets = enemyBullets.filter(b => b.y < canvas.height + 20 && b.x > 0 && b.x < canvas.width);
 
-      // 6. 更新敵軍小兵
-      enemies.forEach((en, eIdx) => {
+      // 小兵碰撞與受傷
+      enemies.forEach((en) => {
         en.y += en.vy;
-        en.x += Math.sin(en.y * 0.04 + en.seed) * 2; // S型俯衝
+        en.x += Math.sin(en.y * 0.04 + en.seed) * 2;
         en.shootTimer--;
         if (en.shootTimer <= 0) {
           enemyBullets.push({ x: en.x + 12, y: en.y + 20, vx: 0, vy: 3.5, color: '#ff6666' });
           en.shootTimer = 60 + Math.random() * 40;
         }
 
-        // 玩家子彈擊中敵軍
         bullets.forEach((b, bIdx) => {
           if (checkHit(b, { x: en.x, y: en.y, w: 26, h: 26 })) {
             en.hp -= 10;
@@ -438,13 +460,11 @@
               snd.playBoom();
               createExplosion(en.x, en.y, '#ffaa00', 8);
               score += 150;
-              // 機率掉落寶物
               if (Math.random() < 0.25) spawnItem(en.x, en.y);
             }
           }
         });
 
-        // 敵軍碰撞玩家
         if (checkHit({ x: en.x, y: en.y, w: 24, h: 24 }, player)) {
           player.hp -= 15;
           en.hp = 0;
@@ -453,15 +473,14 @@
       });
       enemies = enemies.filter(en => en.y < canvas.height + 30 && en.hp > 0);
 
-      // 7. 更新 Boss 邏輯
-      if (boss) {
+      // Boss 邏輯與擊殺轉場修復
+      if (boss && boss.hp > 0) {
         bossQuoteTimer++;
-        if (boss.y < 80) boss.y += 1.5; // 登場進場
+        if (boss.y < 80) boss.y += 1.5;
         boss.x += Math.sin(Date.now() * 0.002) * 2.5;
 
         boss.shootTimer--;
         if (boss.shootTimer <= 0) {
-          // Boss 彈幕扇形散射
           for (let angle = -0.5; angle <= 0.5; angle += 0.25) {
             enemyBullets.push({
               x: boss.x + 35,
@@ -474,28 +493,28 @@
           boss.shootTimer = 45;
         }
 
-        // 擊中 Boss
         bullets.forEach((b, bIdx) => {
           if (checkHit(b, { x: boss.x, y: boss.y, w: 70, h: 60 })) {
             boss.hp -= 4;
             bullets.splice(bIdx, 1);
             createExplosion(b.x, b.y, '#ffd700', 3);
+            
             if (boss.hp <= 0) {
-              // 討滅 Boss 過關！
               snd.playBoom();
-              createExplosion(boss.x + 35, boss.y + 30, '#ff3300', 25);
+              createExplosion(boss.x + 35, boss.y + 30, '#ff3300', 30);
               score += 2000;
+              
+              // 鎖定狀態，防止重複觸發
+              gameState = 'CLEAR';
               setTimeout(() => {
                 document.getElementById('stageClearScreen').style.display = 'flex';
                 document.getElementById('stageClearText').innerText = `【${curStage.boss.name}】已被徹底降伏！部隊正開拔前往下一張歷史地圖！`;
-                gameState = 'CLEAR';
-              }, 800);
+              }, 600);
             }
           }
         });
       }
 
-      // 8. 敵彈擊中玩家
       enemyBullets.forEach((eb, ebIdx) => {
         if (checkHit(eb, { x: player.x + 6, y: player.y + 6, w: 20, h: 24 })) {
           player.hp -= 10;
@@ -503,33 +522,27 @@
           createExplosion(player.x, player.y, '#ff0000', 6);
           if (player.hp <= 0) {
             snd.playBoom();
-            document.getElementById('gameOverScreen').style.display = 'flex';
             gameState = 'GAMEOVER';
+            document.getElementById('gameOverScreen').style.display = 'flex';
             snd.stopBgm();
           }
         }
       });
 
-      // 9. 拾取升級寶物
       items.forEach((it, itIdx) => {
         it.y += 1.2;
         if (checkHit(it, player)) {
-          if (it.type === 'weapon') {
-            player.weaponLevel = Math.min(3, player.weaponLevel + 1);
-          } else if (it.type === 'heal') {
-            player.hp = Math.min(100, player.hp + 25);
-          }
+          if (it.type === 'weapon') player.weaponLevel = Math.min(3, player.weaponLevel + 1);
+          else if (it.type === 'heal') player.hp = Math.min(100, player.hp + 25);
           items.splice(itIdx, 1);
           score += 200;
         }
       });
       items = items.filter(it => it.y < canvas.height + 20);
 
-      // 10. 粒子爆破更新
       particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.alpha -= 0.04; });
       particles = particles.filter(p => p.alpha > 0);
 
-      // 更新 HUD
       document.getElementById('hudHp').innerText = Math.max(0, player.hp) + '%';
       document.getElementById('hudScore').innerText = score;
     }
@@ -577,11 +590,7 @@
     }
 
     function spawnItem(x, y) {
-      items.push({
-        x, y,
-        type: Math.random() < 0.6 ? 'weapon' : 'heal',
-        w: 18, h: 18
-      });
+      items.push({ x, y, type: Math.random() < 0.6 ? 'weapon' : 'heal', w: 18, h: 18 });
     }
 
     function createExplosion(x, y, color, count) {
@@ -603,12 +612,11 @@
     }
 
     /* ==========================================================================
-       6. 繪圖渲染：垂直動態地圖、名將戰機與古典 UI
+       5. 畫面渲染
        ========================================================================== */
     function draw() {
       const curStage = STAGES[currentStageIdx];
 
-      // 1. 繪製由下往上的動態地貌滾動 (地形、方格與河川)
       ctx.fillStyle = curStage.bgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -622,7 +630,6 @@
         ctx.stroke();
       }
 
-      // 蜿蜒長江 / 峽谷水道
       ctx.fillStyle = curStage.riverColor;
       ctx.beginPath();
       const waveOffset = bgScrollY * 0.03;
@@ -632,7 +639,6 @@
       ctx.lineTo(110 + Math.sin(waveOffset + 2) * 30, canvas.height);
       ctx.fill();
 
-      // 2. 繪製掉落寶物
       items.forEach(it => {
         ctx.fillStyle = it.type === 'weapon' ? '#ffd700' : '#44ff44';
         ctx.fillRect(it.x, it.y, 16, 16);
@@ -641,10 +647,9 @@
         ctx.fillText(it.type === 'weapon' ? '劍' : '藥', it.x + 3, it.y + 12);
       });
 
-      // 3. 繪製玩家英姿 (青龍銀甲飛騎戰機造型)
+      // 玩家
       ctx.save();
       ctx.translate(player.x, player.y);
-      // 白馬披風 / 翼片
       ctx.fillStyle = '#d4af37';
       ctx.beginPath();
       ctx.moveTo(16, 0);
@@ -652,17 +657,15 @@
       ctx.lineTo(16, 20);
       ctx.lineTo(0, 28);
       ctx.fill();
-      // 銀甲主身
       ctx.fillStyle = '#f0f0f0';
       ctx.fillRect(11, 4, 10, 24);
-      // 龍纓紅頂
       ctx.fillStyle = '#ff2222';
       ctx.beginPath();
       ctx.arc(16, 4, 4, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
-      // 4. 繪製敵軍先鋒部隊
+      // 小兵
       enemies.forEach(en => {
         ctx.fillStyle = '#aa3333';
         ctx.beginPath();
@@ -672,26 +675,23 @@
         ctx.fill();
       });
 
-      // 5. 繪製 Boss (大型旗艦 / 騎神猛將)
-      if (boss) {
+      // Boss
+      if (boss && boss.hp > 0) {
         ctx.fillStyle = boss.color;
-        // 巨型戰船/樓台外框
         ctx.fillRect(boss.x, boss.y, 70, 50);
         ctx.fillStyle = '#d4af37';
         ctx.fillRect(boss.x + 20, boss.y + 10, 30, 25);
-        // Boss 名稱與血條
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 12px sans-serif';
         ctx.fillText(boss.name, boss.x + 4, boss.y - 10);
-        // 血條底
+        
         ctx.fillStyle = '#440000';
         ctx.fillRect(boss.x, boss.y - 6, 70, 4);
         ctx.fillStyle = '#ff3333';
-        ctx.fillRect(boss.x, boss.y - 6, (boss.hp / boss.maxHp) * 70, 4);
+        ctx.fillRect(boss.x, boss.y - 6, Math.max(0, (boss.hp / boss.maxHp) * 70), 4);
 
-        // 陣前名言氣泡
         if (bossQuoteTimer < 240) {
-          ctx.fillStyle = 'rgba(0,0,0,0.8)';
+          ctx.fillStyle = 'rgba(0,0,0,0.85)';
           ctx.fillRect(20, 150, canvas.width - 40, 38);
           ctx.strokeStyle = '#d4af37';
           ctx.strokeRect(20, 150, canvas.width - 40, 38);
@@ -701,7 +701,6 @@
         }
       }
 
-      // 6. 繪製子彈
       ctx.fillStyle = '#66ffff';
       bullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 10));
 
@@ -712,7 +711,6 @@
         ctx.fill();
       });
 
-      // 7. 爆破火花粒子
       particles.forEach(p => {
         ctx.save();
         ctx.globalAlpha = p.alpha;
