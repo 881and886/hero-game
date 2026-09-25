@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>三國1943：赤壁烽火 (江東隆 製作 / 江恬妃 測試)</title>
+  <title>三國1943：赤壁烽火 (八雲 製作)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; -webkit-touch-callout: none; }
     body {
@@ -229,9 +229,9 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">製作人：江東隆 ｜ 版本：v2.5 名將暴走版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演 ｜ 版本：v2.8 血戰赤壁版</div>
       <p style="font-size:13px; color:#bbb; line-height:1.6; max-width:320px;">
-        中原五大戰役 Boss 戰力全面覺醒！小心 Boss 狙擊彈、旋轉狂濤與召喚僚機護航，直搗赤壁終極曹操！
+        Boss 戰力全面翻倍暴走！掌握「友」軍援護與「天火」滅頂時機，直搗終極曹操千血連環艦！
       </p>
       
       <div style="margin: 10px 0;">
@@ -249,17 +249,17 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:20px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v2.5 名將暴走版】(當前版本)</b><br>
-        • Boss 攻擊模式重構：新增預判狙擊彈、螺旋彈幕與狂暴加速機制。<br>
-        • Boss 僚機系統：後段 Boss 與終極曹操會召喚左右護衛僚機協同夾擊！<br>
-        • Boss 血量階梯式翻倍增強，難度真正考驗走位與天火使用。<br><br>
+        <b>【v2.8 血戰赤壁版】(當前版本)</b><br>
+        • 製作群名單更新：創作者【八雲】、測試者【導演】。<br>
+        • Boss 血量全線翻倍！終極曹操突破 1100 HP，耐打度與挑戰性拉滿。<br>
+        • Boss 狂暴招式升級：加入全螢幕交錯彈雨、交叉突進與狂暴僚機突刺！<br><br>
+        <b>【v2.5 名將暴走版】</b><br>
+        • Boss 引入預判狙擊彈、螺旋波紋與護衛僚機協防。<br><br>
         <b>【v2.0 街機終極版】</b><br>
         • 加入「友」援軍協戰 3 秒、「劍」滿級超載雷霆暴擊。<br>
-        • 綜合計分與本地英雄榜。<br><br>
+        • 綜合計分公式與本地英雄榜。<br><br>
         <b>【v1.8 街機 1943 模式】</b><br>
-        • 轉為縱向捲軸射擊，新增 3 架戰機與暫停功能。<br><br>
-        <b>【v1.0~v1.5】</b><br>
-        • 奇幻卡牌與三國逐鹿內政策略原型。
+        • 轉為縱向捲軸射擊，新增 3 架戰機與暫停功能。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -392,7 +392,7 @@
     const snd = new SoundController();
 
     /* ==========================================================================
-       2. 五大關卡設定 (Boss 血量大幅加厚、新增多種戰鬥模式)
+       2. 五大關卡設定 (Boss 血量翻倍、狂暴機制升級)
        ========================================================================== */
     const STAGES = [
       {
@@ -406,11 +406,11 @@
         boss: {
           name: '猛將 · 華雄',
           quote: '「關東群鼠，誰敢與我華雄一戰！」',
-          hp: 150,
-          maxHp: 150,
+          hp: 300, // 翻倍
+          maxHp: 300,
           color: '#b83b23',
           bulletColor: '#ff6644',
-          pattern: 'spread_snipe' // 散彈 + 瞄準狙擊
+          pattern: 'spread_snipe'
         }
       },
       {
@@ -424,11 +424,11 @@
         boss: {
           name: '高順 · 陷陣營',
           quote: '「陷陣之志，有死無生！」',
-          hp: 220,
-          maxHp: 220,
+          hp: 440, // 翻倍
+          maxHp: 440,
           color: '#346633',
           bulletColor: '#77dd77',
-          pattern: 'spiral' // 螺旋波紋彈
+          pattern: 'spiral'
         }
       },
       {
@@ -442,11 +442,11 @@
         boss: {
           name: '先鋒 · 夏侯惇',
           quote: '「父精母血不可棄也！納命來！」',
-          hp: 320,
-          maxHp: 320,
+          hp: 640, // 翻倍
+          maxHp: 640,
           color: '#2a5a99',
           bulletColor: '#6bb3ff',
-          hasMinions: true, // 召喚左右突擊僚機
+          hasMinions: true,
           minionCount: 2,
           pattern: 'spread_snipe'
         }
@@ -462,13 +462,13 @@
         boss: {
           name: '大將 · 張遼',
           quote: '「威震逍遙津，且教江南小兒止啼！」',
-          hp: 420,
-          maxHp: 420,
+          hp: 840, // 翻倍
+          maxHp: 840,
           color: '#7a2266',
           bulletColor: '#e066ff',
           hasMinions: true,
           minionCount: 2,
-          pattern: 'spiral_dive' // 螺旋彈 + 偶發高速俯衝
+          pattern: 'spiral_dive'
         }
       },
       {
@@ -482,14 +482,14 @@
         boss: {
           name: '【終極BOSS】丞相 · 曹操 (連環樓船)',
           quote: '「寧教我負天下人，休教天下人負我！萬弩齊發！」',
-          hp: 550, // 大幅加厚
-          maxHp: 550,
+          hp: 1100, // 突破千血
+          maxHp: 1100,
           color: '#a61c1c',
           bulletColor: '#ff2222',
           isFinal: true,
           hasMinions: true,
-          minionCount: 2, // 左右重型護衛艦
-          pattern: 'final_barrage' // 全螢幕波浪密集彈幕
+          minionCount: 2,
+          pattern: 'final_barrage'
         }
       }
     ];
@@ -535,9 +535,9 @@
     let items = [];
     let particles = [];
     let boss = null;
-    let bossMinions = []; // Boss 僚機陣列
+    let bossMinions = [];
     let bossQuoteTimer = 0;
-    let bossSpiralAngle = 0; // 螺旋彈計數角度
+    let bossSpiralAngle = 0;
     let bgScrollY = 0;
     let flashAlpha = 0;
 
@@ -626,7 +626,6 @@
       });
       enemies = [];
 
-      // 天火能同時擊毀 Boss 的僚機！
       bossMinions.forEach(m => {
         createExplosion(m.x + 12, m.y + 12, '#ffaa00', 12);
         score += 300;
@@ -634,7 +633,7 @@
       bossMinions = [];
 
       if (boss && boss.hp > 0) {
-        boss.hp -= 50;
+        boss.hp -= 60;
         createExplosion(boss.x + 35, boss.y + 25, '#ff3300', 25);
       }
 
@@ -732,7 +731,7 @@
     }
 
     /* ==========================================================================
-       7. 總分結算與英雄榜
+       7. 總分結算與英雄榜 (更新預設創作者 八雲、測試者 導演)
        ========================================================================== */
     let finalCalculatedScore = 0;
 
@@ -763,10 +762,10 @@
 
     function getLeaderboard() {
       try {
-        return JSON.parse(localStorage.getItem('hero_1943_rank')) || [
-          { name: '江東隆 (主創)', score: 72000, stage: '一統天下' },
-          { name: '常山趙子龍', score: 58000, stage: '一統天下' },
-          { name: '美髯公關羽', score: 49500, stage: '第四關' }
+        return JSON.parse(localStorage.getItem('hero_1943_rank_v2')) || [
+          { name: '八雲 (創作者)', score: 88800, stage: '一統天下' },
+          { name: '導演 (特級測試)', score: 76500, stage: '一統天下' },
+          { name: '常山趙子龍', score: 62000, stage: '一統天下' }
         ];
       } catch(e) { return []; }
     }
@@ -776,7 +775,7 @@
       list.push({ name, score: sc, stage: st });
       list.sort((a, b) => b.score - a.score);
       const top5 = list.slice(0, 5);
-      localStorage.setItem('hero_1943_rank', JSON.stringify(top5));
+      localStorage.setItem('hero_1943_rank_v2', JSON.stringify(top5));
     }
 
     function showLeaderboardScreen() {
@@ -809,7 +808,7 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新與主循環 (強化 Boss AI 與僚機系統)
+       8. 物理更新與主循環 (強化狂暴機制與雙倍血量 Boss AI)
        ========================================================================== */
     function gameLoop() {
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
@@ -907,23 +906,34 @@
       enemies = enemies.filter(en => en.y < canvas.height + 30 && en.hp > 0);
 
       /* ==============================================================
-         強化版 BOSS AI 攻擊模式與僚機運作
+         Boss 行動更新 (狂暴強化：血量小於 40% 時狂暴)
          ============================================================== */
       if (boss && boss.hp > 0) {
         bossQuoteTimer++;
-        const isEnraged = (boss.hp / boss.maxHp) <= 0.35; // 狂暴臨界點
-        const moveSpeedFactor = isEnraged ? 3.4 : 2.4;
+        const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
+        const moveSpeedFactor = isEnraged ? 3.6 : 2.4;
 
         if (boss.y < 85) boss.y += 1.2;
         boss.x += Math.sin(Date.now() * 0.002) * moveSpeedFactor;
 
-        // 僚機召喚 (若有設定且僚機陣亡後會定期補充)
+        // 狂暴特殊動作：週期性短暫俯衝逼退玩家
+        if (isEnraged) {
+          boss.diveTimer++;
+          if (boss.diveTimer % 180 > 140) {
+            boss.y += 2.2;
+          } else if (boss.y > 85) {
+            boss.y -= 1.5;
+          }
+        }
+
+        // 僚機召喚 (狂暴時補充更快)
         if (curStage.boss.hasMinions) {
           boss.minionSpawnTimer--;
+          const spawnRate = isEnraged ? 240 : 350;
           if (boss.minionSpawnTimer <= 0 && bossMinions.length < (curStage.boss.minionCount || 2)) {
-            spawnBossMinion(boss.x - 35, boss.y + 20, -1);
-            spawnBossMinion(boss.x + 85, boss.y + 20, 1);
-            boss.minionSpawnTimer = 350; // 週期刷新
+            spawnBossMinion(boss.x - 35, boss.y + 20, -1, isEnraged);
+            spawnBossMinion(boss.x + 85, boss.y + 20, 1, isEnraged);
+            boss.minionSpawnTimer = spawnRate;
           }
         }
 
@@ -932,61 +942,61 @@
           const bossCenterX = boss.x + (curStage.boss.isFinal ? 45 : 35);
           const bossCenterY = boss.y + 50;
 
-          // 招式 1: 預判狙擊彈 (朝玩家當前座標發射精準3連彈)
-          if (curStage.boss.pattern === 'spread_snipe' || Math.random() < 0.35) {
+          // 招式 1: 預判狙擊彈 (狂暴時升級為雙重交叉狙擊)
+          if (curStage.boss.pattern === 'spread_snipe' || Math.random() < 0.4) {
             const dx = (player.x + 16) - bossCenterX;
             const dy = (player.y + 16) - bossCenterY;
-            const dist = Math.hypot(dx, dy) || 1;
             const angle = Math.atan2(dy, dx);
+            const offsets = isEnraged ? [-0.35, -0.15, 0.15, 0.35] : [-0.2, 0, 0.2];
 
-            for (let offset of [-0.2, 0, 0.2]) {
+            offsets.forEach(offset => {
               enemyBullets.push({
                 x: bossCenterX,
                 y: bossCenterY,
-                vx: Math.cos(angle + offset) * 4.8,
-                vy: Math.sin(angle + offset) * 4.8,
+                vx: Math.cos(angle + offset) * (isEnraged ? 5.4 : 4.6),
+                vy: Math.sin(angle + offset) * (isEnraged ? 5.4 : 4.6),
                 color: '#ff9900'
               });
-            }
+            });
           }
 
-          // 招式 2: 旋轉螺旋風暴 (徐州高順、張遼)
+          // 招式 2: 旋轉螺旋風暴 (狂暴時雙向對衝螺旋)
           if (curStage.boss.pattern === 'spiral' || curStage.boss.pattern === 'spiral_dive') {
             bossSpiralAngle += 0.45;
-            for (let i = 0; i < 4; i++) {
-              const a = bossSpiralAngle + (i * Math.PI / 2);
+            const arms = isEnraged ? 6 : 4;
+            for (let i = 0; i < arms; i++) {
+              const a = bossSpiralAngle + (i * Math.PI * 2 / arms);
               enemyBullets.push({
                 x: bossCenterX,
                 y: bossCenterY,
-                vx: Math.cos(a) * 3.8,
-                vy: Math.sin(a) * 3.8,
+                vx: Math.cos(a) * (isEnraged ? 4.2 : 3.6),
+                vy: Math.sin(a) * (isEnraged ? 4.2 : 3.6),
                 color: curStage.boss.bulletColor
               });
             }
           }
 
-          // 招式 3: 終極曹操 · 萬弩巨艦連環大波浪
+          // 招式 3: 終極曹操 · 萬弩千血大波浪
           if (curStage.boss.pattern === 'final_barrage') {
-            const bulletCount = isEnraged ? 9 : 7;
-            const spreadWidth = isEnraged ? 0.9 : 0.75;
+            const bulletCount = isEnraged ? 11 : 8;
+            const spreadWidth = isEnraged ? 1.05 : 0.8;
             const step = (spreadWidth * 2) / (bulletCount - 1);
             for (let i = 0; i < bulletCount; i++) {
               const a = -spreadWidth + (i * step);
               enemyBullets.push({
                 x: bossCenterX,
                 y: bossCenterY,
-                vx: Math.sin(a) * (isEnraged ? 5.2 : 4.4),
-                vy: Math.cos(a) * (isEnraged ? 5.2 : 4.4),
-                color: '#ff2222'
+                vx: Math.sin(a) * (isEnraged ? 5.5 : 4.5),
+                vy: Math.cos(a) * (isEnraged ? 5.5 : 4.5),
+                color: '#ff1111'
               });
             }
           }
 
-          // 基礎扇形射擊 (狂暴時射速激增)
-          boss.shootTimer = isEnraged ? 28 : (curStage.boss.isFinal ? 34 : 44);
+          boss.shootTimer = isEnraged ? 24 : (curStage.boss.isFinal ? 32 : 42);
         }
 
-        // 玩家子彈擊中 Boss
+        // 玩家擊中 Boss
         const bW = curStage.boss.isFinal ? 90 : 70;
         const bH = curStage.boss.isFinal ? 65 : 50;
 
@@ -999,22 +1009,22 @@
             
             if (boss.hp <= 0) {
               snd.playBoom();
-              createExplosion(boss.x + bW / 2, boss.y + bH / 2, '#ff3300', 40);
-              score += 3500;
+              createExplosion(boss.x + bW / 2, boss.y + bH / 2, '#ff3300', 45);
+              score += 4000;
               handleStageClear();
             }
           }
         });
       }
 
-      // 僚機行動與射擊更新
+      // 僚機更新 (狂暴僚機會加速擺動與連射)
       bossMinions.forEach((m) => {
         m.x += m.vx;
         if (m.x < 20 || m.x > canvas.width - 45) m.vx *= -1;
         m.shootTimer--;
         if (m.shootTimer <= 0) {
-          enemyBullets.push({ x: m.x + 10, y: m.y + 20, vx: 0, vy: 4.2, color: '#ff7733' });
-          m.shootTimer = 55 + Math.random() * 30;
+          enemyBullets.push({ x: m.x + 10, y: m.y + 20, vx: 0, vy: m.isEnraged ? 4.8 : 4.0, color: '#ff7733' });
+          m.shootTimer = m.isEnraged ? 40 : 60;
         }
 
         bullets.forEach((b, bIdx) => {
@@ -1032,7 +1042,7 @@
       });
       bossMinions = bossMinions.filter(m => m.hp > 0);
 
-      // 玩家中彈判定
+      // 玩家中彈
       if (player.invincibleTimer <= 0) {
         enemyBullets.forEach((eb, ebIdx) => {
           if (checkHit(eb, { x: player.x + 6, y: player.y + 6, w: 20, h: 24 })) {
@@ -1143,19 +1153,21 @@
         bulletColor: bConfig.bulletColor,
         isFinal: bConfig.isFinal || false,
         shootTimer: 30,
-        minionSpawnTimer: 60 // 登場不久召喚僚機
+        diveTimer: 0,
+        minionSpawnTimer: 60
       };
       bossQuoteTimer = 0;
       bossMinions = [];
     }
 
-    function spawnBossMinion(x, y, dir) {
+    function spawnBossMinion(x, y, dir, isEnraged = false) {
       bossMinions.push({
         x: Math.max(20, Math.min(canvas.width - 45, x)),
         y: Math.max(30, y),
-        vx: 1.5 * dir,
-        hp: 45, // 僚機具備一定血量
-        shootTimer: 30 + Math.random() * 20
+        vx: (isEnraged ? 2.2 : 1.5) * dir,
+        hp: isEnraged ? 65 : 45,
+        isEnraged,
+        shootTimer: 25 + Math.random() * 20
       });
     }
 
@@ -1298,23 +1310,23 @@
         ctx.fill();
       });
 
-      // Boss 僚機繪製 (藍紫重裝護衛艇)
+      // Boss 僚機
       bossMinions.forEach(m => {
-        ctx.fillStyle = '#552288';
+        ctx.fillStyle = m.isEnraged ? '#880022' : '#552288';
         ctx.fillRect(m.x, m.y, 24, 22);
         ctx.fillStyle = '#ff9900';
         ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
       });
 
-      // Boss 繪製 (狂暴時散發危險紅芒)
+      // Boss 繪製 (狂暴烈焰血光)
       if (boss && boss.hp > 0) {
-        const isEnraged = (boss.hp / boss.maxHp) <= 0.35;
+        const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
         const bW = boss.isFinal ? 90 : 70;
         const bH = boss.isFinal ? 65 : 50;
 
         ctx.save();
         if (isEnraged) {
-          ctx.shadowBlur = 15;
+          ctx.shadowBlur = 18;
           ctx.shadowColor = '#ff0000';
         }
         ctx.fillStyle = isEnraged ? '#7a0000' : boss.color;
@@ -1323,9 +1335,9 @@
         ctx.fillRect(boss.x + (bW - 30) / 2, boss.y + 10, 30, 25);
         ctx.restore();
 
-        ctx.fillStyle = isEnraged ? '#ff5555' : '#fff';
+        ctx.fillStyle = isEnraged ? '#ff4444' : '#fff';
         ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(`${boss.name}${isEnraged ? ' (狂暴!)' : ''}`, boss.x - 10, boss.y - 10);
+        ctx.fillText(`${boss.name}${isEnraged ? ' (狂暴暴走!)' : ''}`, boss.x - 12, boss.y - 10);
         
         ctx.fillStyle = '#440000';
         ctx.fillRect(boss.x, boss.y - 6, bW, 5);
