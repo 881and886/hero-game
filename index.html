@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>三國1943：五關破曹大決戰</title>
+  <title>三國1943：赤壁烽火 (江東隆 製作)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; -webkit-touch-callout: none; }
     body {
@@ -35,7 +35,7 @@
     }
     .hud {
       position: absolute;
-      top: 10px;
+      top: 8px;
       left: 10px;
       right: 10px;
       display: flex;
@@ -50,7 +50,6 @@
     }
     .hud b { color: #d4af37; }
 
-    /* 頂部暫停按鈕 */
     #btnPause {
       pointer-events: auto;
       background: rgba(40, 30, 20, 0.7);
@@ -67,8 +66,8 @@
       position: absolute;
       bottom: 24px;
       right: 20px;
-      width: 70px;
-      height: 70px;
+      width: 68px;
+      height: 68px;
       border-radius: 50%;
       background: radial-gradient(circle, #ff5722 0%, #8a1900 100%);
       border: 3px solid #ffd700;
@@ -91,73 +90,115 @@
       background: radial-gradient(circle, #ff8c00 0%, #cc3300 100%);
     }
 
-    /* 彈窗與全螢幕覆蓋 */
     .overlay-screen {
       position: absolute;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.88);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 20px;
       text-align: center;
       z-index: 30;
+      overflow-y: auto;
     }
     .overlay-screen h1 {
       color: #d4af37;
       font-size: 24px;
-      margin-bottom: 12px;
+      margin-bottom: 6px;
       letter-spacing: 2px;
     }
-    .overlay-screen p {
-      font-size: 14px;
-      color: #bbb;
-      margin-bottom: 20px;
-      line-height: 1.6;
-      max-width: 340px;
+    .author-tag {
+      font-size: 12px;
+      color: #e2b744;
+      margin-bottom: 12px;
+      border: 1px solid #7c621d;
+      padding: 2px 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.4);
     }
     .btn {
       background: linear-gradient(180deg, #d4af37 0%, #997819 100%);
       border: none;
       color: #000;
-      padding: 10px 24px;
+      padding: 9px 22px;
       font-size: 15px;
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0,0,0,0.5);
       transition: 0.2s;
-      margin: 6px;
+      margin: 5px;
     }
     .btn:hover {
       transform: scale(1.05);
       background: #ffcc00;
     }
+    .btn-sub {
+      background: #2b2216;
+      border: 1px solid #775c35;
+      color: #e2b744;
+      font-size: 13px;
+      padding: 6px 14px;
+    }
 
     /* 自動過關橫幅 */
     #stageClearBanner {
       position: absolute;
-      top: 35%;
+      top: 36%;
       left: 0;
       right: 0;
       background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(20,50,20,0.92) 20%, rgba(20,50,20,0.92) 80%, rgba(0,0,0,0) 100%);
       border-top: 2px solid #7ef07e;
       border-bottom: 2px solid #7ef07e;
-      padding: 18px 0;
+      padding: 16px 0;
       text-align: center;
       z-index: 25;
       display: none;
       animation: fadeIn 0.3s ease-out;
     }
-    #stageClearBanner h2 { color: #7ef07e; font-size: 22px; margin-bottom: 6px; }
+    #stageClearBanner h2 { color: #7ef07e; font-size: 22px; margin-bottom: 4px; }
     #stageClearBanner p { color: #fff; font-size: 13px; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* 英雄榜清單表格 */
+    .rank-table {
+      width: 100%;
+      max-width: 320px;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+    .rank-table th, .rank-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #33261a;
+      text-align: center;
+    }
+    .rank-table th { color: #d4af37; background: #1c150e; }
+    .rank-table tr:first-child td { color: #ffeb3b; font-weight: bold; }
+
+    /* 開發歷程彈窗 */
+    #changelogBox {
+      background: #191410;
+      border: 1px solid #5a4529;
+      border-radius: 6px;
+      padding: 14px;
+      max-width: 340px;
+      max-height: 280px;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #c9bca8;
+      margin-bottom: 14px;
+    }
+    #changelogBox b { color: #d4af37; }
   </style>
 </head>
 <body>
 
-  <!-- 音樂播放器 (讀取同目錄下 bgm.mp3) -->
+  <!-- 音樂播放器 (讀取同目錄下的 bgm.mp3) -->
   <audio id="externalBgm" loop preload="auto">
     <source src="bgm.mp3" type="audio/mpeg">
   </audio>
@@ -181,45 +222,102 @@
       <small id="mobileBombCount" style="font-size: 10px; color:#ffeb3b;">剩1次</small>
     </div>
 
-    <!-- 自動過關過渡橫幅 (不需手動點按) -->
+    <!-- 自動過關橫幅 -->
     <div id="stageClearBanner">
       <h2>🏆 敵將已破 · 大獲全勝！</h2>
-      <p id="bannerNextText">部隊全速行軍，即將進入下一關...</p>
+      <p id="bannerNextText">部隊全速行軍，即將挺進下一關...</p>
     </div>
 
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <p>征戰中原五大戰役！共有 3 架戰機（3 條命），自動連射，直搗赤壁終極曹操！</p>
-      <div style="margin-bottom: 20px; font-size: 13px; line-height: 1.8; color: #ddd;">
-        <span style="color:#d4af37;">【電腦操作】</span><br>
-        WASD/方向鍵移動，<b>空白鍵</b>天火大招，<b>P鍵</b>暫停<br>
-        <span style="color:#d4af37;">【手機操作】</span><br>
-        單指直接在螢幕滑動戰機，右下角按<b>天火大招</b>，右上角按<b>⏸️暫停</b>
+      <div class="author-tag">製作人：江東隆 ｜ 版本：v2.0 街機終極版</div>
+      <p style="font-size:13px; color:#bbb; line-height:1.6; max-width:320px;">
+        征戰中原五大歷史戰役！擁有 3 架戰機，撿拾神兵「劍」、良藥「藥」、天火「火」與援軍「友」，直搗赤壁終極曹操！
+      </p>
+      
+      <div style="margin: 10px 0;">
+        <button class="btn" onclick="startGame()">拔劍啟程！</button><br>
+        <button class="btn btn-sub" onclick="openChangelog()">📜 開發歷程</button>
+        <button class="btn btn-sub" onclick="showLeaderboardScreen()">🏆 英雄榜</button>
       </div>
-      <button class="btn" onclick="startGame()">拔劍啟程！</button>
+
+      <div style="font-size: 12px; color: #888; margin-top: 8px;">
+        鍵盤：WASD移動 / 空白鍵大招 / P暫停<br>手機：單指滑動戰機 / 點右下角大招按鈕
+      </div>
+    </div>
+
+    <!-- 開發歷程彈窗 -->
+    <div class="overlay-screen" id="changelogScreen" style="display: none;">
+      <h1 style="font-size:20px;">📜 開發發行歷程</h1>
+      <div id="changelogBox">
+        <b>【v2.0 街機終極版】(當前版本)</b><br>
+        • 全新加入「友」道具：召喚關羽/趙雲武魂副機協戰 3 秒！<br>
+        • 「劍」滿級後轉化為超載雷霆暴擊模式 +1000分。<br>
+        • 綜合結算系統：軍力、命數、天火全面折算終極戰功。<br>
+        • 加入本地「英雄榜」高分紀錄庫。<br>
+        • 5關過渡改為 2.5 秒無縫自動進入下一關。<br><br>
+        <b>【v1.8 街機 1943 模式】</b><br>
+        • 轉型為縱向捲軸 Canvas 街機射擊，支援手機觸控拖曳。<br>
+        • 新增三架戰機（3條命）與專屬暫停功能。<br><br>
+        <b>【v1.5 三國策略篇】</b><br>
+        • 引入中原四季流轉、內政稅收、三顧茅廬事件與陣前名言。<br><br>
+        <b>【v1.0 初生之犢】</b><br>
+        • 奇幻卡牌與紙娃娃換裝初代原型。
+      </div>
+      <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
 
     <!-- 暫停選單 -->
     <div class="overlay-screen" id="pauseScreen" style="display: none;">
       <h1>⏸️ 軍機暫歇</h1>
-      <p>戰陣已暫停，整頓軍心再戰！</p>
+      <p>戰事已暫停，整頓軍心再戰！</p>
       <button class="btn" onclick="togglePause()">繼續戰鬥 ➔</button>
       <button class="btn" style="background:#8b2525; color:#fff;" onclick="restartGame()">重新起兵</button>
     </div>
 
-    <!-- 終極通關畫面 -->
+    <!-- 終極結算與輸入英雄榜畫面 -->
     <div class="overlay-screen" id="victoryScreen" style="display: none;">
       <h1 style="color:#ffd700;">👑 千秋霸業 · 天下一統</h1>
-      <p>五大戰役皆已蕩平！赤壁烈火燒盡八十萬敵軍，曹操連環樓船化為灰燼！天下自此歸一！</p>
-      <button class="btn" onclick="restartGame()">名垂青史 · 再戰一次</button>
+      <p style="font-size:13px; color:#ddd;">赤壁烈火燒盡八十萬敵軍，曹操連環巨艦灰飛煙滅！</p>
+      
+      <!-- 結算明細卡 -->
+      <div style="background:#1a140e; border:1px solid #5a4529; border-radius:6px; padding:12px; width:100%; max-width:320px; font-size:13px; text-align:left; line-height:1.8; margin:10px 0;">
+        <div>討伐戰陣得分：<b id="calcBaseScore" style="color:#fff;">0</b></div>
+        <div>存留軍力加成：<b id="calcHpScore" style="color:#7ef07e;">+0</b></div>
+        <div>剩餘戰機加成：<b id="calcLivesScore" style="color:#6bb3ff;">+0</b></div>
+        <div>剩餘天火加成：<b id="calcBombScore" style="color:#ff9900;">+0</b></div>
+        <hr style="border:0; border-top:1px solid #44321d; margin:6px 0;">
+        <div style="font-size:15px; color:#ffd700;"><b>總功勳積分：<span id="calcTotalScore">0</span></b></div>
+      </div>
+
+      <div style="margin: 10px 0;">
+        <input type="text" id="playerNameInput" maxlength="8" placeholder="請輸入主公尊姓大名" style="padding:8px 12px; border:1px solid #d4af37; background:#111; color:#fff; border-radius:4px; text-align:center; font-size:14px; width:200px;">
+        <br>
+        <button class="btn" onclick="submitScore()">登榜立傳 ➔</button>
+      </div>
+    </div>
+
+    <!-- 英雄榜單畫面 -->
+    <div class="overlay-screen" id="leaderboardScreen" style="display: none;">
+      <h1>🏆 萬世英雄榜</h1>
+      <table class="rank-table" id="leaderboardTable">
+        <thead>
+          <tr><th>名次</th><th>主公大名</th><th>總功勳</th><th>關卡</th></tr>
+        </thead>
+        <tbody id="leaderboardBody">
+          <!-- 動態載入 -->
+        </tbody>
+      </table>
+      <button class="btn btn-sub" onclick="backToStartFromRank()">返回主頁</button>
     </div>
 
     <!-- 陣亡畫面 -->
     <div class="overlay-screen" id="gameOverScreen" style="display: none;">
       <h1 style="color:#ff6b6b;">💀 三軍盡瘁 · 英雄隕落</h1>
-      <p>三架戰機皆已折損。勝敗乃兵家常事，少俠請重新起兵！</p>
+      <p id="gameOverText">三架戰機皆已折損。勝敗乃兵家常事，少俠請重新起兵！</p>
       <button class="btn" onclick="restartGame()">重新起兵</button>
+      <button class="btn btn-sub" onclick="backToStartFromRank()">回主選單</button>
     </div>
   </div>
 
@@ -281,11 +379,27 @@
           osc.stop(this.ctx.currentTime + 0.28);
         } catch(e) {}
       }
+      playAllySound() { // 援軍召喚音效
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.2);
+        } catch(e) {}
+      }
     }
     const snd = new SoundController();
 
     /* ==========================================================================
-       2. 五大關卡設定 (每關約 60 秒節奏，第五關大決戰)
+       2. 五大關卡設定
        ========================================================================== */
     const STAGES = [
       {
@@ -377,7 +491,7 @@
     ];
 
     /* ==========================================================================
-       3. 核心遊戲狀態
+       3. 核心變數
        ========================================================================== */
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -385,11 +499,10 @@
     let currentStageIdx = 0;
     let stageDistance = 0;
     let score = 0;
-    let gameState = 'START'; // START, PLAYING, PAUSED, TRANSITION, GAMEOVER, VICTORY
+    let gameState = 'START';
     let keys = {};
     let animationFrameId = null;
 
-    // 戰機狀態 (3 條命)
     const player = {
       x: 210,
       y: 540,
@@ -398,11 +511,20 @@
       speed: 4.8,
       hp: 100,
       maxHp: 100,
-      lives: 3, // 3 架戰機
-      invincibleTimer: 0, // 重生短暫無敵
+      lives: 3,
+      invincibleTimer: 0,
       shotCooldown: 0,
       weaponLevel: 1,
-      bombs: 1
+      bombs: 1,
+      // 滿級後的雷霆過載狀態
+      overloadTimer: 0
+    };
+
+    // 友軍援護機制 (持續 3 秒)
+    let ally = {
+      active: false,
+      timer: 0,
+      shotCooldown: 0
     };
 
     let bullets = [];
@@ -415,11 +537,12 @@
     let bgScrollY = 0;
     let flashAlpha = 0;
 
-    // 大招嚴格控管：每關最多掉落 1~2 次
+    // 道具節制開關（每關最多掉落 1~2 次火，1 次友）
     let bombsDroppedInStage = 0;
+    let allyDroppedInStage = false;
 
     /* ==========================================================================
-       4. 操控事件 (鍵盤 + 手機觸控 + 暫停)
+       4. 操控事件
        ========================================================================== */
     window.addEventListener('keydown', e => {
       keys[e.key] = true;
@@ -433,7 +556,6 @@
     });
     window.addEventListener('keyup', e => { keys[e.key] = false; });
 
-    // 手機平滑觸控
     let isTouching = false;
     let touchOffset = { x: 0, y: 0 };
 
@@ -468,7 +590,6 @@
 
     canvas.addEventListener('touchend', () => { isTouching = false; });
 
-    // 手機版大招按鈕
     const mobileBtn = document.getElementById('mobileBombBtn');
     mobileBtn.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); useUltimateBomb(); });
     mobileBtn.addEventListener('click', e => { e.preventDefault(); useUltimateBomb(); });
@@ -486,7 +607,7 @@
     }
 
     /* ==========================================================================
-       5. 天火大招系統 (每關節制出現)
+       5. 天火與戰局更新
        ========================================================================== */
     function useUltimateBomb() {
       if (gameState !== 'PLAYING' || player.bombs <= 0) return;
@@ -522,7 +643,7 @@
     }
 
     /* ==========================================================================
-       6. 遊戲流程 (無縫自動過關)
+       6. 遊戲流程控制
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
@@ -530,6 +651,8 @@
       document.getElementById('victoryScreen').style.display = 'none';
       document.getElementById('gameOverScreen').style.display = 'none';
       document.getElementById('pauseScreen').style.display = 'none';
+      document.getElementById('changelogScreen').style.display = 'none';
+      document.getElementById('leaderboardScreen').style.display = 'none';
 
       document.getElementById('hud').style.display = 'flex';
       document.getElementById('mobileBombBtn').style.display = 'flex';
@@ -538,10 +661,12 @@
       player.lives = 3;
       player.hp = 100;
       player.weaponLevel = 1;
-      player.bombs = 1; // 一開始贈送 1 次大招
+      player.bombs = 1;
       player.x = 210;
       player.y = 540;
       player.invincibleTimer = 0;
+      player.overloadTimer = 0;
+      ally.active = false;
 
       loadStage(0);
       gameState = 'PLAYING';
@@ -562,26 +687,24 @@
       items = [];
       particles = [];
       flashAlpha = 0;
-      bombsDroppedInStage = 0; // 重置該關大招掉落次數
+      bombsDroppedInStage = 0;
+      allyDroppedInStage = false;
 
       document.getElementById('hudStage').innerText = STAGES[idx].name.split('：')[0];
       updateHud();
     }
 
-    // 自動過關處理 (倒數 2.5 秒自動挺進下一關)
     function handleStageClear() {
       gameState = 'TRANSITION';
       const isFinal = (currentStageIdx === STAGES.length - 1);
 
       if (isFinal) {
         setTimeout(() => {
-          document.getElementById('victoryScreen').style.display = 'flex';
-          document.getElementById('mobileBombBtn').style.display = 'none';
-          gameState = 'VICTORY';
+          showVictoryScreen();
         }, 1200);
       } else {
         const nextStageName = STAGES[currentStageIdx + 1].name;
-        document.getElementById('bannerNextText').innerText = `部隊乘勝追擊，即將進入【${nextStageName}】...`;
+        document.getElementById('bannerNextText').innerText = `部隊乘勝追擊，即將挺進【${nextStageName}】...`;
         document.getElementById('stageClearBanner').style.display = 'block';
 
         setTimeout(() => {
@@ -591,18 +714,90 @@
           player.x = 210;
           player.y = 540;
           gameState = 'PLAYING';
-        }, 2500); // 2.5 秒後自動進入下一關，無需點擊
+        }, 2500);
       }
     }
 
-    function restartGame() {
-      document.getElementById('gameOverScreen').style.display = 'none';
-      document.getElementById('victoryScreen').style.display = 'none';
-      startGame();
+    /* ==========================================================================
+       7. 總分結算與英雄榜 (localStorage)
+       ========================================================================== */
+    let finalCalculatedScore = 0;
+
+    function showVictoryScreen() {
+      gameState = 'VICTORY';
+      document.getElementById('mobileBombBtn').style.display = 'none';
+
+      // 總成績公式計算
+      const baseScore = score;
+      const hpBonus = player.hp * 20;
+      const livesBonus = player.lives * 3000;
+      const bombsBonus = player.bombs * 2000;
+      finalCalculatedScore = baseScore + hpBonus + livesBonus + bombsBonus;
+
+      document.getElementById('calcBaseScore').innerText = baseScore;
+      document.getElementById('calcHpScore').innerText = `+${hpBonus} (${player.hp}%)`;
+      document.getElementById('calcLivesScore').innerText = `+${livesBonus} (${player.lives}機)`;
+      document.getElementById('calcBombScore').innerText = `+${bombsBonus} (${player.bombs}發)`;
+      document.getElementById('calcTotalScore').innerText = finalCalculatedScore;
+
+      document.getElementById('victoryScreen').style.display = 'flex';
     }
 
+    function submitScore() {
+      const name = document.getElementById('playerNameInput').value.trim() || '無名英雄';
+      saveToLeaderboard(name, finalCalculatedScore, '一統天下');
+      showLeaderboardScreen();
+    }
+
+    function getLeaderboard() {
+      try {
+        return JSON.parse(localStorage.getItem('hero_1943_rank')) || [
+          { name: '江東隆 (主創)', score: 68800, stage: '一統天下' },
+          { name: '常山趙子龍', score: 56000, stage: '一統天下' },
+          { name: '美髯公關羽', score: 48500, stage: '第四關' }
+        ];
+      } catch(e) { return []; }
+    }
+
+    function saveToLeaderboard(name, sc, st) {
+      const list = getLeaderboard();
+      list.push({ name, score: sc, stage: st });
+      list.sort((a, b) => b.score - a.score);
+      const top5 = list.slice(0, 5);
+      localStorage.setItem('hero_1943_rank', JSON.stringify(top5));
+    }
+
+    function showLeaderboardScreen() {
+      document.getElementById('victoryScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('gameOverScreen').style.display = 'none';
+
+      const tbody = document.getElementById('leaderboardBody');
+      tbody.innerHTML = '';
+      const list = getLeaderboard();
+
+      list.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>第 ${idx+1} 名</td><td>${item.name}</td><td>${item.score}</td><td>${item.stage}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('leaderboardScreen').style.display = 'flex';
+    }
+
+    function backToStartFromRank() {
+      document.getElementById('leaderboardScreen').style.display = 'none';
+      document.getElementById('gameOverScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'flex';
+      gameState = 'START';
+    }
+
+    function openChangelog() { document.getElementById('changelogScreen').style.display = 'flex'; }
+    function closeChangelog() { document.getElementById('changelogScreen').style.display = 'none'; }
+    function restartGame() { startGame(); }
+
     /* ==========================================================================
-       7. 物理更新與主循環
+       8. 物理更新與主循環
        ========================================================================== */
     function gameLoop() {
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
@@ -624,6 +819,7 @@
       }
 
       if (player.invincibleTimer > 0) player.invincibleTimer--;
+      if (player.overloadTimer > 0) player.overloadTimer--;
 
       // 鍵盤移動
       if ((keys['ArrowLeft'] || keys['a'] || keys['A']) && player.x > 10) player.x -= player.speed;
@@ -631,16 +827,31 @@
       if ((keys['ArrowUp'] || keys['w'] || keys['W']) && player.y > 20) player.y -= player.speed;
       if ((keys['ArrowDown'] || keys['s'] || keys['S']) && player.y < canvas.height - player.h - 10) player.y += player.speed;
 
-      // 自動射擊
+      // 自動射擊 (滿級過載時射速提升)
       if (gameState === 'PLAYING') {
         if (player.shotCooldown > 0) player.shotCooldown--;
+        const fireRate = player.overloadTimer > 0 ? 5 : 9;
         if (player.shotCooldown <= 0) {
           firePlayerBullet();
-          player.shotCooldown = 9;
+          player.shotCooldown = fireRate;
+        }
+
+        // 友軍協戰邏輯 (持續 3 秒，每 6 幀射擊穿透劍氣)
+        if (ally.active) {
+          ally.timer--;
+          ally.shotCooldown--;
+          if (ally.shotCooldown <= 0) {
+            // 友軍位於玩家右側 30px
+            bullets.push({ x: player.x + 38, y: player.y, vx: 0, vy: 11, isAlly: true });
+            snd.playPew();
+            ally.shotCooldown = 6;
+          }
+          if (ally.timer <= 0) {
+            ally.active = false;
+          }
         }
       }
 
-      // 生成小兵巡邏隊
       if (!boss && gameState === 'PLAYING' && Math.random() < 0.045) {
         spawnEnemyWave();
       }
@@ -651,7 +862,7 @@
       enemyBullets.forEach(b => { b.y += b.vy; b.x += b.vx; });
       enemyBullets = enemyBullets.filter(b => b.y < canvas.height + 20 && b.x > 0 && b.x < canvas.width);
 
-      // 小兵行動
+      // 小兵更新
       enemies.forEach((en) => {
         en.y += en.vy;
         en.x += Math.sin(en.y * 0.035 + en.seed) * 2.2;
@@ -663,14 +874,15 @@
 
         bullets.forEach((b, bIdx) => {
           if (checkHit(b, { x: en.x, y: en.y, w: 26, h: 26 })) {
-            en.hp -= 10;
-            bullets.splice(bIdx, 1);
+            const dmg = b.isAlly ? 25 : (player.overloadTimer > 0 ? 16 : 10);
+            en.hp -= dmg;
+            if (!b.isAlly) bullets.splice(bIdx, 1); // 友軍劍氣具穿透性不銷毀
             createExplosion(b.x, b.y, '#fff', 3);
             if (en.hp <= 0) {
               snd.playBoom();
               createExplosion(en.x, en.y, '#ffaa00', 8);
               score += 150;
-              if (Math.random() < 0.22) spawnItem(en.x, en.y);
+              if (Math.random() < 0.25) spawnItem(en.x, en.y);
             }
           }
         });
@@ -707,8 +919,9 @@
 
         bullets.forEach((b, bIdx) => {
           if (checkHit(b, { x: boss.x, y: boss.y, w: 70, h: 60 })) {
-            boss.hp -= 4;
-            bullets.splice(bIdx, 1);
+            const dmg = b.isAlly ? 8 : (player.overloadTimer > 0 ? 6 : 4);
+            boss.hp -= dmg;
+            if (!b.isAlly) bullets.splice(bIdx, 1);
             createExplosion(b.x, b.y, '#ffd700', 3);
             
             if (boss.hp <= 0) {
@@ -721,7 +934,6 @@
         });
       }
 
-      // 玩家中彈判定
       if (player.invincibleTimer <= 0) {
         enemyBullets.forEach((eb, ebIdx) => {
           if (checkHit(eb, { x: player.x + 6, y: player.y + 6, w: 20, h: 24 })) {
@@ -732,15 +944,34 @@
         });
       }
 
-      // 道具拾取
+      // 拾取道具邏輯
       items.forEach((it, itIdx) => {
         it.y += 1.2;
         if (checkHit(it, player)) {
-          if (it.type === 'weapon') player.weaponLevel = Math.min(3, player.weaponLevel + 1);
-          else if (it.type === 'heal') player.hp = Math.min(100, player.hp + 25);
-          else if (it.type === 'bomb') player.bombs += 1;
+          if (it.type === 'weapon') {
+            if (player.weaponLevel < 3) {
+              player.weaponLevel++;
+              score += 200;
+            } else {
+              // 滿級後吃劍：超載暴擊 5 秒 + 額外 1000 分大獎勵！
+              player.overloadTimer = 300; // 5秒
+              score += 1000;
+            }
+          } else if (it.type === 'heal') {
+            player.hp = Math.min(100, player.hp + 25);
+            score += 200;
+          } else if (it.type === 'bomb') {
+            player.bombs += 1;
+            score += 300;
+          } else if (it.type === 'ally') {
+            // 吃到「友」：召喚 3 秒友軍
+            ally.active = true;
+            ally.timer = 180; // 60幀 * 3秒 = 180
+            ally.shotCooldown = 0;
+            snd.playAllySound();
+            score += 500;
+          }
           items.splice(itIdx, 1);
-          score += 200;
         }
       });
       items = items.filter(it => it.y < canvas.height + 20);
@@ -753,7 +984,6 @@
       updateHud();
     }
 
-    // 戰機受創與 3 條命重生判定
     function damagePlayer(amount) {
       player.hp -= amount;
       if (player.hp <= 0) {
@@ -762,14 +992,12 @@
         createExplosion(player.x + 16, player.y + 16, '#ff4444', 20);
 
         if (player.lives > 0) {
-          // 重生於底部並給予 2 秒無敵
           player.hp = 100;
           player.x = 210;
           player.y = 540;
-          player.invincibleTimer = 120; // 2秒無敵
+          player.invincibleTimer = 120;
           flashAlpha = 0.5;
         } else {
-          // 3 條命全部耗盡
           gameState = 'GAMEOVER';
           document.getElementById('gameOverScreen').style.display = 'flex';
           snd.stopBgm();
@@ -779,15 +1007,16 @@
 
     function firePlayerBullet() {
       snd.playPew();
+      const vy = player.overloadTimer > 0 ? 11 : 9.5;
       if (player.weaponLevel === 1) {
-        bullets.push({ x: player.x + 14, y: player.y, vx: 0, vy: 9.5 });
+        bullets.push({ x: player.x + 14, y: player.y, vx: 0, vy });
       } else if (player.weaponLevel === 2) {
-        bullets.push({ x: player.x + 6, y: player.y, vx: -0.6, vy: 9.5 });
-        bullets.push({ x: player.x + 22, y: player.y, vx: 0.6, vy: 9.5 });
+        bullets.push({ x: player.x + 6, y: player.y, vx: -0.6, vy });
+        bullets.push({ x: player.x + 22, y: player.y, vx: 0.6, vy });
       } else {
-        bullets.push({ x: player.x + 14, y: player.y - 2, vx: 0, vy: 10 });
-        bullets.push({ x: player.x + 4, y: player.y, vx: -1.5, vy: 9.5 });
-        bullets.push({ x: player.x + 24, y: player.y, vx: 1.5, vy: 9.5 });
+        bullets.push({ x: player.x + 14, y: player.y - 2, vx: 0, vy: vy + 0.5 });
+        bullets.push({ x: player.x + 4, y: player.y, vx: -1.5, vy });
+        bullets.push({ x: player.x + 24, y: player.y, vx: 1.5, vy });
       }
     }
 
@@ -821,17 +1050,19 @@
       bossQuoteTimer = 0;
     }
 
-    // 道具生成控制：嚴格限制大招出現頻率（每關最多 1~2 次）
+    // 道具生成控制 (每關嚴格控制 1~2 個火、1 個友)
     function spawnItem(x, y) {
       const rand = Math.random();
       let type = 'weapon';
 
-      if (rand < 0.55) {
+      if (!allyDroppedInStage && Math.random() < 0.25) {
+        type = 'ally'; // 每關至多出現 1 次「友」
+        allyDroppedInStage = true;
+      } else if (rand < 0.5) {
         type = 'weapon';
-      } else if (rand < 0.90) {
+      } else if (rand < 0.85) {
         type = 'heal';
       } else {
-        // 大招嚴格檢查：整關最多掉落 2 次
         if (bombsDroppedInStage < 2) {
           type = 'bomb';
           bombsDroppedInStage++;
@@ -862,7 +1093,7 @@
     }
 
     /* ==========================================================================
-       8. 畫面繪製
+       9. 畫面繪製
        ========================================================================== */
     function draw() {
       const curStage = STAGES[currentStageIdx];
@@ -889,23 +1120,34 @@
       ctx.lineTo(110 + Math.sin(waveOffset + 2) * 30, canvas.height);
       ctx.fill();
 
-      // 掉落道具
+      // 繪製道具 (劍、藥、火、友)
       items.forEach(it => {
         if (it.type === 'weapon') ctx.fillStyle = '#ffd700';
         else if (it.type === 'heal') ctx.fillStyle = '#44ff44';
-        else ctx.fillStyle = '#ff5722';
+        else if (it.type === 'bomb') ctx.fillStyle = '#ff5722';
+        else if (it.type === 'ally') ctx.fillStyle = '#00e5ff'; // 藍色「友」
+        
         ctx.fillRect(it.x, it.y, 16, 16);
         ctx.fillStyle = '#000';
         ctx.font = 'bold 11px sans-serif';
-        const label = it.type === 'weapon' ? '劍' : (it.type === 'heal' ? '藥' : '火');
+        let label = '劍';
+        if (it.type === 'heal') label = '藥';
+        if (it.type === 'bomb') label = '火';
+        if (it.type === 'ally') label = '友';
         ctx.fillText(label, it.x + 3, it.y + 12);
       });
 
-      // 戰機 (無敵閃爍效果)
+      // 玩家戰機 (過載時自帶金色雷霆外光芒)
       if (player.invincibleTimer % 6 < 3) {
         ctx.save();
         ctx.translate(player.x, player.y);
-        ctx.fillStyle = '#d4af37';
+        
+        if (player.overloadTimer > 0) {
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = '#ffd700';
+        }
+
+        ctx.fillStyle = player.overloadTimer > 0 ? '#ffea00' : '#d4af37';
         ctx.beginPath();
         ctx.moveTo(16, 0);
         ctx.lineTo(32, 28);
@@ -918,6 +1160,23 @@
         ctx.beginPath();
         ctx.arc(16, 4, 4, 0, Math.PI * 2);
         ctx.fill();
+        ctx.restore();
+      }
+
+      // 友軍戰機繪製 (關羽/趙雲武魂副機，浮動於右側)
+      if (ally.active) {
+        ctx.save();
+        ctx.translate(player.x + 34, player.y + 4);
+        ctx.fillStyle = '#00e5ff';
+        ctx.beginPath();
+        ctx.moveTo(10, 0);
+        ctx.lineTo(20, 18);
+        ctx.lineTo(10, 14);
+        ctx.lineTo(0, 18);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText('友', 5, 12);
         ctx.restore();
       }
 
@@ -959,9 +1218,17 @@
         }
       }
 
-      // 子彈
-      ctx.fillStyle = '#66ffff';
-      bullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 10));
+      // 子彈 (友軍為穿透碧綠劍氣，玩家過載時為雷霆金光)
+      bullets.forEach(b => {
+        if (b.isAlly) {
+          ctx.fillStyle = '#00ffcc';
+          ctx.fillRect(b.x, b.y, 5, 14);
+        } else {
+          ctx.fillStyle = player.overloadTimer > 0 ? '#ffea00' : '#66ffff';
+          const bw = player.overloadTimer > 0 ? 5 : 4;
+          ctx.fillRect(b.x, b.y, bw, 10);
+        }
+      });
 
       enemyBullets.forEach(b => {
         ctx.fillStyle = b.color || '#ff4444';
