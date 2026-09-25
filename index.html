@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>三國1943：赤壁烽火 (江東隆 製作)</title>
+  <title>三國1943：赤壁烽火 (江東隆 製作 / 江恬妃 測試)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; -webkit-touch-callout: none; }
     body {
@@ -61,7 +61,7 @@
       cursor: pointer;
     }
 
-    /* 手機專屬大招觸控按鈕 */
+    /* 手機專屬大招按鈕 */
     #mobileBombBtn {
       position: absolute;
       bottom: 24px;
@@ -162,7 +162,6 @@
     #stageClearBanner p { color: #fff; font-size: 13px; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* 英雄榜清單表格 */
     .rank-table {
       width: 100%;
       max-width: 320px;
@@ -178,7 +177,6 @@
     .rank-table th { color: #d4af37; background: #1c150e; }
     .rank-table tr:first-child td { color: #ffeb3b; font-weight: bold; }
 
-    /* 開發歷程彈窗 */
     #changelogBox {
       background: #191410;
       border: 1px solid #5a4529;
@@ -231,9 +229,9 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">製作人：江東隆 ｜ 版本：v2.0 街機終極版</div>
+      <div class="author-tag">製作人：江東隆 ｜ 版本：v2.5 名將暴走版</div>
       <p style="font-size:13px; color:#bbb; line-height:1.6; max-width:320px;">
-        征戰中原五大歷史戰役！擁有 3 架戰機，撿拾神兵「劍」、良藥「藥」、天火「火」與援軍「友」，直搗赤壁終極曹操！
+        中原五大戰役 Boss 戰力全面覺醒！小心 Boss 狙擊彈、旋轉狂濤與召喚僚機護航，直搗赤壁終極曹操！
       </p>
       
       <div style="margin: 10px 0;">
@@ -251,19 +249,17 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:20px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v2.0 街機終極版】(當前版本)</b><br>
-        • 全新加入「友」道具：召喚關羽/趙雲武魂副機協戰 3 秒！<br>
-        • 「劍」滿級後轉化為超載雷霆暴擊模式 +1000分。<br>
-        • 綜合結算系統：軍力、命數、天火全面折算終極戰功。<br>
-        • 加入本地「英雄榜」高分紀錄庫。<br>
-        • 5關過渡改為 2.5 秒無縫自動進入下一關。<br><br>
+        <b>【v2.5 名將暴走版】(當前版本)</b><br>
+        • Boss 攻擊模式重構：新增預判狙擊彈、螺旋彈幕與狂暴加速機制。<br>
+        • Boss 僚機系統：後段 Boss 與終極曹操會召喚左右護衛僚機協同夾擊！<br>
+        • Boss 血量階梯式翻倍增強，難度真正考驗走位與天火使用。<br><br>
+        <b>【v2.0 街機終極版】</b><br>
+        • 加入「友」援軍協戰 3 秒、「劍」滿級超載雷霆暴擊。<br>
+        • 綜合計分與本地英雄榜。<br><br>
         <b>【v1.8 街機 1943 模式】</b><br>
-        • 轉型為縱向捲軸 Canvas 街機射擊，支援手機觸控拖曳。<br>
-        • 新增三架戰機（3條命）與專屬暫停功能。<br><br>
-        <b>【v1.5 三國策略篇】</b><br>
-        • 引入中原四季流轉、內政稅收、三顧茅廬事件與陣前名言。<br><br>
-        <b>【v1.0 初生之犢】</b><br>
-        • 奇幻卡牌與紙娃娃換裝初代原型。
+        • 轉為縱向捲軸射擊，新增 3 架戰機與暫停功能。<br><br>
+        <b>【v1.0~v1.5】</b><br>
+        • 奇幻卡牌與三國逐鹿內政策略原型。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -281,7 +277,6 @@
       <h1 style="color:#ffd700;">👑 千秋霸業 · 天下一統</h1>
       <p style="font-size:13px; color:#ddd;">赤壁烈火燒盡八十萬敵軍，曹操連環巨艦灰飛煙滅！</p>
       
-      <!-- 結算明細卡 -->
       <div style="background:#1a140e; border:1px solid #5a4529; border-radius:6px; padding:12px; width:100%; max-width:320px; font-size:13px; text-align:left; line-height:1.8; margin:10px 0;">
         <div>討伐戰陣得分：<b id="calcBaseScore" style="color:#fff;">0</b></div>
         <div>存留軍力加成：<b id="calcHpScore" style="color:#7ef07e;">+0</b></div>
@@ -305,9 +300,7 @@
         <thead>
           <tr><th>名次</th><th>主公大名</th><th>總功勳</th><th>關卡</th></tr>
         </thead>
-        <tbody id="leaderboardBody">
-          <!-- 動態載入 -->
-        </tbody>
+        <tbody id="leaderboardBody"></tbody>
       </table>
       <button class="btn btn-sub" onclick="backToStartFromRank()">返回主頁</button>
     </div>
@@ -315,7 +308,7 @@
     <!-- 陣亡畫面 -->
     <div class="overlay-screen" id="gameOverScreen" style="display: none;">
       <h1 style="color:#ff6b6b;">💀 三軍盡瘁 · 英雄隕落</h1>
-      <p id="gameOverText">三架戰機皆已折損。勝敗乃兵家常事，少俠請重新起兵！</p>
+      <p id="gameOverText">三架戰機皆已折損。敵將凶悍，少俠請整頓陣容再來！</p>
       <button class="btn" onclick="restartGame()">重新起兵</button>
       <button class="btn btn-sub" onclick="backToStartFromRank()">回主選單</button>
     </div>
@@ -379,7 +372,7 @@
           osc.stop(this.ctx.currentTime + 0.28);
         } catch(e) {}
       }
-      playAllySound() { // 援軍召喚音效
+      playAllySound() {
         if (!this.ctx) return;
         try {
           const osc = this.ctx.createOscillator();
@@ -399,7 +392,7 @@
     const snd = new SoundController();
 
     /* ==========================================================================
-       2. 五大關卡設定
+       2. 五大關卡設定 (Boss 血量大幅加厚、新增多種戰鬥模式)
        ========================================================================== */
     const STAGES = [
       {
@@ -413,10 +406,11 @@
         boss: {
           name: '猛將 · 華雄',
           quote: '「關東群鼠，誰敢與我華雄一戰！」',
-          hp: 110,
-          maxHp: 110,
+          hp: 150,
+          maxHp: 150,
           color: '#b83b23',
-          bulletColor: '#ff6644'
+          bulletColor: '#ff6644',
+          pattern: 'spread_snipe' // 散彈 + 瞄準狙擊
         }
       },
       {
@@ -430,10 +424,11 @@
         boss: {
           name: '高順 · 陷陣營',
           quote: '「陷陣之志，有死無生！」',
-          hp: 140,
-          maxHp: 140,
+          hp: 220,
+          maxHp: 220,
           color: '#346633',
-          bulletColor: '#77dd77'
+          bulletColor: '#77dd77',
+          pattern: 'spiral' // 螺旋波紋彈
         }
       },
       {
@@ -447,10 +442,13 @@
         boss: {
           name: '先鋒 · 夏侯惇',
           quote: '「父精母血不可棄也！納命來！」',
-          hp: 170,
-          maxHp: 170,
+          hp: 320,
+          maxHp: 320,
           color: '#2a5a99',
-          bulletColor: '#6bb3ff'
+          bulletColor: '#6bb3ff',
+          hasMinions: true, // 召喚左右突擊僚機
+          minionCount: 2,
+          pattern: 'spread_snipe'
         }
       },
       {
@@ -464,10 +462,13 @@
         boss: {
           name: '大將 · 張遼',
           quote: '「威震逍遙津，且教江南小兒止啼！」',
-          hp: 200,
-          maxHp: 200,
+          hp: 420,
+          maxHp: 420,
           color: '#7a2266',
-          bulletColor: '#e066ff'
+          bulletColor: '#e066ff',
+          hasMinions: true,
+          minionCount: 2,
+          pattern: 'spiral_dive' // 螺旋彈 + 偶發高速俯衝
         }
       },
       {
@@ -481,11 +482,14 @@
         boss: {
           name: '【終極BOSS】丞相 · 曹操 (連環樓船)',
           quote: '「寧教我負天下人，休教天下人負我！萬弩齊發！」',
-          hp: 300,
-          maxHp: 300,
+          hp: 550, // 大幅加厚
+          maxHp: 550,
           color: '#a61c1c',
           bulletColor: '#ff2222',
-          isFinal: true
+          isFinal: true,
+          hasMinions: true,
+          minionCount: 2, // 左右重型護衛艦
+          pattern: 'final_barrage' // 全螢幕波浪密集彈幕
         }
       }
     ];
@@ -516,11 +520,9 @@
       shotCooldown: 0,
       weaponLevel: 1,
       bombs: 1,
-      // 滿級後的雷霆過載狀態
       overloadTimer: 0
     };
 
-    // 友軍援護機制 (持續 3 秒)
     let ally = {
       active: false,
       timer: 0,
@@ -533,11 +535,12 @@
     let items = [];
     let particles = [];
     let boss = null;
+    let bossMinions = []; // Boss 僚機陣列
     let bossQuoteTimer = 0;
+    let bossSpiralAngle = 0; // 螺旋彈計數角度
     let bgScrollY = 0;
     let flashAlpha = 0;
 
-    // 道具節制開關（每關最多掉落 1~2 次火，1 次友）
     let bombsDroppedInStage = 0;
     let allyDroppedInStage = false;
 
@@ -623,8 +626,15 @@
       });
       enemies = [];
 
+      // 天火能同時擊毀 Boss 的僚機！
+      bossMinions.forEach(m => {
+        createExplosion(m.x + 12, m.y + 12, '#ffaa00', 12);
+        score += 300;
+      });
+      bossMinions = [];
+
       if (boss && boss.hp > 0) {
-        boss.hp -= 40;
+        boss.hp -= 50;
         createExplosion(boss.x + 35, boss.y + 25, '#ff3300', 25);
       }
 
@@ -680,7 +690,9 @@
       currentStageIdx = idx;
       stageDistance = 0;
       boss = null;
+      bossMinions = [];
       bossQuoteTimer = 0;
+      bossSpiralAngle = 0;
       enemies = [];
       bullets = [];
       enemyBullets = [];
@@ -696,6 +708,7 @@
 
     function handleStageClear() {
       gameState = 'TRANSITION';
+      bossMinions = [];
       const isFinal = (currentStageIdx === STAGES.length - 1);
 
       if (isFinal) {
@@ -719,7 +732,7 @@
     }
 
     /* ==========================================================================
-       7. 總分結算與英雄榜 (localStorage)
+       7. 總分結算與英雄榜
        ========================================================================== */
     let finalCalculatedScore = 0;
 
@@ -727,7 +740,6 @@
       gameState = 'VICTORY';
       document.getElementById('mobileBombBtn').style.display = 'none';
 
-      // 總成績公式計算
       const baseScore = score;
       const hpBonus = player.hp * 20;
       const livesBonus = player.lives * 3000;
@@ -752,9 +764,9 @@
     function getLeaderboard() {
       try {
         return JSON.parse(localStorage.getItem('hero_1943_rank')) || [
-          { name: '江東隆 (主創)', score: 68800, stage: '一統天下' },
-          { name: '常山趙子龍', score: 56000, stage: '一統天下' },
-          { name: '美髯公關羽', score: 48500, stage: '第四關' }
+          { name: '江東隆 (主創)', score: 72000, stage: '一統天下' },
+          { name: '常山趙子龍', score: 58000, stage: '一統天下' },
+          { name: '美髯公關羽', score: 49500, stage: '第四關' }
         ];
       } catch(e) { return []; }
     }
@@ -797,7 +809,7 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新與主循環
+       8. 物理更新與主循環 (強化 Boss AI 與僚機系統)
        ========================================================================== */
     function gameLoop() {
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
@@ -827,7 +839,7 @@
       if ((keys['ArrowUp'] || keys['w'] || keys['W']) && player.y > 20) player.y -= player.speed;
       if ((keys['ArrowDown'] || keys['s'] || keys['S']) && player.y < canvas.height - player.h - 10) player.y += player.speed;
 
-      // 自動射擊 (滿級過載時射速提升)
+      // 自動射擊
       if (gameState === 'PLAYING') {
         if (player.shotCooldown > 0) player.shotCooldown--;
         const fireRate = player.overloadTimer > 0 ? 5 : 9;
@@ -836,12 +848,11 @@
           player.shotCooldown = fireRate;
         }
 
-        // 友軍協戰邏輯 (持續 3 秒，每 6 幀射擊穿透劍氣)
+        // 友軍協戰
         if (ally.active) {
           ally.timer--;
           ally.shotCooldown--;
           if (ally.shotCooldown <= 0) {
-            // 友軍位於玩家右側 30px
             bullets.push({ x: player.x + 38, y: player.y, vx: 0, vy: 11, isAlly: true });
             snd.playPew();
             ally.shotCooldown = 6;
@@ -876,7 +887,7 @@
           if (checkHit(b, { x: en.x, y: en.y, w: 26, h: 26 })) {
             const dmg = b.isAlly ? 25 : (player.overloadTimer > 0 ? 16 : 10);
             en.hp -= dmg;
-            if (!b.isAlly) bullets.splice(bIdx, 1); // 友軍劍氣具穿透性不銷毀
+            if (!b.isAlly) bullets.splice(bIdx, 1);
             createExplosion(b.x, b.y, '#fff', 3);
             if (en.hp <= 0) {
               snd.playBoom();
@@ -895,30 +906,92 @@
       });
       enemies = enemies.filter(en => en.y < canvas.height + 30 && en.hp > 0);
 
-      // Boss 邏輯
+      /* ==============================================================
+         強化版 BOSS AI 攻擊模式與僚機運作
+         ============================================================== */
       if (boss && boss.hp > 0) {
         bossQuoteTimer++;
+        const isEnraged = (boss.hp / boss.maxHp) <= 0.35; // 狂暴臨界點
+        const moveSpeedFactor = isEnraged ? 3.4 : 2.4;
+
         if (boss.y < 85) boss.y += 1.2;
-        boss.x += Math.sin(Date.now() * 0.002) * 2.5;
+        boss.x += Math.sin(Date.now() * 0.002) * moveSpeedFactor;
+
+        // 僚機召喚 (若有設定且僚機陣亡後會定期補充)
+        if (curStage.boss.hasMinions) {
+          boss.minionSpawnTimer--;
+          if (boss.minionSpawnTimer <= 0 && bossMinions.length < (curStage.boss.minionCount || 2)) {
+            spawnBossMinion(boss.x - 35, boss.y + 20, -1);
+            spawnBossMinion(boss.x + 85, boss.y + 20, 1);
+            boss.minionSpawnTimer = 350; // 週期刷新
+          }
+        }
 
         boss.shootTimer--;
         if (boss.shootTimer <= 0) {
-          const spread = curStage.boss.isFinal ? 0.8 : 0.6;
-          const step = curStage.boss.isFinal ? 0.25 : 0.3;
-          for (let angle = -spread; angle <= spread; angle += step) {
-            enemyBullets.push({
-              x: boss.x + 35,
-              y: boss.y + 60,
-              vx: Math.sin(angle) * 4.2,
-              vy: Math.cos(angle) * 4.2,
-              color: curStage.boss.bulletColor
-            });
+          const bossCenterX = boss.x + (curStage.boss.isFinal ? 45 : 35);
+          const bossCenterY = boss.y + 50;
+
+          // 招式 1: 預判狙擊彈 (朝玩家當前座標發射精準3連彈)
+          if (curStage.boss.pattern === 'spread_snipe' || Math.random() < 0.35) {
+            const dx = (player.x + 16) - bossCenterX;
+            const dy = (player.y + 16) - bossCenterY;
+            const dist = Math.hypot(dx, dy) || 1;
+            const angle = Math.atan2(dy, dx);
+
+            for (let offset of [-0.2, 0, 0.2]) {
+              enemyBullets.push({
+                x: bossCenterX,
+                y: bossCenterY,
+                vx: Math.cos(angle + offset) * 4.8,
+                vy: Math.sin(angle + offset) * 4.8,
+                color: '#ff9900'
+              });
+            }
           }
-          boss.shootTimer = curStage.boss.isFinal ? 38 : 48;
+
+          // 招式 2: 旋轉螺旋風暴 (徐州高順、張遼)
+          if (curStage.boss.pattern === 'spiral' || curStage.boss.pattern === 'spiral_dive') {
+            bossSpiralAngle += 0.45;
+            for (let i = 0; i < 4; i++) {
+              const a = bossSpiralAngle + (i * Math.PI / 2);
+              enemyBullets.push({
+                x: bossCenterX,
+                y: bossCenterY,
+                vx: Math.cos(a) * 3.8,
+                vy: Math.sin(a) * 3.8,
+                color: curStage.boss.bulletColor
+              });
+            }
+          }
+
+          // 招式 3: 終極曹操 · 萬弩巨艦連環大波浪
+          if (curStage.boss.pattern === 'final_barrage') {
+            const bulletCount = isEnraged ? 9 : 7;
+            const spreadWidth = isEnraged ? 0.9 : 0.75;
+            const step = (spreadWidth * 2) / (bulletCount - 1);
+            for (let i = 0; i < bulletCount; i++) {
+              const a = -spreadWidth + (i * step);
+              enemyBullets.push({
+                x: bossCenterX,
+                y: bossCenterY,
+                vx: Math.sin(a) * (isEnraged ? 5.2 : 4.4),
+                vy: Math.cos(a) * (isEnraged ? 5.2 : 4.4),
+                color: '#ff2222'
+              });
+            }
+          }
+
+          // 基礎扇形射擊 (狂暴時射速激增)
+          boss.shootTimer = isEnraged ? 28 : (curStage.boss.isFinal ? 34 : 44);
         }
 
+        // 玩家子彈擊中 Boss
+        const bW = curStage.boss.isFinal ? 90 : 70;
+        const bH = curStage.boss.isFinal ? 65 : 50;
+
         bullets.forEach((b, bIdx) => {
-          if (checkHit(b, { x: boss.x, y: boss.y, w: 70, h: 60 })) {
+          if (checkHit(b, { x: boss.x, y: boss.y, w: bW, h: bH })) {
             const dmg = b.isAlly ? 8 : (player.overloadTimer > 0 ? 6 : 4);
             boss.hp -= dmg;
             if (!b.isAlly) bullets.splice(bIdx, 1);
@@ -926,14 +999,40 @@
             
             if (boss.hp <= 0) {
               snd.playBoom();
-              createExplosion(boss.x + 35, boss.y + 30, '#ff3300', 35);
-              score += 3000;
+              createExplosion(boss.x + bW / 2, boss.y + bH / 2, '#ff3300', 40);
+              score += 3500;
               handleStageClear();
             }
           }
         });
       }
 
+      // 僚機行動與射擊更新
+      bossMinions.forEach((m) => {
+        m.x += m.vx;
+        if (m.x < 20 || m.x > canvas.width - 45) m.vx *= -1;
+        m.shootTimer--;
+        if (m.shootTimer <= 0) {
+          enemyBullets.push({ x: m.x + 10, y: m.y + 20, vx: 0, vy: 4.2, color: '#ff7733' });
+          m.shootTimer = 55 + Math.random() * 30;
+        }
+
+        bullets.forEach((b, bIdx) => {
+          if (checkHit(b, { x: m.x, y: m.y, w: 26, h: 26 })) {
+            m.hp -= b.isAlly ? 25 : 10;
+            if (!b.isAlly) bullets.splice(bIdx, 1);
+            createExplosion(b.x, b.y, '#fff', 3);
+            if (m.hp <= 0) {
+              snd.playBoom();
+              createExplosion(m.x + 12, m.y + 12, '#ffaa00', 10);
+              score += 300;
+            }
+          }
+        });
+      });
+      bossMinions = bossMinions.filter(m => m.hp > 0);
+
+      // 玩家中彈判定
       if (player.invincibleTimer <= 0) {
         enemyBullets.forEach((eb, ebIdx) => {
           if (checkHit(eb, { x: player.x + 6, y: player.y + 6, w: 20, h: 24 })) {
@@ -944,7 +1043,7 @@
         });
       }
 
-      // 拾取道具邏輯
+      // 道具拾取
       items.forEach((it, itIdx) => {
         it.y += 1.2;
         if (checkHit(it, player)) {
@@ -953,8 +1052,7 @@
               player.weaponLevel++;
               score += 200;
             } else {
-              // 滿級後吃劍：超載暴擊 5 秒 + 額外 1000 分大獎勵！
-              player.overloadTimer = 300; // 5秒
+              player.overloadTimer = 300;
               score += 1000;
             }
           } else if (it.type === 'heal') {
@@ -964,9 +1062,8 @@
             player.bombs += 1;
             score += 300;
           } else if (it.type === 'ally') {
-            // 吃到「友」：召喚 3 秒友軍
             ally.active = true;
-            ally.timer = 180; // 60幀 * 3秒 = 180
+            ally.timer = 180;
             ally.shotCooldown = 0;
             snd.playAllySound();
             score += 500;
@@ -1038,25 +1135,36 @@
       boss = {
         name: bConfig.name,
         quote: bConfig.quote,
-        x: canvas.width / 2 - 35,
+        x: canvas.width / 2 - (bConfig.isFinal ? 45 : 35),
         y: -70,
         hp: bConfig.hp,
         maxHp: bConfig.maxHp,
         color: bConfig.color,
         bulletColor: bConfig.bulletColor,
         isFinal: bConfig.isFinal || false,
-        shootTimer: 30
+        shootTimer: 30,
+        minionSpawnTimer: 60 // 登場不久召喚僚機
       };
       bossQuoteTimer = 0;
+      bossMinions = [];
     }
 
-    // 道具生成控制 (每關嚴格控制 1~2 個火、1 個友)
+    function spawnBossMinion(x, y, dir) {
+      bossMinions.push({
+        x: Math.max(20, Math.min(canvas.width - 45, x)),
+        y: Math.max(30, y),
+        vx: 1.5 * dir,
+        hp: 45, // 僚機具備一定血量
+        shootTimer: 30 + Math.random() * 20
+      });
+    }
+
     function spawnItem(x, y) {
       const rand = Math.random();
       let type = 'weapon';
 
       if (!allyDroppedInStage && Math.random() < 0.25) {
-        type = 'ally'; // 每關至多出現 1 次「友」
+        type = 'ally';
         allyDroppedInStage = true;
       } else if (rand < 0.5) {
         type = 'weapon';
@@ -1120,12 +1228,12 @@
       ctx.lineTo(110 + Math.sin(waveOffset + 2) * 30, canvas.height);
       ctx.fill();
 
-      // 繪製道具 (劍、藥、火、友)
+      // 道具
       items.forEach(it => {
         if (it.type === 'weapon') ctx.fillStyle = '#ffd700';
         else if (it.type === 'heal') ctx.fillStyle = '#44ff44';
         else if (it.type === 'bomb') ctx.fillStyle = '#ff5722';
-        else if (it.type === 'ally') ctx.fillStyle = '#00e5ff'; // 藍色「友」
+        else if (it.type === 'ally') ctx.fillStyle = '#00e5ff';
         
         ctx.fillRect(it.x, it.y, 16, 16);
         ctx.fillStyle = '#000';
@@ -1137,7 +1245,7 @@
         ctx.fillText(label, it.x + 3, it.y + 12);
       });
 
-      // 玩家戰機 (過載時自帶金色雷霆外光芒)
+      // 戰機
       if (player.invincibleTimer % 6 < 3) {
         ctx.save();
         ctx.translate(player.x, player.y);
@@ -1163,7 +1271,7 @@
         ctx.restore();
       }
 
-      // 友軍戰機繪製 (關羽/趙雲武魂副機，浮動於右側)
+      // 友軍副機
       if (ally.active) {
         ctx.save();
         ctx.translate(player.x + 34, player.y + 4);
@@ -1190,21 +1298,38 @@
         ctx.fill();
       });
 
-      // Boss
+      // Boss 僚機繪製 (藍紫重裝護衛艇)
+      bossMinions.forEach(m => {
+        ctx.fillStyle = '#552288';
+        ctx.fillRect(m.x, m.y, 24, 22);
+        ctx.fillStyle = '#ff9900';
+        ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
+      });
+
+      // Boss 繪製 (狂暴時散發危險紅芒)
       if (boss && boss.hp > 0) {
-        ctx.fillStyle = boss.color;
+        const isEnraged = (boss.hp / boss.maxHp) <= 0.35;
         const bW = boss.isFinal ? 90 : 70;
         const bH = boss.isFinal ? 65 : 50;
+
+        ctx.save();
+        if (isEnraged) {
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = '#ff0000';
+        }
+        ctx.fillStyle = isEnraged ? '#7a0000' : boss.color;
         ctx.fillRect(boss.x, boss.y, bW, bH);
         ctx.fillStyle = '#d4af37';
         ctx.fillRect(boss.x + (bW - 30) / 2, boss.y + 10, 30, 25);
-        ctx.fillStyle = '#fff';
+        ctx.restore();
+
+        ctx.fillStyle = isEnraged ? '#ff5555' : '#fff';
         ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(boss.name, boss.x - 10, boss.y - 10);
+        ctx.fillText(`${boss.name}${isEnraged ? ' (狂暴!)' : ''}`, boss.x - 10, boss.y - 10);
         
         ctx.fillStyle = '#440000';
         ctx.fillRect(boss.x, boss.y - 6, bW, 5);
-        ctx.fillStyle = '#ff3333';
+        ctx.fillStyle = isEnraged ? '#ff0000' : '#ff3333';
         ctx.fillRect(boss.x, boss.y - 6, Math.max(0, (boss.hp / boss.maxHp) * bW), 5);
 
         if (bossQuoteTimer < 240) {
@@ -1218,7 +1343,7 @@
         }
       }
 
-      // 子彈 (友軍為穿透碧綠劍氣，玩家過載時為雷霆金光)
+      // 子彈
       bullets.forEach(b => {
         if (b.isAlly) {
           ctx.fillStyle = '#00ffcc';
