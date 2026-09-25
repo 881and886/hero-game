@@ -262,9 +262,9 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v3.8 凱旋定鼎版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v4.0 順暢連關版</div>
       <p style="font-size:13px; color:#bbb; line-height:1.6; max-width:320px;">
-        【挑戰彩蛋】連續無傷擊破 30 架敵機可召喚稀有「加命戰機」！討滅赤壁終極曹操，平步登榜立傳！
+        【挑戰彩蛋】連續無傷擊破 30 架敵機可召喚稀有「加命戰機」！五大戰役關卡無縫推進！
       </p>
       
       <div style="margin: 10px 0;">
@@ -282,16 +282,14 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:20px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v3.8 凱旋定鼎版】(當前版本)</b><br>
-        • 徹底排查修復通關結算：終極曹操擊破後絕對平滑直達英雄榜輸入！<br>
-        • 新增加命神物「機」：連續無傷擊落 30 機可觸發，每關上限 1 次。<br>
+        <b>【v4.0 順暢連關版】(當前版本)</b><br>
+        • 徹底重構狀態機：加入「關卡結算鎖定（StageClearing Lock）」，徹底消滅關卡跳轉時 Boss 卡住殘留的嚴重 BUG！<br>
+        • Boss 陣亡第一毫秒完全銷毀碰撞實體，絕不重複觸發死鎖。<br>
         • 製作群名單更新：創作者【八雲】、特級測試【導演】、【丘比】。<br><br>
-        <b>【v3.5 滾木天火版】</b><br>
-        • 新增一般流程「巨型滾木」，需大幅閃避，可用天火直接震碎！<br>
-        • 追蹤彈專屬移交 Boss 僚機釋放。<br><br>
-        <b>【v3.0~v3.2】</b><br>
-        • 援軍改為主動儲備令（按 C 鍵或按鈕自選釋放時機）。<br>
-        • Boss 翻倍血量與全屏狂暴彈雨。
+        <b>【v3.8 凱旋定鼎版】</b><br>
+        • 新增加命神物「機」：連續無傷擊落 30 機觸發，每關上限 1 次。<br>
+        • 一般流程巨型滾木，可被天火震碎。<br>
+        • 援軍改為主動儲備令（按 C 鍵自選時機釋放）。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -420,7 +418,7 @@
           osc.stop(this.ctx.currentTime + 0.2);
         } catch(e) {}
       }
-      playExtraLifeSound() { // 獲得額外戰機特別音效
+      playExtraLifeSound() {
         if (!this.ctx) return;
         try {
           const osc = this.ctx.createOscillator();
@@ -556,6 +554,9 @@
     let keys = {};
     let animationFrameId = null;
 
+    // 【核心防鎖死狀態標記】
+    let isTransitioning = false;
+
     const player = {
       x: 210,
       y: 540,
@@ -594,8 +595,6 @@
 
     let bombsDroppedInStage = 0;
     let allyDroppedInStage = false;
-
-    // 【新增】：連續無傷擊殺計數器 與 每關加命道具掉落旗標
     let flawlessKillStreak = 0;
     let extraLifeDroppedInStage = false;
 
@@ -733,7 +732,7 @@
     }
 
     /* ==========================================================================
-       6. 遊戲流程控制 (徹底解決終極 Boss 擊破卡死)
+       6. 遊戲流程控制 (徹底修復關卡卡死重疊)
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
@@ -760,6 +759,7 @@
       player.overloadTimer = 0;
       ally.active = false;
       flawlessKillStreak = 0;
+      isTransitioning = false;
 
       loadStage(0);
       gameState = 'PLAYING';
@@ -785,31 +785,39 @@
       flashAlpha = 0;
       bombsDroppedInStage = 0;
       allyDroppedInStage = false;
-      extraLifeDroppedInStage = false; // 每關重置加命道具掉落旗標
+      extraLifeDroppedInStage = false;
+      isTransitioning = false; // 解除換關鎖定
 
       document.getElementById('hudStage').innerText = STAGES[idx].name.split('：')[0];
       updateHud();
     }
 
+    // 核心安全換關函數 (徹底阻斷重複觸發)
     function handleStageClear() {
-      // 關鍵修復：完全清除所有可能造成重複判定死循環的物件
+      if (isTransitioning) return; // 若已在過渡中，嚴格忽視任何後續呼叫！
+      isTransitioning = true;
+
+      // 1. 立即永久銷毀 Boss 實體與所有敵彈
+      boss = null;
+      bossMinions = [];
       enemyBullets = [];
       rollingLogs = [];
-      bossMinions = [];
-      boss = null; // 徹底清空 boss 物件
-      player.invincibleTimer = 999; // 結算過渡期絕對無敵
+      player.invincibleTimer = 999; // 換關過渡絕對無敵
 
       const isFinal = (currentStageIdx === STAGES.length - 1);
 
       if (isFinal) {
-        // 最終 BOSS 通關：強制切斷動畫主循環，直接展示大捷與輸入榜單
+        // 最終 BOSS 通關：終止動畫幀，展示通關結算
         gameState = 'VICTORY';
         if (animationFrameId) {
           cancelAnimationFrame(animationFrameId);
           animationFrameId = null;
         }
-        showVictoryScreen();
+        setTimeout(() => {
+          showVictoryScreen();
+        }, 800);
       } else {
+        // 一般關卡：展示橫幅，2.5 秒後準時換關
         gameState = 'TRANSITION';
         const nextStageName = STAGES[currentStageIdx + 1].name;
         document.getElementById('bannerNextText').innerText = `部隊乘勝追擊，即將挺進【${nextStageName}】...`;
@@ -821,13 +829,14 @@
           player.hp = Math.min(100, player.hp + 35);
           player.x = 210;
           player.y = 540;
+          player.invincibleTimer = 60;
           gameState = 'PLAYING';
         }, 2500);
       }
     }
 
     /* ==========================================================================
-       7. 總分結算與英雄榜 (含最新名單：八雲、導演、丘比)
+       7. 總分結算與英雄榜
        ========================================================================== */
     let finalCalculatedScore = 0;
 
@@ -858,7 +867,7 @@
 
     function getLeaderboard() {
       try {
-        return JSON.parse(localStorage.getItem('hero_1943_rank_v3')) || [
+        return JSON.parse(localStorage.getItem('hero_1943_rank_v4')) || [
           { name: '八雲 (創作者)', score: 92000, stage: '一統天下' },
           { name: '導演 (特級測試)', score: 79800, stage: '一統天下' },
           { name: '丘比 (先鋒測試)', score: 71500, stage: '一統天下' },
@@ -872,7 +881,7 @@
       list.push({ name, score: sc, stage: st });
       list.sort((a, b) => b.score - a.score);
       const top5 = list.slice(0, 5);
-      localStorage.setItem('hero_1943_rank_v3', JSON.stringify(top5));
+      localStorage.setItem('hero_1943_rank_v4', JSON.stringify(top5));
     }
 
     function showLeaderboardScreen() {
@@ -905,7 +914,7 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新與主循環 (連續無傷30殺加命機制)
+       8. 物理更新與主循環
        ========================================================================== */
     function gameLoop() {
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
@@ -919,6 +928,14 @@
       const curStage = STAGES[currentStageIdx];
 
       bgScrollY += curStage.scrollSpeed;
+
+      // 如果正在換關過渡中，只保留背景捲動與粒子，不進行任何敵方生成與碰撞運算！
+      if (isTransitioning) {
+        particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.alpha -= 0.04; });
+        particles = particles.filter(p => p.alpha > 0);
+        return;
+      }
+
       if (!boss && gameState === 'PLAYING') {
         stageDistance += curStage.scrollSpeed;
         if (stageDistance >= curStage.targetDistance) {
@@ -967,7 +984,7 @@
       bullets.forEach(b => { b.y -= b.vy; b.x += b.vx; });
       bullets = bullets.filter(b => b.y > -20 && b.x > 0 && b.x < canvas.width);
 
-      // 敵彈更新 (僚機專屬追蹤彈)
+      // 敵彈更新
       enemyBullets.forEach(b => {
         if (b.isHoming) {
           if (b.y <= player.y + 10) {
@@ -1022,7 +1039,6 @@
               createExplosion(en.x, en.y, '#ffaa00', 8);
               score += 150;
               
-              // 【核心加命判定】：無傷連續擊殺累積
               flawlessKillStreak++;
               if (flawlessKillStreak >= 30 && !extraLifeDroppedInStage) {
                 spawnExtraLifeItem(en.x, en.y);
@@ -1042,8 +1058,8 @@
       });
       enemies = enemies.filter(en => en.y < canvas.height + 30 && en.hp > 0);
 
-      // Boss 行動更新
-      if (boss && boss.hp > 0) {
+      // Boss 行動更新 (安全防護：若在過渡期或已無 Boss 則直接略過)
+      if (boss && boss.hp > 0 && !isTransitioning) {
         bossQuoteTimer++;
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
         const moveSpeedFactor = isEnraged ? 3.6 : 2.4;
@@ -1136,7 +1152,8 @@
             if (!b.isAlly) bullets.splice(bIdx, 1);
             createExplosion(b.x, b.y, '#ffd700', 3);
             
-            if (boss.hp <= 0) {
+            // 關鍵擊殺：血量見底立即結算，不給下一發子彈重複觸發的機會
+            if (boss.hp <= 0 && !isTransitioning) {
               snd.playBoom();
               createExplosion(boss.x + bW / 2, boss.y + bH / 2, '#ff3300', 45);
               score += 4000;
@@ -1211,7 +1228,6 @@
             player.allyStock += 1;
             score += 500;
           } else if (it.type === 'life') {
-            // 拾取加命寶物「機」
             player.lives += 1;
             snd.playExtraLifeSound();
             flashAlpha = 0.6;
@@ -1232,7 +1248,6 @@
 
     function damagePlayer(amount) {
       player.hp -= amount;
-      // 【一旦中彈受傷，無傷連殺計數立即歸零！】
       flawlessKillStreak = 0;
 
       if (player.hp <= 0) {
@@ -1350,7 +1365,6 @@
       items.push({ x, y, type, w: 18, h: 18 });
     }
 
-    // 【新增】：生成稀有加命道具「機」
     function spawnExtraLifeItem(x, y) {
       items.push({ x, y, type: 'life', w: 20, h: 20 });
     }
@@ -1417,13 +1431,13 @@
         ctx.restore();
       });
 
-      // 道具繪製 (包含稀有「機」道具)
+      // 道具
       items.forEach(it => {
         if (it.type === 'weapon') ctx.fillStyle = '#ffd700';
         else if (it.type === 'heal') ctx.fillStyle = '#44ff44';
         else if (it.type === 'bomb') ctx.fillStyle = '#ff5722';
         else if (it.type === 'ally') ctx.fillStyle = '#00e5ff';
-        else if (it.type === 'life') ctx.fillStyle = '#ff1744'; // 耀眼紅色「機」
+        else if (it.type === 'life') ctx.fillStyle = '#ff1744';
         
         ctx.fillRect(it.x, it.y, it.w || 16, it.h || 16);
         ctx.fillStyle = '#000';
@@ -1500,8 +1514,8 @@
         ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
       });
 
-      // Boss 繪製
-      if (boss && boss.hp > 0) {
+      // Boss 繪製 (若 boss 已被擊殺清空則不繪製，防止殘留卡畫面)
+      if (boss && boss.hp > 0 && !isTransitioning) {
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
         const bW = boss.isFinal ? 90 : 70;
         const bH = boss.isFinal ? 65 : 50;
