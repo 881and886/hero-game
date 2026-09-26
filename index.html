@@ -239,10 +239,10 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v6.2 零卡死穩固版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v6.3 徹底解決擊殺判定版</div>
       
       <p style="font-size:12px; color:#bbb; line-height:1.5; max-width:320px;">
-        已全面支援自訂 PNG 貼圖！採用絕對穩固的手動過關確認推進，平定赤壁即可解鎖第六關彩蛋！
+        已全面修正 Boss 死亡判定！無論子彈或天火擊殺，血量歸零立即大捷過關！
       </p>
 
       <div class="diff-select">
@@ -262,7 +262,7 @@
       </div>
     </div>
 
-    <!-- 過關確認畫面（最穩固模式，絕不再卡死） -->
+    <!-- 過關確認畫面 -->
     <div class="overlay-screen" id="stageClearScreen" style="display: none;">
       <h1 style="color:#7ef07e;">🏆 大捷！斬落敵將！</h1>
       <p id="stageClearDesc" style="font-size:13px; color:#ddd; margin-bottom:16px;">敵將已被徹底降伏！部隊整軍完畢！</p>
@@ -273,14 +273,14 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:18px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v6.2 零卡死穩固版】(當前版本)</b><br>
-        • 回退到零卡死的穩定過關確認流：斬殺 Boss 後點擊「挺進下一關」安全無縫載入新關卡！<br>
-        • 保留 14 款 PNG 資源載入池：機首朝上直接畫，無圖自動幾何保底。<br>
+        <b>【v6.3 徹底解決擊殺判定版】(當前版本)</b><br>
+        • 修復天火擊殺 Boss 漏判卡死 BUG：Boss 血量小於等於 0 立即全域觸發大捷結算！<br>
+        • 保留 14 款 PNG 資源預載系統，機首朝上，缺圖自動色塊保底。<br>
         • 製作群名單：創作者【八雲】、特級測試【導演】、【丘比】。<br><br>
-        <b>【v5.0~v6.0】</b><br>
+        <b>【v6.2 零卡死穩固版】</b><br>
+        • 手動確認換關流程。<br>
         • 跨設備 DeltaTime 速度恆定。<br>
-        • 稀有加命道具「機」（無傷連破 30 機）。<br>
-        • 難度選擇與第六關彩蛋神魔殿。
+        • 難度選擇與第六關神魔彩蛋。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -363,7 +363,7 @@
 
   <script>
     /* ==========================================================================
-       0. 14 款圖片資源預載管理器 (完全尊重原始朝向，無圖自動幾何保底)
+       0. 14 款圖片資源預載管理器
        ========================================================================== */
     const ASSETS = {
       player: new Image(),
@@ -623,7 +623,7 @@
     }
 
     /* ==========================================================================
-       5. 技能系統
+       5. 技能系統 (修正：天火若炸死 Boss 立即觸發過關)
        ========================================================================== */
     function useTimeSlow() {
       if (!equipment.slow || timeSlowTimer > 0 || gameState !== 'PLAYING') return;
@@ -652,7 +652,16 @@
       enemies = [];
       bossMinions.forEach(m => { createExplosion(m.x + 12, m.y + 12, '#ffaa00', 12); score += 300; });
       bossMinions = [];
-      if (boss && boss.hp > 0) { boss.hp -= 60; createExplosion(boss.x + 35, boss.y + 25, '#ff3300', 25); }
+
+      // 【核心修正】：若天火使 Boss 死亡，立即執行大捷結算
+      if (boss && boss.hp > 0) {
+        boss.hp -= 60;
+        createExplosion(boss.x + 35, boss.y + 25, '#ff3300', 25);
+        if (boss.hp <= 0) {
+          score += 4000 * diffMultiplier;
+          triggerBossDefeated();
+        }
+      }
       updateHud();
     }
 
@@ -893,7 +902,7 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新與主循環
+       8. 物理更新與主循環 (全域監控 Boss 死亡判定)
        ========================================================================== */
     function gameLoop(now) {
       let dt = (now - lastFrameTime) / 1000;
@@ -909,6 +918,15 @@
 
     function update(dt) {
       const curStage = STAGES[currentStageIdx];
+
+      // 【核心全域保護】：只要 Boss 生命值歸零，立即結算過關，防止任何傷害漏判
+      if (boss && boss.hp <= 0) {
+        snd.playBoom();
+        createExplosion(boss.x + 35, boss.y + 25, '#ff3300', 45);
+        score += 4000 * diffMultiplier;
+        triggerBossDefeated();
+        return;
+      }
 
       let timeScale = 1.0;
       if (timeSlowTimer > 0) {
@@ -1090,7 +1108,7 @@
             if (!b.isAlly) bullets.splice(bIdx, 1);
             createExplosion(b.x, b.y, '#ffd700', 3);
 
-            // 擊殺 Boss：立即觸發過關
+            // 擊殺判斷
             if (boss.hp <= 0) {
               snd.playBoom();
               createExplosion(boss.x + bW / 2, boss.y + bH / 2, '#ff3300', 45);
@@ -1249,7 +1267,7 @@
     }
 
     /* ==========================================================================
-       9. 畫面繪製（圖片優先，無圖片自動幾何保底，絕不介入旋轉）
+       9. 畫面繪製
        ========================================================================== */
     function draw() {
       const curStage = STAGES[currentStageIdx];
@@ -1314,7 +1332,7 @@
         }
       });
 
-      // 玩家戰機
+      // 戰機
       if (player.invincibleTimer <= 0 || Math.floor(player.invincibleTimer * 10) % 2 === 0) {
         if (isImgReady(ASSETS.player)) {
           ctx.drawImage(ASSETS.player, player.x, player.y, player.w, player.h);
@@ -1381,7 +1399,7 @@
         }
       });
 
-      // Boss 繪製 (嚴格校驗：存在且正常遊戲中才繪製)
+      // Boss
       if (boss && boss.hp > 0 && gameState === 'PLAYING') {
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
         const bW = boss.isFinal ? 90 : 70;
