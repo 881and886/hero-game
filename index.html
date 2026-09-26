@@ -61,10 +61,22 @@
       cursor: pointer;
     }
 
-    #mobileBombBtn {
+    /* ==========================================
+       左手專屬技能控制艙 (集中在左下側)
+       ========================================== */
+    .left-control-cluster {
       position: absolute;
-      bottom: 24px;
-      right: 18px;
+      bottom: 20px;
+      left: 16px;
+      display: flex;
+      flex-direction: column-reverse; /* 由下往上排列 */
+      gap: 12px;
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    /* 1. 天火大招 (最下方，最直覺好按) */
+    #mobileBombBtn {
       width: 66px;
       height: 66px;
       border-radius: 50%;
@@ -79,44 +91,38 @@
       justify-content: center;
       box-shadow: 0 0 15px rgba(255, 69, 0, 0.7);
       cursor: pointer;
-      z-index: 20;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
       transition: transform 0.1s;
     }
     #mobileBombBtn:active { transform: scale(0.9); }
 
+    /* 2. 友軍支援 (天火上方) */
     #mobileAllyBtn {
-      position: absolute;
-      bottom: 24px;
-      left: 18px;
-      width: 66px;
-      height: 66px;
+      width: 58px;
+      height: 58px;
       border-radius: 50%;
       background: radial-gradient(circle, #00b0ff 0%, #004d80 100%);
-      border: 3px solid #80d8ff;
+      border: 2px solid #80d8ff;
       color: #fff;
       font-weight: bold;
-      font-size: 13px;
+      font-size: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 15px rgba(0, 176, 255, 0.7);
+      box-shadow: 0 0 12px rgba(0, 176, 255, 0.6);
       cursor: pointer;
-      z-index: 20;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
       transition: transform 0.1s;
     }
     #mobileAllyBtn:active { transform: scale(0.9); }
 
+    /* 3. 特殊時緩神裝 (解鎖後出現在友軍上方) */
     #mobileSkillBtn {
-      position: absolute;
-      bottom: 100px;
-      right: 18px;
-      width: 56px;
-      height: 56px;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
       background: radial-gradient(circle, #ab47bc 0%, #4a148c 100%);
       border: 2px solid #e1bee7;
@@ -129,8 +135,11 @@
       justify-content: center;
       box-shadow: 0 0 12px rgba(171, 71, 188, 0.7);
       cursor: pointer;
-      z-index: 20;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s;
     }
+    #mobileSkillBtn:active { transform: scale(0.9); }
 
     .overlay-screen {
       position: absolute;
@@ -176,30 +185,87 @@
     .btn:hover { transform: scale(1.04); background: #ffcc00; }
     .btn-sub { background: #2b2216; border: 1px solid #775c35; color: #e2b744; font-size: 12px; padding: 6px 12px; }
 
-    .diff-select { display: flex; gap: 8px; margin: 8px 0; }
-    .diff-btn {
-      padding: 6px 10px; border: 1px solid #5a4529; background: #1e1710;
-      color: #bfa382; border-radius: 4px; font-size: 12px; cursor: pointer;
+    .diff-select {
+      display: flex;
+      gap: 8px;
+      margin: 8px 0;
     }
-    .diff-btn.active { border-color: #ffd700; background: #4a3819; color: #fff; font-weight: bold; }
+    .diff-btn {
+      padding: 6px 10px;
+      border: 1px solid #5a4529;
+      background: #1e1710;
+      color: #bfa382;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .diff-btn.active {
+      border-color: #ffd700;
+      background: #4a3819;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    #stageClearBanner {
+      position: absolute;
+      top: 36%;
+      left: 0;
+      right: 0;
+      background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(20,50,20,0.92) 20%, rgba(20,50,20,0.92) 80%, rgba(0,0,0,0) 100%);
+      border-top: 2px solid #7ef07e;
+      border-bottom: 2px solid #7ef07e;
+      padding: 16px 0;
+      text-align: center;
+      z-index: 25;
+      display: none;
+    }
+    #stageClearBanner h2 { color: #7ef07e; font-size: 20px; margin-bottom: 4px; }
+    #stageClearBanner p { color: #fff; font-size: 13px; }
 
     .shop-list {
-      width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 6px; margin: 10px 0; text-align: left;
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 10px 0;
+      text-align: left;
     }
     .shop-item {
-      display: flex; justify-content: space-between; align-items: center;
-      background: #1f1812; border: 1px solid #4a3825; padding: 6px 10px; border-radius: 4px; font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1f1812;
+      border: 1px solid #4a3825;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 12px;
     }
     .shop-item b { color: #ffd700; }
 
-    .rank-table { width: 100%; max-width: 330px; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+    .rank-table {
+      width: 100%;
+      max-width: 330px;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 12px;
+    }
     .rank-table th, .rank-table td { padding: 5px 6px; border-bottom: 1px solid #33261a; text-align: center; }
     .rank-table th { color: #d4af37; background: #1c150e; }
 
     #changelogBox {
-      background: #191410; border: 1px solid #5a4529; border-radius: 6px; padding: 12px;
-      max-width: 340px; max-height: 250px; overflow-y: auto; text-align: left; font-size: 12px;
-      line-height: 1.6; color: #c9bca8; margin-bottom: 12px;
+      background: #191410;
+      border: 1px solid #5a4529;
+      border-radius: 6px;
+      padding: 12px;
+      max-width: 340px;
+      max-height: 250px;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #c9bca8;
+      margin-bottom: 12px;
     }
     #changelogBox b { color: #d4af37; }
   </style>
@@ -223,26 +289,40 @@
       <button id="btnPause" onclick="togglePause()">⏸️</button>
     </div>
 
-    <div id="mobileAllyBtn" style="display: none;">
-      <span>援軍</span>
-      <small id="mobileAllyCount" style="font-size: 10px; color:#e0f7fa;">0次</small>
+    <!-- 左手專屬技能控制艙 (全部集中在左下側，右手自由走位) -->
+    <div class="left-control-cluster" id="leftControlCluster" style="display: none;">
+      <!-- 1. 最下層：天火大招 -->
+      <div id="mobileBombBtn">
+        <span>天火</span>
+        <small id="mobileBombCount" style="font-size: 10px; color:#ffeb3b;">1次</small>
+      </div>
+
+      <!-- 2. 中間層：援軍支援 -->
+      <div id="mobileAllyBtn">
+        <span>援軍</span>
+        <small id="mobileAllyCount" style="font-size: 10px; color:#e0f7fa;">0次</small>
+      </div>
+
+      <!-- 3. 最上層：時緩法寶 (換裝解鎖) -->
+      <div id="mobileSkillBtn" onclick="useTimeSlow()">
+        <span>時緩</span>
+        <small id="mobileSkillCount" style="font-size: 9px; color:#f3e5f5;">3秒</small>
+      </div>
     </div>
-    <div id="mobileBombBtn" style="display: none;">
-      <span>天火</span>
-      <small id="mobileBombCount" style="font-size: 10px; color:#ffeb3b;">1次</small>
-    </div>
-    <div id="mobileSkillBtn" onclick="useTimeSlow()">
-      <span>時緩</span>
-      <small id="mobileSkillCount" style="font-size: 9px; color:#f3e5f5;">3秒</small>
+
+    <!-- 自動過關橫幅 -->
+    <div id="stageClearBanner">
+      <h2>🏆 敵將已破 · 大捷！</h2>
+      <p id="bannerNextText">部隊全速行軍，即將挺進下一關...</p>
     </div>
 
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v6.5 巨艦威壓版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v5.2 左手街機佈局版</div>
       
       <p style="font-size:12px; color:#bbb; line-height:1.5; max-width:320px;">
-        全面導入「畫布動態等比例縮放」！Boss 體型隨關卡節節攀升，壓迫感全面升級！
+        【操作升級】按鈕全數集中在<b>左下側</b>！由左手專職施放大招，右手專注滑動戰機走位！
       </p>
 
       <div class="diff-select">
@@ -258,57 +338,48 @@
       </div>
 
       <div style="font-size: 11px; color: #888; margin-top: 4px;">
-        鍵盤：WASD移動 / 空白鍵天火 / C鍵援軍 / X鍵時緩 / P暫停
+        電腦：WASD移動 / 空白鍵天火 / C鍵援軍 / X鍵時緩 / P暫停<br>手機：右手滑動戰機 / 左下角控制所有技能
       </div>
     </div>
 
-    <!-- 過關確認畫面 -->
-    <div class="overlay-screen" id="stageClearScreen" style="display: none;">
-      <h1 style="color:#7ef07e;">🏆 大捷！斬落敵將！</h1>
-      <p id="stageClearDesc" style="font-size:13px; color:#ddd; margin-bottom:16px;">敵將已被徹底降伏！部隊整軍完畢！</p>
-      <button class="btn" onclick="confirmNextStage()">挺進下一關 ➔</button>
-    </div>
-
-    <!-- 開發歷程 -->
+    <!-- 開發歷程彈窗 -->
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:18px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v6.5 巨艦威壓版】(當前版本)</b><br>
-        • 導入畫布動態縮放：保持圖片原比例不變形，Boss 寬度依關卡從 100px 成長至 215px（魔化呂布近半屏）！<br>
-        • 碰撞判定箱與生命血條全自動貼合動態體型。<br>
-        • 天火擊殺與手動換關確認機制，穩定破關絕不卡死。<br>
-        • 製作群名單：創作者【八雲】、特級測試【導演】、【丘比】。<br><br>
-        <b>【v6.0~v6.3】</b><br>
-        • 14 款 PNG 資源載入池支援。<br>
-        • 修正天火炸死 Boss 判定漏判 BUG。
+        <b>【v5.2 左手街機佈局版】(當前版本)</b><br>
+        • 人體工學介面重構：所有主動按鈕集中在「左下垂直排列」，釋放右側全屏供右手流暢走位！<br>
+        • 改用 DeltaTime 物理刷新，消滅 Android 與 iOS 速度落差。<br>
+        • 中途陣亡留名系統、三級難度選擇。<br>
+        • 通關解鎖軍機處換裝與第六關彩蛋神魔殿。<br>
+        • 製作群：創作者【八雲】、特級測試【導演】、【丘比】。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
 
-    <!-- 軍機處換裝 -->
+    <!-- 軍機處換裝整備畫面 -->
     <div class="overlay-screen" id="shopScreen" style="display: none;">
       <h1 style="color:#ffd700;">🎖️ 軍機處 · 換裝整備</h1>
-      <p style="font-size:12px; color:#ddd;">平定赤壁大捷！可用功勳換購神裝直面第六關【邪神降臨】！</p>
+      <p style="font-size:12px; color:#ddd;">恭喜平定赤壁！可用目前累積功勳兌換 5 大神裝，直面第六關【邪神降臨】！</p>
       <div style="font-size:13px; color:#7ef07e; margin-bottom:6px;">可用功勳：<b id="shopScoreDisplay">0</b> 分</div>
       
       <div class="shop-list">
-        <div class="shop-item">
-          <div><b>八卦玄甲</b>: 致命傷自動無敵護盾 1.5 秒</div>
+        <div class="shop-item" id="itemShield">
+          <div><b>八卦玄甲</b>: 致命傷時自動護盾 1.5 秒</div>
           <button class="btn btn-sub" onclick="buyEquipment('shield', 6000)">6,000分</button>
         </div>
-        <div class="shop-item">
-          <div><b>諸葛借時令</b>: 按X鍵/點按鈕全場減速 50% 3秒</div>
+        <div class="shop-item" id="itemSlow">
+          <div><b>諸葛借時令</b>: 按X鍵/點左側時緩按鈕 減速50% 3秒</div>
           <button class="btn btn-sub" onclick="buyEquipment('slow', 8000)">8,000分</button>
         </div>
-        <div class="shop-item">
-          <div><b>常山神武僚機</b>: 開場自帶自律僚機 4 秒</div>
+        <div class="shop-item" id="itemSubPlane">
+          <div><b>常山神武僚機</b>: 開場自帶自律突擊僚機 4 秒</div>
           <button class="btn btn-sub" onclick="buyEquipment('subPlane', 5000)">5,000分</button>
         </div>
-        <div class="shop-item">
+        <div class="shop-item" id="itemOverload">
           <div><b>青龍雷霆破</b>: 開場武器滿級暴擊超載 8 秒</div>
           <button class="btn btn-sub" onclick="buyEquipment('overload', 7000)">7,000分</button>
         </div>
-        <div class="shop-item">
+        <div class="shop-item" id="itemLife">
           <div><b>華佗再造丹</b>: 額外增加 1 架戰機 (多一命)</div>
           <button class="btn btn-sub" onclick="buyEquipment('life', 9000)">9,000分</button>
         </div>
@@ -320,7 +391,7 @@
       </div>
     </div>
 
-    <!-- 結算榜單 -->
+    <!-- 終極結算與輸入英雄榜畫面 -->
     <div class="overlay-screen" id="victoryScreen" style="display: none;">
       <h1 id="victoryTitle" style="color:#ffd700;">👑 千秋霸業 · 天下一統</h1>
       <p id="victoryDesc" style="font-size:12px; color:#ddd;">赤壁烈火燒盡八十萬敵軍，曹操連環巨艦灰飛煙滅！</p>
@@ -341,7 +412,7 @@
       </div>
     </div>
 
-    <!-- 英雄榜 -->
+    <!-- 英雄榜單畫面 -->
     <div class="overlay-screen" id="leaderboardScreen" style="display: none;">
       <h1>🏆 萬世英雄榜</h1>
       <table class="rank-table" id="leaderboardTable">
@@ -363,58 +434,13 @@
 
   <script>
     /* ==========================================================================
-       0. 14 款圖片資源預載管理器
-       ========================================================================== */
-    const ASSETS = {
-      player: new Image(),
-      ally: new Image(),
-      subPlane: new Image(),
-      enemy: new Image(),
-      minion: new Image(),
-      log: new Image(),
-      boss1: new Image(),
-      boss2: new Image(),
-      boss3: new Image(),
-      boss4: new Image(),
-      boss5: new Image(),
-      boss6: new Image(),
-      item_weapon: new Image(),
-      item_life: new Image()
-    };
-
-    ASSETS.player.src = 'player.png';
-    ASSETS.ally.src = 'ally.png';
-    ASSETS.subPlane.src = 'subplane.png';
-    ASSETS.enemy.src = 'enemy.png';
-    ASSETS.minion.src = 'minion.png';
-    ASSETS.log.src = 'log.png';
-    ASSETS.boss1.src = 'boss1.png';
-    ASSETS.boss2.src = 'boss2.png';
-    ASSETS.boss3.src = 'boss3.png';
-    ASSETS.boss4.src = 'boss4.png';
-    ASSETS.boss5.src = 'boss5.png';
-    ASSETS.boss6.src = 'boss6.png';
-    ASSETS.item_weapon.src = 'item_weapon.png';
-    ASSETS.item_life.src = 'item_life.png';
-
-    function isImgReady(img) {
-      return img && img.complete && img.naturalWidth > 0;
-    }
-
-    // 動態等比例尺寸計算函式：依目標寬度自動求出對應高度，保持圖片原始比例
-    function getScaledDimensions(img, targetWidth, defaultHeight = null) {
-      if (isImgReady(img)) {
-        const ratio = img.naturalHeight / img.naturalWidth;
-        return { w: targetWidth, h: Math.round(targetWidth * ratio) };
-      }
-      return { w: targetWidth, h: defaultHeight || targetWidth };
-    }
-
-    /* ==========================================================================
        1. 音效控制器
        ========================================================================== */
     class SoundController {
-      constructor() { this.audioElement = document.getElementById('externalBgm'); this.ctx = null; }
+      constructor() {
+        this.audioElement = document.getElementById('externalBgm');
+        this.ctx = null;
+      }
       init() {
         if (!this.ctx) {
           const AC = window.AudioContext || window.webkitAudioContext;
@@ -427,8 +453,10 @@
       playPew() {
         if (!this.ctx) return;
         try {
-          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
-          osc.type = 'square'; osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(520, this.ctx.currentTime);
           osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.07);
           gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
           gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.07);
@@ -439,8 +467,10 @@
       playBoom() {
         if (!this.ctx) return;
         try {
-          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
-          osc.type = 'sawtooth'; osc.frequency.setValueAtTime(130, this.ctx.currentTime);
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(130, this.ctx.currentTime);
           osc.frequency.exponentialRampToValueAtTime(25, this.ctx.currentTime + 0.28);
           gain.gain.setValueAtTime(0.14, this.ctx.currentTime);
           gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.28);
@@ -451,8 +481,10 @@
       playExtraLifeSound() {
         if (!this.ctx) return;
         try {
-          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
-          osc.type = 'triangle'; osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, this.ctx.currentTime);
           osc.frequency.setValueAtTime(880, this.ctx.currentTime + 0.15);
           gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
           gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
@@ -460,70 +492,59 @@
           osc.start(); osc.stop(this.ctx.currentTime + 0.3);
         } catch(e) {}
       }
-      playAllySound() {
-        if (!this.ctx) return;
-        try {
-          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
-          osc.type = 'sine'; osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.2);
-          gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
-          osc.connect(gain); gain.connect(this.ctx.destination);
-          osc.start(); osc.stop(this.ctx.currentTime + 0.2);
-        } catch(e) {}
-      }
     }
     const snd = new SoundController();
 
     /* ==========================================================================
-       2. 關卡與 Boss 設定 (體型階梯化設定 targetWidth)
+       2. 關卡與彩蛋第六關設定
        ========================================================================== */
     const STAGES = [
       {
         id: 1, name: '第一關：虎牢關前', bgColor: '#241708', gridColor: '#36220b', riverColor: '#2b1a0c',
         scrollSpeed: 70, targetDistance: 2200,
-        boss: { name: '猛將 · 華雄', quote: '「關東群鼠，誰敢與我華雄一戰！」', hp: 300, maxHp: 300, color: '#b83b23', bulletColor: '#ff6644', pattern: 'spread_snipe', assetKey: 'boss1', targetWidth: 100, defaultH: 75 }
+        boss: { name: '猛將 · 華雄', quote: '「關東群鼠，誰敢與我華雄一戰！」', hp: 300, maxHp: 300, color: '#b83b23', bulletColor: '#ff6644', pattern: 'spread_snipe' }
       },
       {
         id: 2, name: '第二關：徐州之圍', bgColor: '#162211', gridColor: '#24361c', riverColor: '#172e27',
         scrollSpeed: 75, targetDistance: 2400,
-        boss: { name: '高順 · 陷陣營', quote: '「陷陣之志，有死無生！」', hp: 440, maxHp: 440, color: '#346633', bulletColor: '#77dd77', pattern: 'spiral', assetKey: 'boss2', targetWidth: 115, defaultH: 85 }
+        boss: { name: '高順 · 陷陣營', quote: '「陷陣之志，有死無生！」', hp: 440, maxHp: 440, color: '#346633', bulletColor: '#77dd77', pattern: 'spiral' }
       },
       {
         id: 3, name: '第三關：長坂坡野', bgColor: '#10222a', gridColor: '#183845', riverColor: '#0a1d26',
         scrollSpeed: 80, targetDistance: 2600,
-        boss: { name: '先鋒 · 夏侯惇', quote: '「父精母血不可棄也！納命來！」', hp: 640, maxHp: 640, color: '#2a5a99', bulletColor: '#6bb3ff', hasMinions: true, minionCount: 2, pattern: 'spread_snipe', assetKey: 'boss3', targetWidth: 132, defaultH: 95 }
+        boss: { name: '先鋒 · 夏侯惇', quote: '「父精母血不可棄也！納命來！」', hp: 640, maxHp: 640, color: '#2a5a99', bulletColor: '#6bb3ff', hasMinions: true, minionCount: 2, pattern: 'spread_snipe' }
       },
       {
         id: 4, name: '第四關：華容隘口', bgColor: '#24101b', gridColor: '#3d1c30', riverColor: '#210c18',
         scrollSpeed: 85, targetDistance: 2800,
-        boss: { name: '大將 · 張遼', quote: '「威震逍遙津，且教江南小兒止啼！」', hp: 840, maxHp: 840, color: '#7a2266', bulletColor: '#e066ff', hasMinions: true, minionCount: 2, pattern: 'spiral_dive', assetKey: 'boss4', targetWidth: 150, defaultH: 105 }
+        boss: { name: '大將 · 張遼', quote: '「威震逍遙津，且教江南小兒止啼！」', hp: 840, maxHp: 840, color: '#7a2266', bulletColor: '#e066ff', hasMinions: true, minionCount: 2, pattern: 'spiral_dive' }
       },
       {
         id: 5, name: '第五關：赤壁烽火', bgColor: '#081726', gridColor: '#0d2b4a', riverColor: '#050f1a',
         scrollSpeed: 90, targetDistance: 3000,
-        boss: { name: '【赤壁終極】丞相 · 曹操 (連環樓船)', quote: '「寧教我負天下人，休教天下人負我！萬弩齊發！」', hp: 1100, maxHp: 1100, color: '#a61c1c', bulletColor: '#ff2222', isFinal: true, hasMinions: true, minionCount: 2, pattern: 'final_barrage', assetKey: 'boss5', targetWidth: 180, defaultH: 125 }
+        boss: { name: '【赤壁終極】丞相 · 曹操 (連環樓船)', quote: '「寧教我負天下人，休教天下人負我！萬弩齊發！」', hp: 1100, maxHp: 1100, color: '#a61c1c', bulletColor: '#ff2222', isFinal: true, hasMinions: true, minionCount: 2, pattern: 'final_barrage' }
       },
       {
         id: 6, name: '第六關：彩蛋神魔殿 (進階)', bgColor: '#1c0524', gridColor: '#3a0c4a', riverColor: '#0a010d',
         scrollSpeed: 95, targetDistance: 3200,
-        boss: { name: '【邪神降臨】魔化 · 呂布 (無雙鬼神)', quote: '「神擋殺神，佛擋殺佛！天下唯我獨尊！」', hp: 1600, maxHp: 1600, color: '#8e00a8', bulletColor: '#e040fb', isFinal: true, isBonusBoss: true, hasMinions: true, minionCount: 3, pattern: 'god_barrage', assetKey: 'boss6', targetWidth: 215, defaultH: 145 }
+        boss: { name: '【邪神降臨】魔化 · 呂布 (無雙鬼神)', quote: '「神擋殺神，佛擋殺佛！天下唯我獨尊！」', hp: 1600, maxHp: 1600, color: '#8e00a8', bulletColor: '#e040fb', isFinal: true, isBonusBoss: true, hasMinions: true, minionCount: 3, pattern: 'god_barrage' }
       }
     ];
 
     /* ==========================================================================
-       3. 核心狀態
+       3. 核心變數
        ========================================================================== */
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    let gameState = 'START';
     let currentStageIdx = 0;
     let stageDistance = 0;
     let score = 0;
+    let gameState = 'START';
     let keys = {};
     let animationFrameId = null;
     let lastFrameTime = performance.now();
+    let isTransitioning = false;
 
     let difficulty = 'normal';
     let diffMultiplier = 1.0;
@@ -532,9 +553,8 @@
     const equipment = { shield: false, slow: false, subPlane: false, overload: false, life: false };
     let timeSlowTimer = 0;
 
-    // 玩家本體規格 (基準寬度 48px)
     const player = {
-      x: 201, y: 540, w: 48, h: 48, speed: 290,
+      x: 210, y: 540, w: 32, h: 36, speed: 290,
       hp: 100, maxHp: 100, lives: 3,
       invincibleTimer: 0, shotCooldown: 0, weaponLevel: 1, bombs: 1, allyStock: 0, overloadTimer: 0
     };
@@ -560,7 +580,7 @@
     let extraLifeDroppedInStage = false;
 
     /* ==========================================================================
-       4. 操控事件
+       4. 操控事件 (右手專注滑動，左側按鈕防止事件穿透)
        ========================================================================== */
     window.addEventListener('keydown', e => {
       keys[e.key] = true;
@@ -600,10 +620,18 @@
 
     canvas.addEventListener('touchend', () => { isTouching = false; });
 
+    // 綁定左下角技能按鈕 (加上 stopPropagation 避免牽引戰機走位)
     const mobileBombBtn = document.getElementById('mobileBombBtn');
-    mobileBombBtn.addEventListener('click', e => { e.preventDefault(); useUltimateBomb(); });
+    mobileBombBtn.addEventListener('touchstart', e => { e.stopPropagation(); });
+    mobileBombBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); useUltimateBomb(); });
+
     const mobileAllyBtn = document.getElementById('mobileAllyBtn');
-    mobileAllyBtn.addEventListener('click', e => { e.preventDefault(); triggerAllySupport(); });
+    mobileAllyBtn.addEventListener('touchstart', e => { e.stopPropagation(); });
+    mobileAllyBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); triggerAllySupport(); });
+
+    const mobileSkillBtn = document.getElementById('mobileSkillBtn');
+    mobileSkillBtn.addEventListener('touchstart', e => { e.stopPropagation(); });
+    mobileSkillBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); useTimeSlow(); });
 
     function togglePause() {
       if (gameState === 'PLAYING') {
@@ -633,11 +661,12 @@
     }
 
     /* ==========================================================================
-       5. 技能系統
+       5. 裝備與技能
        ========================================================================== */
     function useTimeSlow() {
       if (!equipment.slow || timeSlowTimer > 0 || gameState !== 'PLAYING') return;
-      timeSlowTimer = 3.0; flashAlpha = 0.4;
+      timeSlowTimer = 3.0;
+      flashAlpha = 0.4;
     }
 
     function triggerAllySupport() {
@@ -646,7 +675,7 @@
       ally.active = true;
       ally.timer = 3.0;
       ally.shotCooldown = 0;
-      snd.playAllySound();
+      snd.playExtraLifeSound();
       updateHud();
     }
 
@@ -662,15 +691,7 @@
       enemies = [];
       bossMinions.forEach(m => { createExplosion(m.x + 12, m.y + 12, '#ffaa00', 12); score += 300; });
       bossMinions = [];
-
-      if (boss && boss.hp > 0) {
-        boss.hp -= 60;
-        createExplosion(boss.x + boss.w / 2, boss.y + boss.h / 2, '#ff3300', 25);
-        if (boss.hp <= 0) {
-          score += 4000 * diffMultiplier;
-          triggerBossDefeated();
-        }
-      }
+      if (boss && boss.hp > 0) { boss.hp -= 60; createExplosion(boss.x + 35, boss.y + 25, '#ff3300', 25); }
       updateHud();
     }
 
@@ -687,11 +708,11 @@
     }
 
     /* ==========================================================================
-       6. 流程管理
+       6. 流程管理與軍機處
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
-      document.getElementById('stageClearScreen').style.display = 'none';
+      document.getElementById('stageClearBanner').style.display = 'none';
       document.getElementById('victoryScreen').style.display = 'none';
       document.getElementById('pauseScreen').style.display = 'none';
       document.getElementById('changelogScreen').style.display = 'none';
@@ -699,8 +720,7 @@
       document.getElementById('shopScreen').style.display = 'none';
 
       document.getElementById('hud').style.display = 'flex';
-      document.getElementById('mobileBombBtn').style.display = 'flex';
-      document.getElementById('mobileAllyBtn').style.display = 'flex';
+      document.getElementById('leftControlCluster').style.display = 'flex';
       
       score = 0;
       player.lives = 3;
@@ -708,13 +728,14 @@
       player.weaponLevel = 1;
       player.bombs = 1;
       player.allyStock = 0;
-      player.x = 201; player.y = 540;
+      player.x = 210; player.y = 540;
       player.invincibleTimer = 0;
       player.overloadTimer = 0;
       ally.active = false;
       subPlane.active = false;
       timeSlowTimer = 0;
       flawlessKillStreak = 0;
+      isTransitioning = false;
 
       for (let k in equipment) equipment[k] = false;
       document.getElementById('mobileSkillBtn').style.display = 'none';
@@ -745,48 +766,46 @@
       bombsDroppedInStage = 0;
       allyDroppedInStage = false;
       extraLifeDroppedInStage = false;
+      isTransitioning = false;
 
       document.getElementById('hudStage').innerText = STAGES[idx].name.split('：')[0];
       updateHud();
     }
 
-    function triggerBossDefeated() {
-      boss = null;
-      bossMinions = [];
-      enemyBullets = [];
-      rollingLogs = [];
+    function handleStageClear() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      boss = null; bossMinions = []; enemyBullets = []; rollingLogs = [];
       player.invincibleTimer = 999;
 
       if (currentStageIdx === 4) {
         gameState = 'SHOP';
-        setTimeout(() => { openShopScreen(); }, 500);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        setTimeout(() => { openShopScreen(); }, 800);
       } else if (currentStageIdx === 5) {
         gameState = 'VICTORY';
-        setTimeout(() => { showVictoryScreen(true); }, 500);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        setTimeout(() => { showVictoryScreen(true); }, 800);
       } else {
-        gameState = 'STAGE_CLEAR_DIALOG';
+        gameState = 'TRANSITION';
         const nextStageName = STAGES[currentStageIdx + 1].name;
-        document.getElementById('stageClearDesc').innerText = `【${STAGES[currentStageIdx].boss.name}】已被徹底討滅！部隊整軍完畢，即將向【${nextStageName}】推進！`;
-        document.getElementById('stageClearScreen').style.display = 'flex';
+        document.getElementById('bannerNextText').innerText = `大獲全勝，即將挺進【${nextStageName}】...`;
+        document.getElementById('stageClearBanner').style.display = 'block';
+
+        setTimeout(() => {
+          document.getElementById('stageClearBanner').style.display = 'none';
+          loadStage(currentStageIdx + 1);
+          player.hp = Math.min(100, player.hp + 35);
+          player.x = 210; player.y = 540;
+          player.invincibleTimer = 1.0;
+          gameState = 'PLAYING';
+          lastFrameTime = performance.now();
+        }, 2400);
       }
     }
 
-    function confirmNextStage() {
-      document.getElementById('stageClearScreen').style.display = 'none';
-      loadStage(currentStageIdx + 1);
-      player.hp = Math.min(100, player.hp + 35);
-      player.x = 201; player.y = 540;
-      player.invincibleTimer = 1.5;
-      gameState = 'PLAYING';
-      lastFrameTime = performance.now();
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-      animationFrameId = requestAnimationFrame(gameLoop);
-    }
-
     function openShopScreen() {
-      document.getElementById('mobileBombBtn').style.display = 'none';
-      document.getElementById('mobileAllyBtn').style.display = 'none';
-      document.getElementById('mobileSkillBtn').style.display = 'none';
+      document.getElementById('leftControlCluster').style.display = 'none';
       document.getElementById('shopScoreDisplay').innerText = Math.round(score);
       document.getElementById('shopScreen').style.display = 'flex';
     }
@@ -804,8 +823,7 @@
 
     function startBonusStage() {
       document.getElementById('shopScreen').style.display = 'none';
-      document.getElementById('mobileBombBtn').style.display = 'flex';
-      document.getElementById('mobileAllyBtn').style.display = 'flex';
+      document.getElementById('leftControlCluster').style.display = 'flex';
       if (equipment.slow) document.getElementById('mobileSkillBtn').style.display = 'flex';
       if (equipment.overload) player.overloadTimer = 8.0;
       if (equipment.subPlane) { subPlane.active = true; subPlane.timer = 4.0; }
@@ -842,9 +860,7 @@
     }
 
     function calculateAndShowScore(isWin) {
-      document.getElementById('mobileBombBtn').style.display = 'none';
-      document.getElementById('mobileAllyBtn').style.display = 'none';
-      document.getElementById('mobileSkillBtn').style.display = 'none';
+      document.getElementById('leftControlCluster').style.display = 'none';
 
       const baseScore = score;
       const hpBonus = Math.round(player.hp * 20);
@@ -869,7 +885,7 @@
 
     function getLeaderboard() {
       try {
-        return JSON.parse(localStorage.getItem('hero_1943_rank_v6')) || [
+        return JSON.parse(localStorage.getItem('hero_1943_rank_v5')) || [
           { name: '八雲 (創作者)', score: 98000, stage: '第六關(全通)', diff: '修羅' },
           { name: '導演 (特級測試)', score: 85400, stage: '第五關(通關)', diff: '標準' },
           { name: '丘比 (先鋒測試)', score: 76000, stage: '第五關(通關)', diff: '標準' }
@@ -881,7 +897,7 @@
       const list = getLeaderboard();
       list.push({ name, score: sc, stage: st, diff: df });
       list.sort((a, b) => b.score - a.score);
-      localStorage.setItem('hero_1943_rank_v6', JSON.stringify(list.slice(0, 5)));
+      localStorage.setItem('hero_1943_rank_v5', JSON.stringify(list.slice(0, 5)));
     }
 
     function showLeaderboardScreen() {
@@ -908,14 +924,14 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新與主循環
+       8. 物理更新 (DeltaTime)
        ========================================================================== */
     function gameLoop(now) {
       let dt = (now - lastFrameTime) / 1000;
       lastFrameTime = now;
       if (dt > 0.1) dt = 0.1;
 
-      if (gameState === 'PLAYING') {
+      if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
         update(dt);
         draw();
         animationFrameId = requestAnimationFrame(gameLoop);
@@ -925,15 +941,6 @@
     function update(dt) {
       const curStage = STAGES[currentStageIdx];
 
-      // 全域安全保護：生命值歸零立即結算
-      if (boss && boss.hp <= 0) {
-        snd.playBoom();
-        createExplosion(boss.x + boss.w / 2, boss.y + boss.h / 2, '#ff3300', 45);
-        score += 4000 * diffMultiplier;
-        triggerBossDefeated();
-        return;
-      }
-
       let timeScale = 1.0;
       if (timeSlowTimer > 0) {
         timeSlowTimer -= dt;
@@ -942,7 +949,13 @@
 
       bgScrollY += curStage.scrollSpeed * dt * timeScale;
 
-      if (!boss) {
+      if (isTransitioning) {
+        particles.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.alpha -= 2.4 * dt; });
+        particles = particles.filter(p => p.alpha > 0);
+        return;
+      }
+
+      if (!boss && gameState === 'PLAYING') {
         stageDistance += curStage.scrollSpeed * dt * timeScale;
         if (stageDistance >= curStage.targetDistance) {
           spawnBoss(curStage.boss);
@@ -952,43 +965,43 @@
       if (player.invincibleTimer > 0) player.invincibleTimer -= dt;
       if (player.overloadTimer > 0) player.overloadTimer -= dt;
 
-      // 玩家移動
       const pSpeed = player.speed * dt;
       if ((keys['ArrowLeft'] || keys['a'] || keys['A']) && player.x > 10) player.x -= pSpeed;
       if ((keys['ArrowRight'] || keys['d'] || keys['D']) && player.x < canvas.width - player.w - 10) player.x += pSpeed;
       if ((keys['ArrowUp'] || keys['w'] || keys['W']) && player.y > 20) player.y -= pSpeed;
       if ((keys['ArrowDown'] || keys['s'] || keys['S']) && player.y < canvas.height - player.h - 10) player.y += pSpeed;
 
-      // 射擊
-      if (player.shotCooldown > 0) player.shotCooldown -= dt;
-      const fireInterval = player.overloadTimer > 0 ? 0.08 : 0.15;
-      if (player.shotCooldown <= 0) {
-        firePlayerBullet();
-        player.shotCooldown = fireInterval;
-      }
-
-      if (ally.active) {
-        ally.timer -= dt;
-        ally.shotCooldown -= dt;
-        if (ally.shotCooldown <= 0) {
-          bullets.push({ x: player.x + player.w + 6, y: player.y + 6, vx: 0, vy: -650, isAlly: true });
-          snd.playPew();
-          ally.shotCooldown = 0.1;
+      if (gameState === 'PLAYING') {
+        if (player.shotCooldown > 0) player.shotCooldown -= dt;
+        const fireInterval = player.overloadTimer > 0 ? 0.08 : 0.15;
+        if (player.shotCooldown <= 0) {
+          firePlayerBullet();
+          player.shotCooldown = fireInterval;
         }
-        if (ally.timer <= 0) ally.active = false;
-      }
 
-      if (subPlane.active) {
-        subPlane.timer -= dt;
-        subPlane.shotCooldown -= dt;
-        if (subPlane.shotCooldown <= 0) {
-          bullets.push({ x: player.x - 24, y: player.y + 8, vx: -50, vy: -600, isAlly: true });
-          subPlane.shotCooldown = 0.12;
+        if (ally.active) {
+          ally.timer -= dt;
+          ally.shotCooldown -= dt;
+          if (ally.shotCooldown <= 0) {
+            bullets.push({ x: player.x + 38, y: player.y, vx: 0, vy: -650, isAlly: true });
+            snd.playPew();
+            ally.shotCooldown = 0.1;
+          }
+          if (ally.timer <= 0) ally.active = false;
         }
-        if (subPlane.timer <= 0) subPlane.active = false;
+
+        if (subPlane.active) {
+          subPlane.timer -= dt;
+          subPlane.shotCooldown -= dt;
+          if (subPlane.shotCooldown <= 0) {
+            bullets.push({ x: player.x - 25, y: player.y + 5, vx: -50, vy: -600, isAlly: true });
+            subPlane.shotCooldown = 0.12;
+          }
+          if (subPlane.timer <= 0) subPlane.active = false;
+        }
       }
 
-      if (!boss) {
+      if (!boss && gameState === 'PLAYING') {
         if (Math.random() < 2.5 * dt) spawnEnemyWave();
         if (Math.random() < 0.45 * dt) spawnRollingLog();
       }
@@ -998,7 +1011,7 @@
 
       enemyBullets.forEach(b => {
         if (b.isHoming && b.y <= player.y + 10) {
-          const targetX = player.x + player.w / 2;
+          const targetX = player.x + 16;
           if (b.x < targetX - 5) b.vx += 10 * dt;
           else if (b.x > targetX + 5) b.vx -= 10 * dt;
           b.vx = Math.max(-150, Math.min(150, b.vx));
@@ -1024,7 +1037,6 @@
       });
       rollingLogs = rollingLogs.filter(log => log.y < canvas.height + 50);
 
-      // 小兵行動
       enemies.forEach((en) => {
         en.y += en.vy * dt * timeScale * diffSpeedFactor;
         en.x += Math.sin(en.y * 0.035 + en.seed) * 120 * dt * timeScale;
@@ -1062,8 +1074,7 @@
       });
       enemies = enemies.filter(en => en.y < canvas.height + 30 && en.hp > 0);
 
-      // Boss 行動與動態邊界
-      if (boss && boss.hp > 0) {
+      if (boss && boss.hp > 0 && !isTransitioning) {
         bossQuoteTimer += dt;
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
         const moveSpeed = (isEnraged ? 210 : 150) * timeScale;
@@ -1075,15 +1086,15 @@
           boss.minionSpawnTimer -= dt * timeScale;
           if (boss.minionSpawnTimer <= 0 && bossMinions.length < (curStage.boss.minionCount || 2)) {
             spawnBossMinion(boss.x - 35, boss.y + 20, -1, isEnraged);
-            spawnBossMinion(boss.x + boss.w + 10, boss.y + 20, 1, isEnraged);
+            spawnBossMinion(boss.x + 85, boss.y + 20, 1, isEnraged);
             boss.minionSpawnTimer = isEnraged ? 4.0 : 6.0;
           }
         }
 
         boss.shootTimer -= dt * timeScale * diffSpeedFactor;
         if (boss.shootTimer <= 0) {
-          const bossCenterX = boss.x + boss.w / 2;
-          const bossCenterY = boss.y + boss.h * 0.65;
+          const bossCenterX = boss.x + (curStage.boss.isFinal ? 45 : 35);
+          const bossCenterY = boss.y + 50;
 
           if (curStage.boss.pattern === 'god_barrage') {
             for (let a = 0; a < Math.PI * 2; a += Math.PI / 6) {
@@ -1094,8 +1105,8 @@
               enemyBullets.push({ x: bossCenterX, y: bossCenterY, vx: Math.sin(angle) * 260, vy: Math.cos(angle) * 260, color: '#ff1111' });
             }
           } else {
-            const dx = (player.x + player.w / 2) - bossCenterX;
-            const dy = (player.y + player.h / 2) - bossCenterY;
+            const dx = (player.x + 16) - bossCenterX;
+            const dy = (player.y + 16) - bossCenterY;
             const a = Math.atan2(dy, dx);
             enemyBullets.push({ x: bossCenterX, y: bossCenterY, vx: Math.cos(a) * 260, vy: Math.sin(a) * 260, color: '#ff9900' });
             enemyBullets.push({ x: bossCenterX, y: bossCenterY, vx: Math.cos(a - 0.2) * 260, vy: Math.sin(a - 0.2) * 260, color: '#ff9900' });
@@ -1104,30 +1115,31 @@
           boss.shootTimer = isEnraged ? 0.45 : 0.7;
         }
 
+        const bW = curStage.boss.isFinal ? 90 : 70;
+        const bH = curStage.boss.isFinal ? 65 : 50;
+
         bullets.forEach((b, bIdx) => {
-          if (checkHit(b, { x: boss.x, y: boss.y, w: boss.w, h: boss.h })) {
+          if (checkHit(b, { x: boss.x, y: boss.y, w: bW, h: bH })) {
             const dmg = b.isAlly ? 8 : (player.overloadTimer > 0 ? 6 : 4);
             boss.hp -= dmg;
             if (!b.isAlly) bullets.splice(bIdx, 1);
             createExplosion(b.x, b.y, '#ffd700', 3);
-
-            if (boss.hp <= 0) {
+            if (boss.hp <= 0 && !isTransitioning) {
               snd.playBoom();
-              createExplosion(boss.x + boss.w / 2, boss.y + boss.h / 2, '#ff3300', 45);
+              createExplosion(boss.x + bW / 2, boss.y + bH / 2, '#ff3300', 45);
               score += 4000 * diffMultiplier;
-              triggerBossDefeated();
+              handleStageClear();
             }
           }
         });
       }
 
-      // 僚機更新
       bossMinions.forEach((m) => {
         m.x += m.vx * dt * timeScale;
         if (m.x < 20 || m.x > canvas.width - 45) m.vx *= -1;
         m.shootTimer -= dt * timeScale;
         if (m.shootTimer <= 0) {
-          enemyBullets.push({ x: m.x + 10, y: m.y + 20, vx: (player.x + player.w / 2 > m.x + 10) ? 50 : -50, vy: 200, color: '#d500f9', isHoming: true });
+          enemyBullets.push({ x: m.x + 10, y: m.y + 20, vx: (player.x + 16 > m.x + 10) ? 50 : -50, vy: 200, color: '#d500f9', isHoming: true });
           m.shootTimer = 1.0;
         }
         bullets.forEach((b, bIdx) => {
@@ -1140,13 +1152,12 @@
       });
       bossMinions = bossMinions.filter(m => m.hp > 0);
 
-      // 玩家中彈 (精準碰撞範圍)
       if (player.invincibleTimer <= 0) {
         enemyBullets.forEach((eb, ebIdx) => {
-          if (checkHit(eb, { x: player.x + 8, y: player.y + 8, w: player.w - 16, h: player.h - 16 })) {
+          if (checkHit(eb, { x: player.x + 6, y: player.y + 6, w: 20, h: 24 })) {
             damagePlayer(10);
             enemyBullets.splice(ebIdx, 1);
-            createExplosion(player.x + player.w / 2, player.y + player.h / 2, '#ff0000', 6);
+            createExplosion(player.x, player.y, '#ff0000', 6);
           }
         });
       }
@@ -1178,7 +1189,7 @@
         equipment.shield = false;
         player.invincibleTimer = 1.5;
         flashAlpha = 0.8;
-        alert('【八卦玄甲】替主公抵禦了致命一擊！');
+        alert('【八卦玄甲】替主公抵禦了致命一擊，玄盾崩解！');
         return;
       }
 
@@ -1188,10 +1199,10 @@
       if (player.hp <= 0) {
         player.lives--;
         snd.playBoom();
-        createExplosion(player.x + player.w / 2, player.y + player.h / 2, '#ff4444', 20);
+        createExplosion(player.x + 16, player.y + 16, '#ff4444', 20);
         if (player.lives > 0) {
           player.hp = 100;
-          player.x = 201; player.y = 540;
+          player.x = 210; player.y = 540;
           player.invincibleTimer = 2.0;
           flashAlpha = 0.5;
         } else {
@@ -1205,17 +1216,15 @@
     function firePlayerBullet() {
       snd.playPew();
       const vy = player.overloadTimer > 0 ? -660 : -570;
-      const midX = player.x + player.w / 2;
-
       if (player.weaponLevel === 1) {
-        bullets.push({ x: midX - 2, y: player.y, vx: 0, vy });
+        bullets.push({ x: player.x + 14, y: player.y, vx: 0, vy });
       } else if (player.weaponLevel === 2) {
-        bullets.push({ x: midX - 10, y: player.y, vx: -35, vy });
-        bullets.push({ x: midX + 6, y: player.y, vx: 35, vy });
+        bullets.push({ x: player.x + 6, y: player.y, vx: -35, vy });
+        bullets.push({ x: player.x + 22, y: player.y, vx: 35, vy });
       } else {
-        bullets.push({ x: midX - 2, y: player.y - 2, vx: 0, vy: vy - 30 });
-        bullets.push({ x: midX - 14, y: player.y, vx: -80, vy });
-        bullets.push({ x: midX + 10, y: player.y, vx: 80, vy });
+        bullets.push({ x: player.x + 14, y: player.y - 2, vx: 0, vy: vy - 30 });
+        bullets.push({ x: player.x + 4, y: player.y, vx: -80, vy });
+        bullets.push({ x: player.x + 24, y: player.y, vx: 80, vy });
       }
     }
 
@@ -1233,17 +1242,11 @@
     }
 
     function spawnBoss(bConfig) {
-      // 根據目標寬度與圖檔計算等比例尺寸
-      const img = ASSETS[bConfig.assetKey];
-      const dims = getScaledDimensions(img, bConfig.targetWidth, bConfig.defaultH);
-
       boss = {
         name: bConfig.name, quote: bConfig.quote,
-        x: canvas.width / 2 - dims.w / 2, y: -dims.h - 10,
-        w: dims.w, h: dims.h,
+        x: canvas.width / 2 - (bConfig.isFinal ? 45 : 35), y: -70,
         hp: bConfig.hp, maxHp: bConfig.maxHp, color: bConfig.color, bulletColor: bConfig.bulletColor,
-        isFinal: bConfig.isFinal || false, assetKey: bConfig.assetKey,
-        shootTimer: 0.5, diveTimer: 0, minionSpawnTimer: 1.0
+        isFinal: bConfig.isFinal || false, shootTimer: 0.5, diveTimer: 0, minionSpawnTimer: 1.0
       };
       bossQuoteTimer = 0;
       bossMinions = [];
@@ -1276,7 +1279,7 @@
     }
 
     /* ==========================================================================
-       9. 畫面繪製 (全自動適配等比例尺寸)
+       9. 畫面繪製
        ========================================================================== */
     function draw() {
       const curStage = STAGES[currentStageIdx];
@@ -1299,151 +1302,106 @@
 
       // 滾木
       rollingLogs.forEach(log => {
-        if (isImgReady(ASSETS.log)) {
-          ctx.drawImage(ASSETS.log, log.x, log.y, log.w, log.h);
-        } else {
-          ctx.save();
-          ctx.translate(log.x + log.w / 2, log.y + log.h / 2);
-          ctx.rotate(log.rotation);
-          ctx.fillStyle = '#6d4c41';
-          ctx.fillRect(-log.w / 2, -log.h / 2, log.w, log.h);
-          ctx.fillStyle = '#bcaaa4';
-          ctx.fillRect(-log.w / 2, -log.h / 2, 6, log.h);
-          ctx.fillRect(log.w / 2 - 6, -log.h / 2, 6, log.h);
-          ctx.strokeStyle = '#3e2723';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(-log.w / 2, -log.h / 2, log.w, log.h);
-          ctx.restore();
-        }
+        ctx.save();
+        ctx.translate(log.x + log.w / 2, log.y + log.h / 2);
+        ctx.rotate(log.rotation);
+        ctx.fillStyle = '#6d4c41';
+        ctx.fillRect(-log.w / 2, -log.h / 2, log.w, log.h);
+        ctx.fillStyle = '#bcaaa4';
+        ctx.fillRect(-log.w / 2, -log.h / 2, 6, log.h);
+        ctx.fillRect(log.w / 2 - 6, -log.h / 2, 6, log.h);
+        ctx.strokeStyle = '#3e2723';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(-log.w / 2, -log.h / 2, log.w, log.h);
+        ctx.restore();
       });
 
       // 道具
       items.forEach(it => {
-        if (it.type === 'weapon' && isImgReady(ASSETS.item_weapon)) {
-          ctx.drawImage(ASSETS.item_weapon, it.x, it.y, it.w || 16, it.h || 16);
-        } else if (it.type === 'life' && isImgReady(ASSETS.item_life)) {
-          ctx.drawImage(ASSETS.item_life, it.x, it.y, it.w || 20, it.h || 20);
-        } else {
-          if (it.type === 'weapon') ctx.fillStyle = '#ffd700';
-          else if (it.type === 'heal') ctx.fillStyle = '#44ff44';
-          else if (it.type === 'bomb') ctx.fillStyle = '#ff5722';
-          else if (it.type === 'ally') ctx.fillStyle = '#00e5ff';
-          else if (it.type === 'life') ctx.fillStyle = '#ff1744';
-          ctx.fillRect(it.x, it.y, it.w || 16, it.h || 16);
-          ctx.fillStyle = '#000';
-          ctx.font = 'bold 11px sans-serif';
-          let label = '劍';
-          if (it.type === 'heal') label = '藥';
-          if (it.type === 'bomb') label = '火';
-          if (it.type === 'ally') label = '友';
-          if (it.type === 'life') { label = '機'; ctx.fillStyle = '#fff'; }
-          ctx.fillText(label, it.x + 3, it.y + 13);
-        }
+        if (it.type === 'weapon') ctx.fillStyle = '#ffd700';
+        else if (it.type === 'heal') ctx.fillStyle = '#44ff44';
+        else if (it.type === 'bomb') ctx.fillStyle = '#ff5722';
+        else if (it.type === 'ally') ctx.fillStyle = '#00e5ff';
+        else if (it.type === 'life') ctx.fillStyle = '#ff1744';
+        ctx.fillRect(it.x, it.y, it.w || 16, it.h || 16);
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 11px sans-serif';
+        let label = '劍';
+        if (it.type === 'heal') label = '藥';
+        if (it.type === 'bomb') label = '火';
+        if (it.type === 'ally') label = '友';
+        if (it.type === 'life') { label = '機'; ctx.fillStyle = '#fff'; }
+        ctx.fillText(label, it.x + 3, it.y + 13);
       });
 
-      // 玩家戰機 (動態計算等比例高度)
+      // 戰機
       if (player.invincibleTimer <= 0 || Math.floor(player.invincibleTimer * 10) % 2 === 0) {
-        if (isImgReady(ASSETS.player)) {
-          const dims = getScaledDimensions(ASSETS.player, player.w, player.h);
-          player.h = dims.h; // 自動更新長寬比高度
-          ctx.drawImage(ASSETS.player, player.x, player.y, player.w, player.h);
-        } else {
-          ctx.save();
-          ctx.translate(player.x, player.y);
-          if (player.overloadTimer > 0) { ctx.shadowBlur = 12; ctx.shadowColor = '#ffd700'; }
-          ctx.fillStyle = player.overloadTimer > 0 ? '#ffea00' : '#d4af37';
-          ctx.beginPath();
-          ctx.moveTo(player.w / 2, 0);
-          ctx.lineTo(player.w, player.h * 0.8);
-          ctx.lineTo(player.w / 2, player.h * 0.6);
-          ctx.lineTo(0, player.h * 0.8);
-          ctx.fill();
-          ctx.fillStyle = '#f0f0f0'; ctx.fillRect(player.w / 2 - 5, 4, 10, player.h * 0.7);
-          ctx.fillStyle = '#ff2222'; ctx.beginPath(); ctx.arc(player.w / 2, 6, 5, 0, Math.PI * 2); ctx.fill();
-          ctx.restore();
-        }
+        ctx.save();
+        ctx.translate(player.x, player.y);
+        if (player.overloadTimer > 0) { ctx.shadowBlur = 12; ctx.shadowColor = '#ffd700'; }
+        ctx.fillStyle = player.overloadTimer > 0 ? '#ffea00' : '#d4af37';
+        ctx.beginPath();
+        ctx.moveTo(16, 0); ctx.lineTo(32, 28); ctx.lineTo(16, 20); ctx.lineTo(0, 28);
+        ctx.fill();
+        ctx.fillStyle = '#f0f0f0'; ctx.fillRect(11, 4, 10, 24);
+        ctx.fillStyle = '#ff2222'; ctx.beginPath(); ctx.arc(16, 4, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
       }
 
       // 友軍副機
       if (ally.active) {
-        if (isImgReady(ASSETS.ally)) {
-          const dims = getScaledDimensions(ASSETS.ally, 28, 28);
-          ctx.drawImage(ASSETS.ally, player.x + player.w + 4, player.y + 4, dims.w, dims.h);
-        } else {
-          ctx.save();
-          ctx.translate(player.x + player.w + 4, player.y + 4);
-          ctx.fillStyle = '#00e5ff';
-          ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(20, 18); ctx.lineTo(10, 14); ctx.lineTo(0, 18); ctx.fill();
-          ctx.fillStyle = '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.fillText('友', 5, 12);
-          ctx.restore();
-        }
+        ctx.save();
+        ctx.translate(player.x + 34, player.y + 4);
+        ctx.fillStyle = '#00e5ff';
+        ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(20, 18); ctx.lineTo(10, 14); ctx.lineTo(0, 18); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.fillText('友', 5, 12);
+        ctx.restore();
       }
 
       // 白龍僚機
       if (subPlane.active) {
-        if (isImgReady(ASSETS.subPlane)) {
-          const dims = getScaledDimensions(ASSETS.subPlane, 24, 24);
-          ctx.drawImage(ASSETS.subPlane, player.x - 26, player.y + 6, dims.w, dims.h);
-        } else {
-          ctx.save();
-          ctx.translate(player.x - 26, player.y + 6);
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(20, 16); ctx.lineTo(10, 12); ctx.lineTo(0, 16); ctx.fill();
-          ctx.restore();
-        }
+        ctx.save();
+        ctx.translate(player.x - 28, player.y + 6);
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(20, 16); ctx.lineTo(10, 12); ctx.lineTo(0, 16); ctx.fill();
+        ctx.restore();
       }
 
       // 小兵
       enemies.forEach(en => {
-        if (isImgReady(ASSETS.enemy)) {
-          ctx.drawImage(ASSETS.enemy, en.x, en.y, 26, 26);
-        } else {
-          ctx.fillStyle = '#aa3333';
-          ctx.beginPath(); ctx.moveTo(en.x + 12, en.y + 24); ctx.lineTo(en.x, en.y); ctx.lineTo(en.x + 24, en.y); ctx.fill();
-        }
+        ctx.fillStyle = '#aa3333';
+        ctx.beginPath(); ctx.moveTo(en.x + 12, en.y + 24); ctx.lineTo(en.x, en.y); ctx.lineTo(en.x + 24, en.y); ctx.fill();
       });
 
       // Boss 僚機
       bossMinions.forEach(m => {
-        if (isImgReady(ASSETS.minion)) {
-          ctx.drawImage(ASSETS.minion, m.x, m.y, 28, 28);
-        } else {
-          ctx.fillStyle = '#552288';
-          ctx.fillRect(m.x, m.y, 24, 22);
-          ctx.fillStyle = '#d500f9';
-          ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
-        }
+        ctx.fillStyle = '#552288';
+        ctx.fillRect(m.x, m.y, 24, 22);
+        ctx.fillStyle = '#d500f9';
+        ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
       });
 
-      // Boss (全自動依等比例尺寸繪製，血條自動適配寬度)
-      if (boss && boss.hp > 0 && gameState === 'PLAYING') {
+      // Boss
+      if (boss && boss.hp > 0 && !isTransitioning) {
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
-        const bossImg = ASSETS[boss.assetKey];
+        const bW = boss.isFinal ? 90 : 70;
+        const bH = boss.isFinal ? 65 : 50;
 
-        if (isImgReady(bossImg)) {
-          // 動態精準更新當前圖片真實比例
-          const dims = getScaledDimensions(bossImg, boss.w, boss.h);
-          boss.h = dims.h;
-          ctx.drawImage(bossImg, boss.x, boss.y, boss.w, boss.h);
-        } else {
-          ctx.save();
-          if (isEnraged) { ctx.shadowBlur = 18; ctx.shadowColor = '#ff0000'; }
-          ctx.fillStyle = isEnraged ? '#7a0000' : boss.color;
-          ctx.fillRect(boss.x, boss.y, boss.w, boss.h);
-          ctx.fillStyle = '#d4af37';
-          ctx.fillRect(boss.x + (boss.w - 30) / 2, boss.y + 10, 30, 25);
-          ctx.restore();
-        }
+        ctx.save();
+        if (isEnraged) { ctx.shadowBlur = 18; ctx.shadowColor = '#ff0000'; }
+        ctx.fillStyle = isEnraged ? '#7a0000' : boss.color;
+        ctx.fillRect(boss.x, boss.y, bW, bH);
+        ctx.fillStyle = '#d4af37';
+        ctx.fillRect(boss.x + (bW - 30) / 2, boss.y + 10, 30, 25);
+        ctx.restore();
 
         ctx.fillStyle = isEnraged ? '#ff4444' : '#fff';
         ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(`${boss.name}${isEnraged ? ' (狂暴暴走!)' : ''}`, boss.x, boss.y - 12);
-        
-        // 血條寬度完美貼合 Boss 體型
+        ctx.fillText(`${boss.name}${isEnraged ? ' (狂暴暴走!)' : ''}`, boss.x - 12, boss.y - 10);
         ctx.fillStyle = '#440000';
-        ctx.fillRect(boss.x, boss.y - 8, boss.w, 6);
+        ctx.fillRect(boss.x, boss.y - 6, bW, 5);
         ctx.fillStyle = isEnraged ? '#ff0000' : '#ff3333';
-        ctx.fillRect(boss.x, boss.y - 8, Math.max(0, (boss.hp / boss.maxHp) * boss.w), 6);
+        ctx.fillRect(boss.x, boss.y - 6, Math.max(0, (boss.hp / boss.maxHp) * bW), 5);
 
         if (bossQuoteTimer < 4.0) {
           ctx.fillStyle = 'rgba(0,0,0,0.85)';
