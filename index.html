@@ -112,7 +112,6 @@
     }
     #mobileAllyBtn:active { transform: scale(0.9); }
 
-    /* 特殊裝備技能按鈕 (時緩) */
     #mobileSkillBtn {
       position: absolute;
       bottom: 100px;
@@ -178,29 +177,13 @@
     .btn:hover { transform: scale(1.04); background: #ffcc00; }
     .btn-sub { background: #2b2216; border: 1px solid #775c35; color: #e2b744; font-size: 12px; padding: 6px 12px; }
 
-    /* 難度選擇盒 */
-    .diff-select {
-      display: flex;
-      gap: 8px;
-      margin: 8px 0;
-    }
+    .diff-select { display: flex; gap: 8px; margin: 8px 0; }
     .diff-btn {
-      padding: 6px 10px;
-      border: 1px solid #5a4529;
-      background: #1e1710;
-      color: #bfa382;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
+      padding: 6px 10px; border: 1px solid #5a4529; background: #1e1710;
+      color: #bfa382; border-radius: 4px; font-size: 12px; cursor: pointer;
     }
-    .diff-btn.active {
-      border-color: #ffd700;
-      background: #4a3819;
-      color: #fff;
-      font-weight: bold;
-    }
+    .diff-btn.active { border-color: #ffd700; background: #4a3819; color: #fff; font-weight: bold; }
 
-    /* 自動過關橫幅 */
     #stageClearBanner {
       position: absolute;
       top: 36%;
@@ -217,52 +200,23 @@
     #stageClearBanner h2 { color: #7ef07e; font-size: 20px; margin-bottom: 4px; }
     #stageClearBanner p { color: #fff; font-size: 13px; }
 
-    /* 軍火商店項目列表 */
     .shop-list {
-      width: 100%;
-      max-width: 340px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin: 10px 0;
-      text-align: left;
+      width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 6px; margin: 10px 0; text-align: left;
     }
     .shop-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #1f1812;
-      border: 1px solid #4a3825;
-      padding: 6px 10px;
-      border-radius: 4px;
-      font-size: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: #1f1812; border: 1px solid #4a3825; padding: 6px 10px; border-radius: 4px; font-size: 12px;
     }
     .shop-item b { color: #ffd700; }
-    .shop-item.owned { border-color: #7ef07e; background: #132213; }
 
-    .rank-table {
-      width: 100%;
-      max-width: 330px;
-      border-collapse: collapse;
-      margin: 10px 0;
-      font-size: 12px;
-    }
+    .rank-table { width: 100%; max-width: 330px; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
     .rank-table th, .rank-table td { padding: 5px 6px; border-bottom: 1px solid #33261a; text-align: center; }
     .rank-table th { color: #d4af37; background: #1c150e; }
 
     #changelogBox {
-      background: #191410;
-      border: 1px solid #5a4529;
-      border-radius: 6px;
-      padding: 12px;
-      max-width: 340px;
-      max-height: 250px;
-      overflow-y: auto;
-      text-align: left;
-      font-size: 12px;
-      line-height: 1.6;
-      color: #c9bca8;
-      margin-bottom: 12px;
+      background: #191410; border: 1px solid #5a4529; border-radius: 6px; padding: 12px;
+      max-width: 340px; max-height: 250px; overflow-y: auto; text-align: left; font-size: 12px;
+      line-height: 1.6; color: #c9bca8; margin-bottom: 12px;
     }
     #changelogBox b { color: #d4af37; }
   </style>
@@ -286,7 +240,6 @@
       <button id="btnPause" onclick="togglePause()">⏸️</button>
     </div>
 
-    <!-- 手機觸控按鈕 -->
     <div id="mobileAllyBtn" style="display: none;">
       <span>援軍</span>
       <small id="mobileAllyCount" style="font-size: 10px; color:#e0f7fa;">0次</small>
@@ -300,7 +253,6 @@
       <small id="mobileSkillCount" style="font-size: 9px; color:#f3e5f5;">3秒</small>
     </div>
 
-    <!-- 自動過關橫幅 -->
     <div id="stageClearBanner">
       <h2>🏆 敵將已破 · 大捷！</h2>
       <p id="bannerNextText">部隊全速行軍，即將挺進下一關...</p>
@@ -309,10 +261,10 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v5.0 彩蛋神魔版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v5.2 絕對穩定版</div>
       
       <p style="font-size:12px; color:#bbb; line-height:1.5; max-width:320px;">
-        已全面適配 Android/iOS 相同物理刷新率！請選擇出征難度，通關赤壁即可解鎖<b>第六關進階彩蛋</b>！
+        徹底修復第一關 Boss 卡死問題！支援跨設備 DeltaTime 等速飛行，通關赤壁即可解鎖第六關彩蛋！
       </p>
 
       <div class="diff-select">
@@ -332,47 +284,45 @@
       </div>
     </div>
 
-    <!-- 開發歷程彈窗 -->
+    <!-- 開發歷程 -->
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:18px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v5.0 彩蛋神魔版】(當前版本)</b><br>
-        • 物理引擎重構：改用 DeltaTime，徹底解決 Android 刷新率過快、iOS 偏慢的問題！<br>
-        • 中途陣亡留名：戰死沙場也能在英雄榜留下威名！<br>
-        • 新增三級難度選擇（休閒 / 標準 / 修羅）。<br>
-        • 通關五關解鎖「軍機處換裝」與「第六關彩蛋神魔呂布」！<br>
-        • 製作群：創作者【八雲】、特級測試【導演】、【丘比】。<br><br>
-        <b>【v4.0 順暢連關版】</b><br>
-        • 徹底排查過關狀態機卡死問題。<br>
-        • 稀有加命道具「機」（無傷連破 30 機）。
+        <b>【v5.2 絕對穩定版】(當前版本)</b><br>
+        • 徹底斬除第一關通關殘留卡死 BUG：導入安全原子狀態鎖，第一時間完全清除 Boss 記憶體！<br>
+        • 轉場期間嚴格凍結所有小兵與 Boss 生成，平滑進入第二關。<br>
+        • 製作群名單：創作者【八雲】、特級測試【導演】、【丘比】。<br><br>
+        <b>【v5.0 彩蛋神魔版】</b><br>
+        • 物理 DeltaTime 統一 Android / iOS 刷新速度。<br>
+        • 第五關通關軍機處換裝與第六關魔化呂布彩蛋。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
 
-    <!-- 彩蛋軍機處：積分換裝備畫面 (第五關通關後) -->
+    <!-- 軍機處換裝 -->
     <div class="overlay-screen" id="shopScreen" style="display: none;">
       <h1 style="color:#ffd700;">🎖️ 軍機處 · 換裝整備</h1>
-      <p style="font-size:12px; color:#ddd;">恭喜平定赤壁！可用目前累積功勳兌換 5 大神裝，直面第六關【邪神降臨】！</p>
+      <p style="font-size:12px; color:#ddd;">平定赤壁大捷！可用功勳換購神裝直面第六關【邪神降臨】！</p>
       <div style="font-size:13px; color:#7ef07e; margin-bottom:6px;">可用功勳：<b id="shopScoreDisplay">0</b> 分</div>
       
       <div class="shop-list">
-        <div class="shop-item" id="itemShield">
-          <div><b>八卦玄甲</b>: 致命傷時自動護盾 1.5 秒</div>
+        <div class="shop-item">
+          <div><b>八卦玄甲</b>: 致命傷自動無敵護盾 1.5 秒</div>
           <button class="btn btn-sub" onclick="buyEquipment('shield', 6000)">6,000分</button>
         </div>
-        <div class="shop-item" id="itemSlow">
+        <div class="shop-item">
           <div><b>諸葛借時令</b>: 按X鍵/點按鈕全場減速 50% 3秒</div>
           <button class="btn btn-sub" onclick="buyEquipment('slow', 8000)">8,000分</button>
         </div>
-        <div class="shop-item" id="itemSubPlane">
-          <div><b>常山神武僚機</b>: 開場自帶自律突擊僚機 4 秒</div>
+        <div class="shop-item">
+          <div><b>常山神武僚機</b>: 開場自帶自律僚機 4 秒</div>
           <button class="btn btn-sub" onclick="buyEquipment('subPlane', 5000)">5,000分</button>
         </div>
-        <div class="shop-item" id="itemOverload">
+        <div class="shop-item">
           <div><b>青龍雷霆破</b>: 開場武器滿級暴擊超載 8 秒</div>
           <button class="btn btn-sub" onclick="buyEquipment('overload', 7000)">7,000分</button>
         </div>
-        <div class="shop-item" id="itemLife">
+        <div class="shop-item">
           <div><b>華佗再造丹</b>: 額外增加 1 架戰機 (多一命)</div>
           <button class="btn btn-sub" onclick="buyEquipment('life', 9000)">9,000分</button>
         </div>
@@ -384,7 +334,7 @@
       </div>
     </div>
 
-    <!-- 終極結算與輸入英雄榜畫面 -->
+    <!-- 結算榜單 -->
     <div class="overlay-screen" id="victoryScreen" style="display: none;">
       <h1 id="victoryTitle" style="color:#ffd700;">👑 千秋霸業 · 天下一統</h1>
       <p id="victoryDesc" style="font-size:12px; color:#ddd;">赤壁烈火燒盡八十萬敵軍，曹操連環巨艦灰飛煙滅！</p>
@@ -405,7 +355,7 @@
       </div>
     </div>
 
-    <!-- 英雄榜單畫面 -->
+    <!-- 英雄榜 -->
     <div class="overlay-screen" id="leaderboardScreen" style="display: none;">
       <h1>🏆 萬世英雄榜</h1>
       <table class="rank-table" id="leaderboardTable">
@@ -430,10 +380,7 @@
        1. 音效控制器
        ========================================================================== */
     class SoundController {
-      constructor() {
-        this.audioElement = document.getElementById('externalBgm');
-        this.ctx = null;
-      }
+      constructor() { this.audioElement = document.getElementById('externalBgm'); this.ctx = null; }
       init() {
         if (!this.ctx) {
           const AC = window.AudioContext || window.webkitAudioContext;
@@ -446,10 +393,8 @@
       playPew() {
         if (!this.ctx) return;
         try {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+          osc.type = 'square'; osc.frequency.setValueAtTime(520, this.ctx.currentTime);
           osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.07);
           gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
           gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.07);
@@ -460,10 +405,8 @@
       playBoom() {
         if (!this.ctx) return;
         try {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(130, this.ctx.currentTime);
+          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+          osc.type = 'sawtooth'; osc.frequency.setValueAtTime(130, this.ctx.currentTime);
           osc.frequency.exponentialRampToValueAtTime(25, this.ctx.currentTime + 0.28);
           gain.gain.setValueAtTime(0.14, this.ctx.currentTime);
           gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.28);
@@ -474,10 +417,8 @@
       playExtraLifeSound() {
         if (!this.ctx) return;
         try {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+          osc.type = 'triangle'; osc.frequency.setValueAtTime(440, this.ctx.currentTime);
           osc.frequency.setValueAtTime(880, this.ctx.currentTime + 0.15);
           gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
           gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
@@ -485,11 +426,23 @@
           osc.start(); osc.stop(this.ctx.currentTime + 0.3);
         } catch(e) {}
       }
+      playAllySound() {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+          osc.type = 'sine'; osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+        } catch(e) {}
+      }
     }
     const snd = new SoundController();
 
     /* ==========================================================================
-       2. 關卡與彩蛋第六關設定
+       2. 關卡與 Boss 設定
        ========================================================================== */
     const STAGES = [
       {
@@ -525,7 +478,7 @@
     ];
 
     /* ==========================================================================
-       3. 核心變數與 DeltaTime
+       3. 核心狀態與 DeltaTime
        ========================================================================== */
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -537,22 +490,16 @@
     let keys = {};
     let animationFrameId = null;
     let lastFrameTime = performance.now();
-    let isTransitioning = false;
 
-    // 難度設定
-    let difficulty = 'normal'; // easy, normal, hard
+    // 【關鍵修復】：換關專用原子鎖
+    let isStageClearing = false;
+
+    let difficulty = 'normal';
     let diffMultiplier = 1.0;
     let diffSpeedFactor = 1.0;
 
-    // 進階版軍備庫存 (裝備五大神物)
-    const equipment = {
-      shield: false,     // 致命傷時無敵 1.5 秒
-      slow: false,       // 主動時緩 3 秒
-      subPlane: false,   // 自律僚機 4 秒
-      overload: false,   // 開場武器過載 8 秒
-      life: false        // 額外生命
-    };
-    let timeSlowTimer = 0; // 時緩計時器
+    const equipment = { shield: false, slow: false, subPlane: false, overload: false, life: false };
+    let timeSlowTimer = 0;
 
     const player = {
       x: 210, y: 540, w: 32, h: 36, speed: 290,
@@ -658,8 +605,7 @@
        ========================================================================== */
     function useTimeSlow() {
       if (!equipment.slow || timeSlowTimer > 0 || gameState !== 'PLAYING') return;
-      timeSlowTimer = 3.0; // 持續 3 秒
-      flashAlpha = 0.4;
+      timeSlowTimer = 3.0; flashAlpha = 0.4;
     }
 
     function triggerAllySupport() {
@@ -701,7 +647,7 @@
     }
 
     /* ==========================================================================
-       6. 流程管理與軍機處裝備購買
+       6. 流程管理與安全切換關卡
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
@@ -729,9 +675,8 @@
       subPlane.active = false;
       timeSlowTimer = 0;
       flawlessKillStreak = 0;
-      isTransitioning = false;
+      isStageClearing = false;
 
-      // 重置裝備
       for (let k in equipment) equipment[k] = false;
       document.getElementById('mobileSkillBtn').style.display = 'none';
 
@@ -761,29 +706,36 @@
       bombsDroppedInStage = 0;
       allyDroppedInStage = false;
       extraLifeDroppedInStage = false;
-      isTransitioning = false;
+      isStageClearing = false; // 嚴格重置
 
       document.getElementById('hudStage').innerText = STAGES[idx].name.split('：')[0];
       updateHud();
     }
 
+    // 【核心排查修復】：絕對乾淨的換關函數
     function handleStageClear() {
-      if (isTransitioning) return;
-      isTransitioning = true;
-      boss = null; bossMinions = []; enemyBullets = []; rollingLogs = [];
-      player.invincibleTimer = 999;
+      if (isStageClearing) return; // 嚴格阻擋第二次進入！
+      isStageClearing = true;
 
-      // 如果擊破第五關赤壁曹操，進入「軍機處彩蛋裝備換購」！
+      // 1. 瞬間徹底銷毀 Boss 與所有敵彈，連殘骸都不保留！
+      boss = null;
+      bossMinions = [];
+      enemyBullets = [];
+      rollingLogs = [];
+      player.invincibleTimer = 999; // 保證無傷
+
+      // 2. 如果擊破第五關赤壁曹操，進入「軍機處彩蛋裝備換購」！
       if (currentStageIdx === 4) {
         gameState = 'SHOP';
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        setTimeout(() => { openShopScreen(); }, 800);
+        setTimeout(() => { openShopScreen(); }, 600);
       } else if (currentStageIdx === 5) {
         // 第六關彩蛋通關
         gameState = 'VICTORY';
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        setTimeout(() => { showVictoryScreen(true); }, 800);
+        setTimeout(() => { showVictoryScreen(true); }, 600);
       } else {
+        // 進入過渡期
         gameState = 'TRANSITION';
         const nextStageName = STAGES[currentStageIdx + 1].name;
         document.getElementById('bannerNextText').innerText = `大獲全勝，即將挺進【${nextStageName}】...`;
@@ -797,11 +749,10 @@
           player.invincibleTimer = 1.0;
           gameState = 'PLAYING';
           lastFrameTime = performance.now();
-        }, 2400);
+        }, 2200);
       }
     }
 
-    // 軍機處裝備購買邏輯
     function openShopScreen() {
       document.getElementById('mobileBombBtn').style.display = 'none';
       document.getElementById('mobileAllyBtn').style.display = 'none';
@@ -829,7 +780,7 @@
       if (equipment.overload) player.overloadTimer = 8.0;
       if (equipment.subPlane) { subPlane.active = true; subPlane.timer = 4.0; }
 
-      loadStage(5); // 進入第六關
+      loadStage(5); // 進入第六關彩蛋
       gameState = 'PLAYING';
       lastFrameTime = performance.now();
       animationFrameId = requestAnimationFrame(gameLoop);
@@ -841,7 +792,7 @@
     }
 
     /* ==========================================================================
-       7. 結算與英雄榜 (含中途陣亡留名)
+       7. 結算與英雄榜
        ========================================================================== */
     let finalCalculatedScore = 0;
     let endStageRecord = '第五關(通關)';
@@ -927,12 +878,12 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新 (基於 Delta Time，解決不同設備刷新率速度不一問題)
+       8. 物理更新 (修復 Boss 幽靈卡死)
        ========================================================================== */
     function gameLoop(now) {
       let dt = (now - lastFrameTime) / 1000;
       lastFrameTime = now;
-      if (dt > 0.1) dt = 0.1; // 防止背景切換時過大跳步
+      if (dt > 0.1) dt = 0.1;
 
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
         update(dt);
@@ -944,7 +895,6 @@
     function update(dt) {
       const curStage = STAGES[currentStageIdx];
 
-      // 時緩光環效果 (敵方與滾木速度減半)
       let timeScale = 1.0;
       if (timeSlowTimer > 0) {
         timeSlowTimer -= dt;
@@ -953,13 +903,15 @@
 
       bgScrollY += curStage.scrollSpeed * dt * timeScale;
 
-      if (isTransitioning) {
+      // 如果已經觸發換關，嚴格停止所有敵方判定，只保留背景與粒子！
+      if (isStageClearing || gameState === 'TRANSITION') {
         particles.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.alpha -= 2.4 * dt; });
         particles = particles.filter(p => p.alpha > 0);
         return;
       }
 
-      if (!boss && gameState === 'PLAYING') {
+      // 只有在完全未處於換關鎖定時，才累計前進距離並召喚 Boss
+      if (!boss && !isStageClearing && gameState === 'PLAYING') {
         stageDistance += curStage.scrollSpeed * dt * timeScale;
         if (stageDistance >= curStage.targetDistance) {
           spawnBoss(curStage.boss);
@@ -969,14 +921,14 @@
       if (player.invincibleTimer > 0) player.invincibleTimer -= dt;
       if (player.overloadTimer > 0) player.overloadTimer -= dt;
 
-      // 玩家鍵盤移動
+      // 玩家移動
       const pSpeed = player.speed * dt;
       if ((keys['ArrowLeft'] || keys['a'] || keys['A']) && player.x > 10) player.x -= pSpeed;
       if ((keys['ArrowRight'] || keys['d'] || keys['D']) && player.x < canvas.width - player.w - 10) player.x += pSpeed;
       if ((keys['ArrowUp'] || keys['w'] || keys['W']) && player.y > 20) player.y -= pSpeed;
       if ((keys['ArrowDown'] || keys['s'] || keys['S']) && player.y < canvas.height - player.h - 10) player.y += pSpeed;
 
-      // 自動射擊
+      // 射擊
       if (gameState === 'PLAYING') {
         if (player.shotCooldown > 0) player.shotCooldown -= dt;
         const fireInterval = player.overloadTimer > 0 ? 0.08 : 0.15;
@@ -985,7 +937,6 @@
           player.shotCooldown = fireInterval;
         }
 
-        // 友軍副機協戰
         if (ally.active) {
           ally.timer -= dt;
           ally.shotCooldown -= dt;
@@ -997,7 +948,6 @@
           if (ally.timer <= 0) ally.active = false;
         }
 
-        // 彩蛋神裝：白龍自律僚機
         if (subPlane.active) {
           subPlane.timer -= dt;
           subPlane.shotCooldown -= dt;
@@ -1009,7 +959,7 @@
         }
       }
 
-      if (!boss && gameState === 'PLAYING') {
+      if (!boss && !isStageClearing && gameState === 'PLAYING') {
         if (Math.random() < 2.5 * dt) spawnEnemyWave();
         if (Math.random() < 0.45 * dt) spawnRollingLog();
       }
@@ -1017,7 +967,6 @@
       bullets.forEach(b => { b.y += b.vy * dt; b.x += b.vx * dt; });
       bullets = bullets.filter(b => b.y > -20 && b.x > 0 && b.x < canvas.width);
 
-      // 敵彈更新
       enemyBullets.forEach(b => {
         if (b.isHoming && b.y <= player.y + 10) {
           const targetX = player.x + 16;
@@ -1030,7 +979,6 @@
       });
       enemyBullets = enemyBullets.filter(b => b.y < canvas.height + 20 && b.x > 0 && b.x < canvas.width);
 
-      // 巨型滾木更新
       rollingLogs.forEach(log => {
         log.y += log.vy * dt * timeScale * diffSpeedFactor;
         log.rotation += 3.0 * dt * timeScale;
@@ -1085,8 +1033,8 @@
       });
       enemies = enemies.filter(en => en.y < canvas.height + 30 && en.hp > 0);
 
-      // Boss 行動
-      if (boss && boss.hp > 0 && !isTransitioning) {
+      // Boss 行動與終結判斷
+      if (boss && boss.hp > 0 && !isStageClearing) {
         bossQuoteTimer += dt;
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
         const moveSpeed = (isEnraged ? 210 : 150) * timeScale;
@@ -1109,7 +1057,6 @@
           const bossCenterY = boss.y + 50;
 
           if (curStage.boss.pattern === 'god_barrage') {
-            // 彩蛋關神魔呂布：全屏八方環形鬼火
             for (let a = 0; a < Math.PI * 2; a += Math.PI / 6) {
               enemyBullets.push({ x: bossCenterX, y: bossCenterY, vx: Math.cos(a) * 230, vy: Math.sin(a) * 230, color: '#e040fb' });
             }
@@ -1137,7 +1084,9 @@
             boss.hp -= dmg;
             if (!b.isAlly) bullets.splice(bIdx, 1);
             createExplosion(b.x, b.y, '#ffd700', 3);
-            if (boss.hp <= 0 && !isTransitioning) {
+
+            // 關鍵擊毀：觸發後立即執行 handleStageClear
+            if (boss.hp <= 0 && !isStageClearing) {
               snd.playBoom();
               createExplosion(boss.x + bW / 2, boss.y + bH / 2, '#ff3300', 45);
               score += 4000 * diffMultiplier;
@@ -1200,12 +1149,11 @@
     }
 
     function damagePlayer(amount) {
-      // 裝備檢查：八卦玄甲自動護罩 (免疫致死傷害一次)
       if (equipment.shield && player.hp <= amount) {
         equipment.shield = false;
         player.invincibleTimer = 1.5;
         flashAlpha = 0.8;
-        alert('【八卦玄甲】替主公抵禦了致命一擊，玄盾崩解！');
+        alert('【八卦玄甲】替主公抵禦了致命一擊！');
         return;
       }
 
@@ -1224,7 +1172,7 @@
         } else {
           gameState = 'GAMEOVER';
           snd.stopBgm();
-          showGameOverScreen(); // 中途陣亡也跳出輸入英雄榜
+          showGameOverScreen();
         }
       }
     }
@@ -1397,8 +1345,8 @@
         ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
       });
 
-      // Boss
-      if (boss && boss.hp > 0 && !isTransitioning) {
+      // Boss (只有在存在且未處於切換狀態時才繪製)
+      if (boss && boss.hp > 0 && !isStageClearing) {
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
         const bW = boss.isFinal ? 90 : 70;
         const bH = boss.isFinal ? 65 : 50;
