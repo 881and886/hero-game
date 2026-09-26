@@ -183,22 +183,6 @@
     }
     .diff-btn.active { border-color: #ffd700; background: #4a3819; color: #fff; font-weight: bold; }
 
-    #stageClearBanner {
-      position: absolute;
-      top: 36%;
-      left: 0;
-      right: 0;
-      background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(20,50,20,0.92) 20%, rgba(20,50,20,0.92) 80%, rgba(0,0,0,0) 100%);
-      border-top: 2px solid #7ef07e;
-      border-bottom: 2px solid #7ef07e;
-      padding: 16px 0;
-      text-align: center;
-      z-index: 25;
-      display: none;
-    }
-    #stageClearBanner h2 { color: #7ef07e; font-size: 20px; margin-bottom: 4px; }
-    #stageClearBanner p { color: #fff; font-size: 13px; }
-
     .shop-list {
       width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 6px; margin: 10px 0; text-align: left;
     }
@@ -252,18 +236,13 @@
       <small id="mobileSkillCount" style="font-size: 9px; color:#f3e5f5;">3秒</small>
     </div>
 
-    <div id="stageClearBanner">
-      <h2>🏆 敵將已破 · 大捷！</h2>
-      <p id="bannerNextText">部隊全速行軍，即將挺進下一關...</p>
-    </div>
-
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v6.0 狀態機真穩版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v6.2 零卡死穩固版</div>
       
       <p style="font-size:12px; color:#bbb; line-height:1.5; max-width:320px;">
-        全面支援外部自訂 PNG 貼圖！純狀態機切換，徹底消除過關卡死問題！
+        已全面支援自訂 PNG 貼圖！採用絕對穩固的手動過關確認推進，平定赤壁即可解鎖第六關彩蛋！
       </p>
 
       <div class="diff-select">
@@ -283,16 +262,24 @@
       </div>
     </div>
 
+    <!-- 過關確認畫面（最穩固模式，絕不再卡死） -->
+    <div class="overlay-screen" id="stageClearScreen" style="display: none;">
+      <h1 style="color:#7ef07e;">🏆 大捷！斬落敵將！</h1>
+      <p id="stageClearDesc" style="font-size:13px; color:#ddd; margin-bottom:16px;">敵將已被徹底降伏！部隊整軍完畢！</p>
+      <button class="btn" onclick="confirmNextStage()">挺進下一關 ➔</button>
+    </div>
+
     <!-- 開發歷程 -->
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:18px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v6.0 狀態機真穩版】(當前版本)</b><br>
-        • 全新「幀級狀態機（Stage State Machine）」：完全移除脆弱的 setTimeout，徹底根除幽靈 Boss 殘留卡關現象！<br>
-        • 內建 14 款 PNG 資源載入池：機首朝上直接支援，缺圖自動色塊保底。<br>
+        <b>【v6.2 零卡死穩固版】(當前版本)</b><br>
+        • 回退到零卡死的穩定過關確認流：斬殺 Boss 後點擊「挺進下一關」安全無縫載入新關卡！<br>
+        • 保留 14 款 PNG 資源載入池：機首朝上直接畫，無圖自動幾何保底。<br>
         • 製作群名單：創作者【八雲】、特級測試【導演】、【丘比】。<br><br>
-        <b>【v5.0~v5.2】</b><br>
+        <b>【v5.0~v6.0】</b><br>
         • 跨設備 DeltaTime 速度恆定。<br>
+        • 稀有加命道具「機」（無傷連破 30 機）。<br>
         • 難度選擇與第六關彩蛋神魔殿。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
@@ -376,7 +363,7 @@
 
   <script>
     /* ==========================================================================
-       0. 14 款圖片資源預載管理器 (圖片優先，幾何保底)
+       0. 14 款圖片資源預載管理器 (完全尊重原始朝向，無圖自動幾何保底)
        ========================================================================== */
     const ASSETS = {
       player: new Image(),
@@ -395,7 +382,6 @@
       item_life: new Image()
     };
 
-    // 指定同級目錄檔名
     ASSETS.player.src = 'player.png';
     ASSETS.ally.src = 'ally.png';
     ASSETS.subPlane.src = 'subplane.png';
@@ -517,12 +503,11 @@
     ];
 
     /* ==========================================================================
-       3. 核心狀態與遊戲狀態機
+       3. 核心狀態
        ========================================================================== */
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // 狀態機：START, PLAYING, STAGE_TRANSITION, PAUSED, SHOP, VICTORY, GAMEOVER
     let gameState = 'START';
     let currentStageIdx = 0;
     let stageDistance = 0;
@@ -530,7 +515,6 @@
     let keys = {};
     let animationFrameId = null;
     let lastFrameTime = performance.now();
-    let transitionTimer = 0; // 轉場倒數
 
     let difficulty = 'normal';
     let diffMultiplier = 1.0;
@@ -639,7 +623,7 @@
     }
 
     /* ==========================================================================
-       5. 裝備與技能
+       5. 技能系統
        ========================================================================== */
     function useTimeSlow() {
       if (!equipment.slow || timeSlowTimer > 0 || gameState !== 'PLAYING') return;
@@ -685,11 +669,11 @@
     }
 
     /* ==========================================================================
-       6. 流程管理與安全切換關卡（狀態機模式）
+       6. 流程管理（穩固手動確認換關，徹底根除幽靈 Boss）
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
-      document.getElementById('stageClearBanner').style.display = 'none';
+      document.getElementById('stageClearScreen').style.display = 'none';
       document.getElementById('victoryScreen').style.display = 'none';
       document.getElementById('pauseScreen').style.display = 'none';
       document.getElementById('changelogScreen').style.display = 'none';
@@ -748,16 +732,15 @@
       updateHud();
     }
 
-    // 當 Boss 被消滅的第一瞬間執行
+    // Boss 擊破時執行：停止戰鬥，彈出確認按鈕
     function triggerBossDefeated() {
-      // 1. 強制斷開 Boss 與小兵，清除危險物
+      // 1. 強制清空所有 Boss 與威脅物
       boss = null;
       bossMinions = [];
       enemyBullets = [];
       rollingLogs = [];
       player.invincibleTimer = 999;
 
-      // 2. 判斷是否為第五關赤壁或第六關彩蛋
       if (currentStageIdx === 4) {
         gameState = 'SHOP';
         setTimeout(() => { openShopScreen(); }, 500);
@@ -765,13 +748,24 @@
         gameState = 'VICTORY';
         setTimeout(() => { showVictoryScreen(true); }, 500);
       } else {
-        // 進入幀級倒數過渡狀態，徹底不用 setTimeout
-        gameState = 'STAGE_TRANSITION';
-        transitionTimer = 2.0;
+        gameState = 'STAGE_CLEAR_DIALOG';
         const nextStageName = STAGES[currentStageIdx + 1].name;
-        document.getElementById('bannerNextText').innerText = `大獲全勝，即將挺進【${nextStageName}】...`;
-        document.getElementById('stageClearBanner').style.display = 'block';
+        document.getElementById('stageClearDesc').innerText = `【${STAGES[currentStageIdx].boss.name}】已被徹底討滅！部隊整軍完畢，即將向【${nextStageName}】推進！`;
+        document.getElementById('stageClearScreen').style.display = 'flex';
       }
+    }
+
+    // 點擊「挺進下一關 ➔」按鈕：最安全的切換
+    function confirmNextStage() {
+      document.getElementById('stageClearScreen').style.display = 'none';
+      loadStage(currentStageIdx + 1);
+      player.hp = Math.min(100, player.hp + 35);
+      player.x = 210; player.y = 540;
+      player.invincibleTimer = 1.5;
+      gameState = 'PLAYING';
+      lastFrameTime = performance.now();
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(gameLoop);
     }
 
     function openShopScreen() {
@@ -899,14 +893,14 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       8. 物理更新（狀態機驅動）
+       8. 物理更新與主循環
        ========================================================================== */
     function gameLoop(now) {
       let dt = (now - lastFrameTime) / 1000;
       lastFrameTime = now;
       if (dt > 0.1) dt = 0.1;
 
-      if (gameState === 'PLAYING' || gameState === 'STAGE_TRANSITION') {
+      if (gameState === 'PLAYING') {
         update(dt);
         draw();
         animationFrameId = requestAnimationFrame(gameLoop);
@@ -924,25 +918,6 @@
 
       bgScrollY += curStage.scrollSpeed * dt * timeScale;
 
-      // 【核心狀態機分支：過渡狀態】
-      if (gameState === 'STAGE_TRANSITION') {
-        transitionTimer -= dt;
-        particles.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.alpha -= 2.4 * dt; });
-        particles = particles.filter(p => p.alpha > 0);
-
-        // 倒數結束，安全重載下一關
-        if (transitionTimer <= 0) {
-          document.getElementById('stageClearBanner').style.display = 'none';
-          loadStage(currentStageIdx + 1);
-          player.hp = Math.min(100, player.hp + 35);
-          player.x = 210; player.y = 540;
-          player.invincibleTimer = 1.0;
-          gameState = 'PLAYING';
-        }
-        return;
-      }
-
-      // 【正常戰鬥狀態】
       if (!boss) {
         stageDistance += curStage.scrollSpeed * dt * timeScale;
         if (stageDistance >= curStage.targetDistance) {
@@ -1115,7 +1090,7 @@
             if (!b.isAlly) bullets.splice(bIdx, 1);
             createExplosion(b.x, b.y, '#ffd700', 3);
 
-            // 擊殺判斷：立即觸發消滅函式
+            // 擊殺 Boss：立即觸發過關
             if (boss.hp <= 0) {
               snd.playBoom();
               createExplosion(boss.x + bW / 2, boss.y + bH / 2, '#ff3300', 45);
@@ -1274,7 +1249,7 @@
     }
 
     /* ==========================================================================
-       9. 畫面繪製（圖片優先，無圖片自動色塊保底，絕不介入旋轉）
+       9. 畫面繪製（圖片優先，無圖片自動幾何保底，絕不介入旋轉）
        ========================================================================== */
     function draw() {
       const curStage = STAGES[currentStageIdx];
@@ -1406,7 +1381,7 @@
         }
       });
 
-      // Boss 繪製 (嚴格校驗：存在且正常遊戲中才繪製，換關過渡絕對隱藏)
+      // Boss 繪製 (嚴格校驗：存在且正常遊戲中才繪製)
       if (boss && boss.hp > 0 && gameState === 'PLAYING') {
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
         const bW = boss.isFinal ? 90 : 70;
