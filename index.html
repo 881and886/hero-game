@@ -279,10 +279,10 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v6.0 巨艦完全版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v7.0 霸王血戰版</div>
       
       <p style="font-size:12px; color:#bbb; line-height:1.5; max-width:320px;">
-        【全圖支援】支援 player.png 與 boss1~6.png 完整載入！左手大招獨立響應， Boss 震撼漸進式放大！
+        【Boss 威壓再進化】Boss 血量翻倍強化，且<b>生命降至 50% 時強制啟動絕技</b>！請善用天火與走位化解危機！
       </p>
 
       <div class="diff-select">
@@ -306,14 +306,14 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:18px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v6.0 巨艦完全版】(當前版本)</b><br>
-        • 全面修復並鎖定所有特性：找回 player.png 戰機立繪與 boss1~boss6 漸進式體型放大震撼外觀！<br>
-        • 徹底排查第五關換關邏輯，通關曹操保證平穩進入軍機處與英雄榜！<br>
-        • 左下多點觸控控制艙全面固定，右手拖曳滑動時左手大招 100% 響應。<br>
+        <b>【v7.0 霸王血戰版】(當前版本)</b><br>
+        • Boss 數值平衡大升級：全體 Boss 血量再次加倍，徹底告別秒殺問題！<br>
+        • 半血必殺技鎖定：Boss 生命值跌至 50% 時，強制即刻進入【金色字卡蓄力】並爆發獨門大招！<br>
+        • 完整維持左手獨立多點觸控、DeltaTime 引擎與外部圖檔支援。<br>
         • 製作群：創作者【八雲】、特級測試【導演】、【丘比】。<br><br>
-        <b>【v5.0~v5.8】</b><br>
-        • DeltaTime 統一物理刷新率。<br>
-        • 陣亡中途留名、無傷 30 殺加命、第六關彩蛋神魔殿。
+        <b>【v6.0~v6.8】</b><br>
+        • Boss 金色字卡與獨門絕技、三大三國精銳兵種（飛羽/鐵騎/戰樓）。<br>
+        • 震撼漸進式放大體型、防卡死狀態機。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -454,24 +454,45 @@
           osc.start(); osc.stop(this.ctx.currentTime + 0.3);
         } catch(e) {}
       }
+      playSkillChargeSound() {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(540, this.ctx.currentTime + 0.45);
+          gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.45);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(); osc.stop(this.ctx.currentTime + 0.45);
+        } catch(e) {}
+      }
     }
     const snd = new SoundController();
 
     /* ==========================================================================
-       2. 圖片資源管理 (玩家戰機 player.png + 各關 Boss 圖片)
+       2. 圖片資源管理
        ========================================================================== */
     const playerImg = new Image();
-    playerImg.src = 'player.png'; // 放置於 GitHub 同目錄
+    playerImg.src = 'player.png';
 
     const bossImages = {};
     for (let i = 1; i <= 6; i++) {
       const img = new Image();
-      img.src = `boss${i}.png`; // 放置於 GitHub 同目錄
+      img.src = `boss${i}.png`;
       bossImages[`boss${i}`] = img;
     }
 
+    const enemyImages = {};
+    for (let i = 1; i <= 3; i++) {
+      const img = new Image();
+      img.src = `enemy${i}.png`;
+      enemyImages[`enemy${i}`] = img;
+    }
+
     /* ==========================================================================
-       3. 關卡與 Boss 體型震撼設定 (漸進式放大，寬度自 100px 成長至 215px)
+       3. 關卡與 Boss 數值加倍設定
        ========================================================================== */
     const STAGES = [
       {
@@ -479,8 +500,9 @@
         scrollSpeed: 70, targetDistance: 2200,
         boss: {
           name: '猛將 · 華雄', imgKey: 'boss1', quote: '「關東群鼠，誰敢與我華雄一戰！」',
-          hp: 300, maxHp: 300, color: '#b83b23', bulletColor: '#ff6644', pattern: 'spread_snipe',
-          width: 100, height: 80
+          hp: 600, maxHp: 600, color: '#b83b23', bulletColor: '#ff6644', pattern: 'spread_snipe',
+          width: 100, height: 80,
+          skillName: '【力劈華山 · 霸王重斬】', skillCooldown: 5.5
         }
       },
       {
@@ -488,8 +510,9 @@
         scrollSpeed: 75, targetDistance: 2400,
         boss: {
           name: '高順 · 陷陣營', imgKey: 'boss2', quote: '「陷陣之志，有死無生！」',
-          hp: 440, maxHp: 440, color: '#346633', bulletColor: '#77dd77', pattern: 'spiral',
-          width: 120, height: 95
+          hp: 880, maxHp: 880, color: '#346633', bulletColor: '#77dd77', pattern: 'spiral',
+          width: 120, height: 95,
+          skillName: '【陷陣鐵壁 · 絕對護體】', skillCooldown: 6.0
         }
       },
       {
@@ -497,8 +520,9 @@
         scrollSpeed: 80, targetDistance: 2600,
         boss: {
           name: '先鋒 · 夏侯惇', imgKey: 'boss3', quote: '「父精母血不可棄也！納命來！」',
-          hp: 640, maxHp: 640, color: '#2a5a99', bulletColor: '#6bb3ff', hasMinions: true, minionCount: 2, pattern: 'spread_snipe',
-          width: 140, height: 110
+          hp: 1280, maxHp: 1280, color: '#2a5a99', bulletColor: '#6bb3ff', hasMinions: true, minionCount: 2, pattern: 'spread_snipe',
+          width: 140, height: 110,
+          skillName: '【啖睛血狂 · 交叉血箭】', skillCooldown: 5.5
         }
       },
       {
@@ -506,8 +530,9 @@
         scrollSpeed: 85, targetDistance: 2800,
         boss: {
           name: '大將 · 張遼', imgKey: 'boss4', quote: '「威震逍遙津，且教江南小兒止啼！」',
-          hp: 840, maxHp: 840, color: '#7a2266', bulletColor: '#e066ff', hasMinions: true, minionCount: 2, pattern: 'spiral_dive',
-          width: 160, height: 125
+          hp: 1680, maxHp: 1680, color: '#7a2266', bulletColor: '#e066ff', hasMinions: true, minionCount: 2, pattern: 'spiral_dive',
+          width: 160, height: 125,
+          skillName: '【八百破十萬 · 鬼神疾走】', skillCooldown: 6.0
         }
       },
       {
@@ -515,8 +540,9 @@
         scrollSpeed: 90, targetDistance: 3000,
         boss: {
           name: '【赤壁終極】丞相 · 曹操 (連環樓船)', imgKey: 'boss5', quote: '「寧教我負天下人，休教天下人負我！萬弩齊發！」',
-          hp: 1100, maxHp: 1100, color: '#a61c1c', bulletColor: '#ff2222', isFinal: true, hasMinions: true, minionCount: 2, pattern: 'final_barrage',
-          width: 190, height: 150
+          hp: 2200, maxHp: 2200, color: '#a61c1c', bulletColor: '#ff2222', isFinal: true, hasMinions: true, minionCount: 2, pattern: 'final_barrage',
+          width: 190, height: 150,
+          skillName: '【連環戰艦 · 萬弩齊發】', skillCooldown: 5.0
         }
       },
       {
@@ -524,8 +550,9 @@
         scrollSpeed: 95, targetDistance: 3200,
         boss: {
           name: '【邪神降臨】魔化 · 呂布 (無雙鬼神)', imgKey: 'boss6', quote: '「神擋殺神，佛擋殺佛！天下唯我獨尊！」',
-          hp: 1600, maxHp: 1600, color: '#8e00a8', bulletColor: '#e040fb', isFinal: true, isBonusBoss: true, hasMinions: true, minionCount: 3, pattern: 'god_barrage',
-          width: 215, height: 170
+          hp: 3200, maxHp: 3200, color: '#8e00a8', bulletColor: '#e040fb', isFinal: true, isBonusBoss: true, hasMinions: true, minionCount: 3, pattern: 'god_barrage',
+          width: 215, height: 170,
+          skillName: '【魔神降世 · 方天畫戟亂舞】', skillCooldown: 4.8
         }
       }
     ];
@@ -573,13 +600,14 @@
     let bossSpiralAngle = 0;
     let bgScrollY = 0;
     let flashAlpha = 0;
+    let animTime = 0;
     let bombsDroppedInStage = 0;
     let allyDroppedInStage = false;
     let flawlessKillStreak = 0;
     let extraLifeDroppedInStage = false;
 
     /* ==========================================================================
-       5. 多點觸控 (右側滑動走位、左側隨時點擊大招)
+       5. 多點觸控
        ========================================================================== */
     window.addEventListener('keydown', e => {
       keys[e.key] = true;
@@ -726,7 +754,7 @@
     }
 
     /* ==========================================================================
-       7. 流程管理與防卡關換關機制
+       7. 流程管理與換關
        ========================================================================== */
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
@@ -793,7 +821,6 @@
     function handleStageClear() {
       if (gameState === 'TRANSITION' || gameState === 'SHOP' || gameState === 'VICTORY') return;
 
-      // 立即永久銷毀 Boss 實體與所有敵彈
       boss = null;
       bossMinions = [];
       enemyBullets = [];
@@ -801,17 +828,14 @@
       player.invincibleTimer = 999;
 
       if (currentStageIdx === 4) {
-        // 第五關赤壁曹操討滅 -> 立即切換為 SHOP 狀態並清空主迴圈
         gameState = 'SHOP';
         if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
         openShopScreen();
       } else if (currentStageIdx === 5) {
-        // 第六關彩蛋呂布討滅 -> 通關
         gameState = 'VICTORY';
         if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
         showVictoryScreen(true);
       } else {
-        // 一般換關：進入過渡
         gameState = 'TRANSITION';
         transitionCountdown = 2.0;
         const nextStageName = STAGES[currentStageIdx + 1].name;
@@ -940,12 +964,13 @@
     function restartGame() { startGame(); }
 
     /* ==========================================================================
-       9. 物理更新
+       9. 物理更新與陣型戰鬥系統
        ========================================================================== */
     function gameLoop(now) {
       let dt = (now - lastFrameTime) / 1000;
       lastFrameTime = now;
       if (dt > 0.1) dt = 0.1;
+      animTime += dt;
 
       if (gameState === 'PLAYING' || gameState === 'TRANSITION') {
         update(dt);
@@ -957,7 +982,6 @@
     function update(dt) {
       const curStage = STAGES[currentStageIdx];
 
-      // 幀驅動換關
       if (gameState === 'TRANSITION') {
         bgScrollY += curStage.scrollSpeed * dt * 1.5;
         transitionCountdown -= dt;
@@ -1067,22 +1091,35 @@
 
       enemies.forEach((en) => {
         en.y += en.vy * dt * timeScale * diffSpeedFactor;
-        en.x += Math.sin(en.y * 0.035 + en.seed) * 120 * dt * timeScale;
+        if (en.type === 1) {
+          en.x += en.vx * dt * timeScale;
+        } else if (en.type === 2) {
+          // 陷陣鐵騎直衝
+        } else if (en.type === 3) {
+          en.x += Math.sin(en.y * 0.03 + en.seed) * 60 * dt * timeScale;
+        }
+
         en.shootTimer -= dt * timeScale;
         if (en.shootTimer <= 0) {
-          enemyBullets.push({ x: en.x + 12, y: en.y + 20, vx: 0, vy: 210, color: '#ff6666' });
-          en.shootTimer = 1.2 + Math.random() * 0.8;
+          if (en.type === 3) {
+            enemyBullets.push({ x: en.x + 8, y: en.y + en.h, vx: -50, vy: 190, color: '#ffd54f' });
+            enemyBullets.push({ x: en.x + en.w - 8, y: en.y + en.h, vx: 50, vy: 190, color: '#ffd54f' });
+            en.shootTimer = 1.4;
+          } else {
+            enemyBullets.push({ x: en.x + en.w / 2, y: en.y + en.h, vx: 0, vy: 210, color: '#ff6666' });
+            en.shootTimer = 1.1 + Math.random() * 0.7;
+          }
         }
 
         bullets.forEach((b, bIdx) => {
-          if (checkHit(b, { x: en.x, y: en.y, w: 26, h: 26 })) {
+          if (checkHit(b, { x: en.x, y: en.y, w: en.w, h: en.h })) {
             const dmg = b.isAlly ? 25 : (player.overloadTimer > 0 ? 16 : 10);
             en.hp -= dmg;
             if (!b.isAlly) bullets.splice(bIdx, 1);
             createExplosion(b.x, b.y, '#fff', 3);
             if (en.hp <= 0) {
               snd.playBoom();
-              createExplosion(en.x, en.y, '#ffaa00', 8);
+              createExplosion(en.x + en.w / 2, en.y + en.h / 2, '#ffaa00', 8);
               score += 150 * diffMultiplier;
               flawlessKillStreak++;
               if (flawlessKillStreak >= 30 && !extraLifeDroppedInStage) {
@@ -1094,15 +1131,15 @@
           }
         });
 
-        if (player.invincibleTimer <= 0 && checkHit({ x: en.x, y: en.y, w: 24, h: 24 }, player)) {
+        if (player.invincibleTimer <= 0 && checkHit({ x: en.x, y: en.y, w: en.w, h: en.h }, player)) {
           damagePlayer(15);
           en.hp = 0;
           snd.playBoom();
         }
       });
-      enemies = enemies.filter(en => en.y < canvas.height + 30 && en.hp > 0);
+      enemies = enemies.filter(en => en.y < canvas.height + 40 && en.hp > 0);
 
-      // Boss 行動 (嚴格檢查狀態)
+      // Boss 行動 (半血強制大招鎖定)
       if (boss && boss.hp > 0 && gameState === 'PLAYING') {
         bossQuoteTimer += dt;
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
@@ -1110,6 +1147,27 @@
 
         if (boss.y < 85) boss.y += 70 * dt * timeScale;
         boss.x += Math.sin(Date.now() * 0.002) * moveSpeed * dt;
+
+        // 【關鍵優化】：血量 <= 50% 且尚未觸發過時，立刻強制啟動蓄力大招！
+        if (boss.hp <= (boss.maxHp * 0.5) && !boss.halfHpSkillTriggered) {
+          boss.halfHpSkillTriggered = true;
+          boss.skillTimer = 0.5; // 直接壓進 0.5 秒蓄力狀態
+          boss.isChargingSkill = true;
+          snd.playSkillChargeSound();
+        }
+
+        // 常規技能計時
+        boss.skillTimer -= dt * timeScale * diffSpeedFactor;
+        if (boss.skillTimer <= 0.5 && !boss.isChargingSkill) {
+          boss.isChargingSkill = true;
+          snd.playSkillChargeSound();
+        }
+
+        if (boss.skillTimer <= 0) {
+          executeBossSignatureSkill();
+          boss.skillTimer = (curStage.boss.skillCooldown || 6.0) * (isEnraged ? 0.75 : 1.0);
+          boss.isChargingSkill = false;
+        }
 
         if (curStage.boss.hasMinions) {
           boss.minionSpawnTimer -= dt * timeScale;
@@ -1120,6 +1178,7 @@
           }
         }
 
+        // 常規射擊
         boss.shootTimer -= dt * timeScale * diffSpeedFactor;
         if (boss.shootTimer <= 0) {
           const bossCenterX = boss.x + boss.w / 2;
@@ -1212,6 +1271,38 @@
       updateHud();
     }
 
+    function executeBossSignatureSkill() {
+      if (!boss) return;
+      const bX = boss.x + boss.w / 2;
+      const bY = boss.y + boss.h;
+
+      if (currentStageIdx === 0) { // 華雄：力劈華山
+        for (let i = -1; i <= 1; i++) {
+          enemyBullets.push({ x: bX + i * 20, y: bY, vx: i * 35, vy: 380, color: '#ff1744' });
+        }
+      } else if (currentStageIdx === 1) { // 高順：陷陣鐵壁
+        for (let a = -0.5; a <= 0.5; a += 0.25) {
+          enemyBullets.push({ x: bX, y: bY, vx: Math.sin(a) * 220, vy: Math.cos(a) * 220, color: '#76ff03' });
+        }
+      } else if (currentStageIdx === 2) { // 夏侯惇：交叉血箭
+        enemyBullets.push({ x: bX - 40, y: bY, vx: 80, vy: 260, color: '#d50000' });
+        enemyBullets.push({ x: bX + 40, y: bY, vx: -80, vy: 260, color: '#d50000' });
+      } else if (currentStageIdx === 3) { // 張遼：鬼神疾走
+        boss.x = (boss.x > canvas.width / 2) ? 40 : canvas.width - boss.w - 40;
+        for (let a = -0.7; a <= 0.7; a += 0.35) {
+          enemyBullets.push({ x: boss.x + boss.w / 2, y: bY, vx: Math.sin(a) * 280, vy: Math.cos(a) * 280, color: '#ea80fc' });
+        }
+      } else if (currentStageIdx === 4) { // 曹操：萬弩齊發
+        for (let angle = -0.9; angle <= 0.9; angle += 0.2) {
+          enemyBullets.push({ x: bX, y: bY, vx: Math.sin(angle) * 300, vy: Math.cos(angle) * 300, color: '#ff3d00' });
+        }
+      } else if (currentStageIdx === 5) { // 魔化呂布：方天亂舞
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
+          enemyBullets.push({ x: bX, y: bY - 20, vx: Math.cos(a) * 270, vy: Math.sin(a) * 270, color: '#e040fb' });
+        }
+      }
+    }
+
     function damagePlayer(amount) {
       if (equipment.shield && player.hp <= amount) {
         equipment.shield = false;
@@ -1257,9 +1348,34 @@
     }
 
     function spawnEnemyWave() {
-      const startX = 40 + Math.random() * (canvas.width - 110);
-      for (let i = 0; i < 3; i++) {
-        enemies.push({ x: startX + i * 24, y: -30 - i * 36, vy: 130 + Math.random() * 40, hp: 20, shootTimer: 0.8 + i * 0.3, seed: Math.random() * 10 });
+      const waveType = Math.random();
+      if (waveType < 0.45) {
+        const startX = 60 + Math.random() * (canvas.width - 150);
+        const vxDir = (startX > canvas.width / 2) ? -35 : 35;
+        for (let i = 0; i < 3; i++) {
+          enemies.push({
+            type: 1, w: 22, h: 26,
+            x: startX + (i - 1) * 26, y: -30 - Math.abs(i - 1) * 20,
+            vx: vxDir, vy: 160 + Math.random() * 30,
+            hp: 15, shootTimer: 0.6 + i * 0.2, seed: Math.random() * 10
+          });
+        }
+      } else if (waveType < 0.75) {
+        const startX = 50 + Math.random() * (canvas.width - 100);
+        enemies.push({
+          type: 2, w: 34, h: 36,
+          x: startX, y: -45,
+          vx: 0, vy: 110,
+          hp: 45, shootTimer: 0.9, seed: Math.random() * 10
+        });
+      } else {
+        const startX = 60 + Math.random() * (canvas.width - 120);
+        enemies.push({
+          type: 3, w: 38, h: 32,
+          x: startX, y: -40,
+          vx: 0, vy: 75,
+          hp: 35, shootTimer: 0.5, seed: Math.random() * 10
+        });
       }
     }
 
@@ -1275,7 +1391,9 @@
         w: bConfig.width, h: bConfig.height,
         x: canvas.width / 2 - bConfig.width / 2, y: -bConfig.height - 10,
         hp: bConfig.hp, maxHp: bConfig.maxHp, color: bConfig.color, bulletColor: bConfig.bulletColor,
-        isFinal: bConfig.isFinal || false, shootTimer: 0.5, diveTimer: 0, minionSpawnTimer: 1.0
+        isFinal: bConfig.isFinal || false, shootTimer: 0.5, diveTimer: 0, minionSpawnTimer: 1.0,
+        skillName: bConfig.skillName, skillTimer: bConfig.skillCooldown || 6.0, isChargingSkill: false,
+        halfHpSkillTriggered: false // 標記 50% 必殺技是否已釋放
       };
       bossQuoteTimer = 0;
       bossMinions = [];
@@ -1308,8 +1426,8 @@
     }
 
     /* ==========================================================================
-       10. 畫面繪製 (找回 player.png 與 boss1~6.png 完整渲染)
-       ========================================================================== */
+       10. 畫面繪製
+       ========================================================================= */
     function draw() {
       const curStage = STAGES[currentStageIdx];
       ctx.fillStyle = curStage.bgColor;
@@ -1363,9 +1481,7 @@
         ctx.fillText(label, it.x + 3, it.y + 13);
       });
 
-      // ==========================================
-      // 玩家戰機 (找回 player.png 圖片優先渲染)
-      // ==========================================
+      // 戰機 (player.png 優先)
       if (player.invincibleTimer <= 0 || Math.floor(player.invincibleTimer * 10) % 2 === 0) {
         ctx.save();
         ctx.translate(player.x, player.y);
@@ -1389,7 +1505,8 @@
         ctx.save();
         ctx.translate(player.x + 38, player.y + 4);
         ctx.fillStyle = '#00e5ff';
-        ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(20, 18); ctx.lineTo(10, 14); ctx.lineTo(0, 18); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(20, 18); ctx.lineTo(10, 14); ctx.lineTo(0, 18);
+        ctx.fill();
         ctx.fillStyle = '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.fillText('友', 5, 12);
         ctx.restore();
       }
@@ -1399,14 +1516,53 @@
         ctx.save();
         ctx.translate(player.x - 28, player.y + 6);
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(20, 16); ctx.lineTo(10, 12); ctx.lineTo(0, 16); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(20, 16); ctx.lineTo(10, 12); ctx.lineTo(0, 16);
+        ctx.fill();
         ctx.restore();
       }
 
-      // 小兵
+      // 三大兵種外觀繪製
       enemies.forEach(en => {
-        ctx.fillStyle = '#aa3333';
-        ctx.beginPath(); ctx.moveTo(en.x + 12, en.y + 24); ctx.lineTo(en.x, en.y); ctx.lineTo(en.x + 24, en.y); ctx.fill();
+        const eImg = enemyImages[`enemy${en.type}`];
+        if (eImg && eImg.complete && eImg.naturalWidth !== 0) {
+          ctx.drawImage(eImg, en.x, en.y, en.w, en.h);
+        } else {
+          ctx.save();
+          ctx.translate(en.x + en.w / 2, en.y + en.h / 2);
+          if (en.type === 1) {
+            ctx.fillStyle = '#26a69a';
+            ctx.beginPath();
+            ctx.moveTo(0, en.h / 2);
+            ctx.lineTo(-en.w / 2, -en.h / 2);
+            ctx.lineTo(0, -en.h / 4);
+            ctx.lineTo(en.w / 2, -en.h / 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#ff1744';
+            ctx.beginPath(); ctx.arc(0, 2, 2.5, 0, Math.PI * 2); ctx.fill();
+          } else if (en.type === 2) {
+            ctx.fillStyle = '#37474f';
+            ctx.fillRect(-en.w / 2, -en.h / 2, en.w, en.h);
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.moveTo(0, en.h / 2 + 6);
+            ctx.lineTo(-en.w / 3, en.h / 2 - 2);
+            ctx.lineTo(en.w / 3, en.h / 2 - 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#ff5722';
+            ctx.fillRect(-4, -4, 8, 8);
+          } else if (en.type === 3) {
+            ctx.fillStyle = '#4e342e';
+            ctx.fillRect(-en.w / 2, -en.h / 2, en.w, en.h);
+            ctx.fillStyle = '#8e24aa';
+            ctx.fillRect(-en.w / 3, -en.h / 3, (en.w * 2) / 3, (en.h * 2) / 3);
+            ctx.fillStyle = '#ffd54f';
+            ctx.fillRect(-8, en.h / 2 - 4, 4, 8);
+            ctx.fillRect(4, en.h / 2 - 4, 4, 8);
+          }
+          ctx.restore();
+        }
       });
 
       // Boss 僚機
@@ -1417,14 +1573,18 @@
         ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
       });
 
-      // ==========================================
-      // Boss 繪製 (震撼漸進式放大 + boss1~6.png 渲染)
-      // ==========================================
+      // Boss 繪製與金色字卡蓄力
       if (boss && boss.hp > 0 && gameState === 'PLAYING') {
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
 
         ctx.save();
-        if (isEnraged) { ctx.shadowBlur = 18; ctx.shadowColor = '#ff0000'; }
+        if (boss.isChargingSkill) {
+          ctx.shadowBlur = 24;
+          ctx.shadowColor = '#ffd700';
+        } else if (isEnraged) {
+          ctx.shadowBlur = 18;
+          ctx.shadowColor = '#ff0000';
+        }
 
         const bImg = bossImages[boss.imgKey];
         if (bImg && bImg.complete && bImg.naturalWidth !== 0) {
@@ -1442,7 +1602,7 @@
         }
         ctx.restore();
 
-        // 血條與名字隨體型全自動貼合
+        // 隨體型自動縮放血條
         ctx.fillStyle = isEnraged ? '#ff4444' : '#fff';
         ctx.font = 'bold 12px sans-serif';
         ctx.fillText(`${boss.name}${isEnraged ? ' (狂暴!)' : ''}`, boss.x, boss.y - 12);
@@ -1451,7 +1611,26 @@
         ctx.fillStyle = isEnraged ? '#ff0000' : '#ff3333';
         ctx.fillRect(boss.x, boss.y - 8, Math.max(0, (boss.hp / boss.maxHp) * boss.w), 5);
 
-        if (bossQuoteTimer < 4.0) {
+        // 金色技能字卡 (半血必出或蓄力時顯示)
+        if (boss.isChargingSkill && boss.skillName) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.88)';
+          ctx.strokeStyle = '#ffd700';
+          ctx.lineWidth = 2;
+          const cardW = 230;
+          const cardH = 36;
+          const cardX = (canvas.width - cardW) / 2;
+          const cardY = 185;
+          ctx.fillRect(cardX, cardY, cardW, cardH);
+          ctx.strokeRect(cardX, cardY, cardW, cardH);
+          ctx.fillStyle = '#ffea00';
+          ctx.font = 'bold 13px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(`⚡ ${boss.skillName}`, canvas.width / 2, cardY + 23);
+          ctx.restore();
+        }
+
+        if (bossQuoteTimer < 4.0 && !boss.isChargingSkill) {
           ctx.fillStyle = 'rgba(0,0,0,0.85)';
           ctx.fillRect(15, 150, canvas.width - 30, 40);
           ctx.strokeStyle = '#d4af37';
