@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>三國1943：赤壁烽火 (八雲 製作)</title>
+  <title>三國1943：赤壁烽火 (v7.2 逐字絕技版) - 八雲 製作</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; -webkit-touch-callout: none; }
     body {
@@ -50,13 +50,18 @@
     }
     .hud b { color: #d4af37; }
 
-    #btnPause {
+    .hud-controls {
+      display: flex;
+      gap: 6px;
       pointer-events: auto;
+    }
+
+    .hud-btn {
       background: rgba(40, 30, 20, 0.7);
       border: 1px solid #d4af37;
       color: #d4af37;
       border-radius: 4px;
-      padding: 3px 8px;
+      padding: 3px 7px;
       font-size: 12px;
       cursor: pointer;
     }
@@ -249,7 +254,10 @@
       <div>天火:<b id="hudBombs">1</b></div>
       <div>援軍:<b id="hudAllies">0</b></div>
       <div>分:<b id="hudScore">0</b></div>
-      <button id="btnPause" onclick="togglePause()">⏸️</button>
+      <div class="hud-controls">
+        <button class="hud-btn" id="btnAudioToggle" onclick="toggleAudio()">🎵</button>
+        <button class="hud-btn" id="btnPause" onclick="togglePause()">⏸️</button>
+      </div>
     </div>
 
     <!-- 左下技能控制艙 -->
@@ -279,10 +287,10 @@
     <!-- 起始畫面 -->
     <div class="overlay-screen" id="startScreen">
       <h1>⚔️ 三國 1943 街機戰</h1>
-      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v7.0 霸王血戰版</div>
+      <div class="author-tag">創作者：八雲 ｜ 測試者：導演、丘比 ｜ 版本：v7.2 逐字絕技版</div>
       
       <p style="font-size:12px; color:#bbb; line-height:1.5; max-width:320px;">
-        【Boss 威壓再進化】Boss 血量翻倍強化，且<b>生命降至 50% 時強制啟動絕技</b>！請善用天火與走位化解危機！
+        【震撼絕技】Boss 蓄力時金色大招逐字浮現後爆裂！支援背景音樂開關與雙手獨立觸控！
       </p>
 
       <div class="diff-select">
@@ -298,7 +306,7 @@
       </div>
 
       <div style="font-size: 11px; color: #888; margin-top: 4px;">
-        電腦：WASD移動 / 空白鍵天火 / C鍵援軍 / X鍵時緩 / P暫停<br>手機：右手滑動戰機 / 左手隨時按技能
+        電腦：WASD移動 / 空白鍵天火 / C鍵援軍 / X鍵時緩 / M鍵音樂 / P暫停<br>手機：右手滑動戰機 / 左手隨時按技能
       </div>
     </div>
 
@@ -306,14 +314,15 @@
     <div class="overlay-screen" id="changelogScreen" style="display: none;">
       <h1 style="font-size:18px;">📜 開發發行歷程</h1>
       <div id="changelogBox">
-        <b>【v7.0 霸王血戰版】(當前版本)</b><br>
-        • Boss 數值平衡大升級：全體 Boss 血量再次加倍，徹底告別秒殺問題！<br>
-        • 半血必殺技鎖定：Boss 生命值跌至 50% 時，強制即刻進入【金色字卡蓄力】並爆發獨門大招！<br>
-        • 完整維持左手獨立多點觸控、DeltaTime 引擎與外部圖檔支援。<br>
+        <b>【v7.2 逐字絕技版】(當前版本)</b><br>
+        • Title 標題精準標註版本號序號。<br>
+        • Boss 絕技字卡震撼升級：22px 大字體、逐字浮現與蓄力爆裂消散動畫！<br>
+        • 頂部 HUD 新增音樂開關按鈕（🎵/🔇），鍵盤支援按 M 鍵切換。<br>
+        • 維持 Boss 雙倍血量、半血強制蓄力大招與多點觸控控制艙。<br>
         • 製作群：創作者【八雲】、特級測試【導演】、【丘比】。<br><br>
-        <b>【v6.0~v6.8】</b><br>
-        • Boss 金色字卡與獨門絕技、三大三國精銳兵種（飛羽/鐵騎/戰樓）。<br>
-        • 震撼漸進式放大體型、防卡死狀態機。
+        <b>【v6.8~v7.0】</b><br>
+        • 三大敵機陣型（飛羽/鐵騎/戰樓）、漸進式體型放大。<br>
+        • 防卡死狀態機、DeltaTime 物理與無縫連關。
       </div>
       <button class="btn btn-sub" onclick="closeChangelog()">返回首頁</button>
     </div>
@@ -396,12 +405,13 @@
 
   <script>
     /* ==========================================================================
-       1. 音效控制器
+       1. 音效與音樂控制器 (支援開關)
        ========================================================================== */
     class SoundController {
       constructor() {
         this.audioElement = document.getElementById('externalBgm');
         this.ctx = null;
+        this.isMuted = false;
       }
       init() {
         if (!this.ctx) {
@@ -410,10 +420,33 @@
         }
         if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
       }
-      playBgm() { this.init(); if (this.audioElement) this.audioElement.play().catch(() => {}); }
-      stopBgm() { if (this.audioElement) { this.audioElement.pause(); this.audioElement.currentTime = 0; } }
+      playBgm() {
+        this.init();
+        if (this.audioElement && !this.isMuted) {
+          this.audioElement.play().catch(() => {});
+        }
+      }
+      stopBgm() {
+        if (this.audioElement) {
+          this.audioElement.pause();
+          this.audioElement.currentTime = 0;
+        }
+      }
+      toggleAudio() {
+        this.isMuted = !this.isMuted;
+        const btn = document.getElementById('btnAudioToggle');
+        if (this.isMuted) {
+          if (this.audioElement) this.audioElement.pause();
+          btn.innerText = '🔇';
+        } else {
+          if (this.audioElement && (gameState === 'PLAYING' || gameState === 'TRANSITION')) {
+            this.audioElement.play().catch(() => {});
+          }
+          btn.innerText = '🎵';
+        }
+      }
       playPew() {
-        if (!this.ctx) return;
+        if (!this.ctx || this.isMuted) return;
         try {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
@@ -427,7 +460,7 @@
         } catch(e) {}
       }
       playBoom() {
-        if (!this.ctx) return;
+        if (!this.ctx || this.isMuted) return;
         try {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
@@ -441,7 +474,7 @@
         } catch(e) {}
       }
       playExtraLifeSound() {
-        if (!this.ctx) return;
+        if (!this.ctx || this.isMuted) return;
         try {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
@@ -455,7 +488,7 @@
         } catch(e) {}
       }
       playSkillChargeSound() {
-        if (!this.ctx) return;
+        if (!this.ctx || this.isMuted) return;
         try {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
@@ -470,6 +503,8 @@
       }
     }
     const snd = new SoundController();
+
+    function toggleAudio() { snd.toggleAudio(); }
 
     /* ==========================================================================
        2. 圖片資源管理
@@ -492,7 +527,7 @@
     }
 
     /* ==========================================================================
-       3. 關卡與 Boss 數值加倍設定
+       3. 關卡與 Boss 數值與絕技設定
        ========================================================================== */
     const STAGES = [
       {
@@ -502,7 +537,7 @@
           name: '猛將 · 華雄', imgKey: 'boss1', quote: '「關東群鼠，誰敢與我華雄一戰！」',
           hp: 600, maxHp: 600, color: '#b83b23', bulletColor: '#ff6644', pattern: 'spread_snipe',
           width: 100, height: 80,
-          skillName: '【力劈華山 · 霸王重斬】', skillCooldown: 5.5
+          skillName: '力劈華山 · 霸王重斬', skillCooldown: 5.5
         }
       },
       {
@@ -512,7 +547,7 @@
           name: '高順 · 陷陣營', imgKey: 'boss2', quote: '「陷陣之志，有死無生！」',
           hp: 880, maxHp: 880, color: '#346633', bulletColor: '#77dd77', pattern: 'spiral',
           width: 120, height: 95,
-          skillName: '【陷陣鐵壁 · 絕對護體】', skillCooldown: 6.0
+          skillName: '陷陣鐵壁 · 絕對護體', skillCooldown: 6.0
         }
       },
       {
@@ -522,7 +557,7 @@
           name: '先鋒 · 夏侯惇', imgKey: 'boss3', quote: '「父精母血不可棄也！納命來！」',
           hp: 1280, maxHp: 1280, color: '#2a5a99', bulletColor: '#6bb3ff', hasMinions: true, minionCount: 2, pattern: 'spread_snipe',
           width: 140, height: 110,
-          skillName: '【啖睛血狂 · 交叉血箭】', skillCooldown: 5.5
+          skillName: '啖睛血狂 · 交叉血箭', skillCooldown: 5.5
         }
       },
       {
@@ -532,7 +567,7 @@
           name: '大將 · 張遼', imgKey: 'boss4', quote: '「威震逍遙津，且教江南小兒止啼！」',
           hp: 1680, maxHp: 1680, color: '#7a2266', bulletColor: '#e066ff', hasMinions: true, minionCount: 2, pattern: 'spiral_dive',
           width: 160, height: 125,
-          skillName: '【八百破十萬 · 鬼神疾走】', skillCooldown: 6.0
+          skillName: '八百破十萬 · 鬼神疾走', skillCooldown: 6.0
         }
       },
       {
@@ -542,7 +577,7 @@
           name: '【赤壁終極】丞相 · 曹操 (連環樓船)', imgKey: 'boss5', quote: '「寧教我負天下人，休教天下人負我！萬弩齊發！」',
           hp: 2200, maxHp: 2200, color: '#a61c1c', bulletColor: '#ff2222', isFinal: true, hasMinions: true, minionCount: 2, pattern: 'final_barrage',
           width: 190, height: 150,
-          skillName: '【連環戰艦 · 萬弩齊發】', skillCooldown: 5.0
+          skillName: '連環戰艦 · 萬弩齊發', skillCooldown: 5.0
         }
       },
       {
@@ -552,7 +587,7 @@
           name: '【邪神降臨】魔化 · 呂布 (無雙鬼神)', imgKey: 'boss6', quote: '「神擋殺神，佛擋殺佛！天下唯我獨尊！」',
           hp: 3200, maxHp: 3200, color: '#8e00a8', bulletColor: '#e040fb', isFinal: true, isBonusBoss: true, hasMinions: true, minionCount: 3, pattern: 'god_barrage',
           width: 215, height: 170,
-          skillName: '【魔神降世 · 方天畫戟亂舞】', skillCooldown: 4.8
+          skillName: '魔神降世 · 方天畫戟亂舞', skillCooldown: 4.8
         }
       }
     ];
@@ -614,6 +649,7 @@
       if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); useUltimateBomb(); }
       if (e.key === 'c' || e.key === 'C') { e.preventDefault(); triggerAllySupport(); }
       if (e.key === 'x' || e.key === 'X') { e.preventDefault(); useTimeSlow(); }
+      if (e.key === 'm' || e.key === 'M') { e.preventDefault(); toggleAudio(); }
       if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { togglePause(); }
     });
     window.addEventListener('keyup', e => { keys[e.key] = false; });
@@ -1148,25 +1184,34 @@
         if (boss.y < 85) boss.y += 70 * dt * timeScale;
         boss.x += Math.sin(Date.now() * 0.002) * moveSpeed * dt;
 
-        // 【關鍵優化】：血量 <= 50% 且尚未觸發過時，立刻強制啟動蓄力大招！
+        // 血量 <= 50% 且尚未觸發過時，立刻強制啟動蓄力大招
         if (boss.hp <= (boss.maxHp * 0.5) && !boss.halfHpSkillTriggered) {
           boss.halfHpSkillTriggered = true;
-          boss.skillTimer = 0.5; // 直接壓進 0.5 秒蓄力狀態
+          boss.skillTimer = 0.5;
+          boss.chargeProgress = 0;
           boss.isChargingSkill = true;
           snd.playSkillChargeSound();
         }
 
-        // 常規技能計時
+        // 蓄力狀態推進
+        if (boss.isChargingSkill) {
+          boss.chargeProgress = Math.min(0.5, boss.chargeProgress + dt);
+        }
+
         boss.skillTimer -= dt * timeScale * diffSpeedFactor;
         if (boss.skillTimer <= 0.5 && !boss.isChargingSkill) {
           boss.isChargingSkill = true;
+          boss.chargeProgress = 0;
           snd.playSkillChargeSound();
         }
 
         if (boss.skillTimer <= 0) {
+          // 爆裂字卡粒子特效
+          triggerSkillCardExplosion();
           executeBossSignatureSkill();
           boss.skillTimer = (curStage.boss.skillCooldown || 6.0) * (isEnraged ? 0.75 : 1.0);
           boss.isChargingSkill = false;
+          boss.chargeProgress = 0;
         }
 
         if (curStage.boss.hasMinions) {
@@ -1269,6 +1314,21 @@
 
       if (flashAlpha > 0) flashAlpha -= 3.0 * dt;
       updateHud();
+    }
+
+    // 觸發大招字卡炸散火花
+    function triggerSkillCardExplosion() {
+      const cardY = 195;
+      for (let i = 0; i < 24; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 260,
+          y: cardY + (Math.random() - 0.5) * 40,
+          vx: (Math.random() - 0.5) * 350,
+          vy: (Math.random() - 0.5) * 350,
+          color: '#ffd700',
+          alpha: 1.0
+        });
+      }
     }
 
     function executeBossSignatureSkill() {
@@ -1392,8 +1452,8 @@
         x: canvas.width / 2 - bConfig.width / 2, y: -bConfig.height - 10,
         hp: bConfig.hp, maxHp: bConfig.maxHp, color: bConfig.color, bulletColor: bConfig.bulletColor,
         isFinal: bConfig.isFinal || false, shootTimer: 0.5, diveTimer: 0, minionSpawnTimer: 1.0,
-        skillName: bConfig.skillName, skillTimer: bConfig.skillCooldown || 6.0, isChargingSkill: false,
-        halfHpSkillTriggered: false // 標記 50% 必殺技是否已釋放
+        skillName: bConfig.skillName, skillTimer: bConfig.skillCooldown || 6.0,
+        isChargingSkill: false, chargeProgress: 0, halfHpSkillTriggered: false
       };
       bossQuoteTimer = 0;
       bossMinions = [];
@@ -1426,8 +1486,8 @@
     }
 
     /* ==========================================================================
-       10. 畫面繪製
-       ========================================================================= */
+       10. 畫面繪製 (大字體、逐字浮現與大招爆裂字卡)
+       ========================================================================== */
     function draw() {
       const curStage = STAGES[currentStageIdx];
       ctx.fillStyle = curStage.bgColor;
@@ -1481,7 +1541,7 @@
         ctx.fillText(label, it.x + 3, it.y + 13);
       });
 
-      // 戰機 (player.png 優先)
+      // 戰機
       if (player.invincibleTimer <= 0 || Math.floor(player.invincibleTimer * 10) % 2 === 0) {
         ctx.save();
         ctx.translate(player.x, player.y);
@@ -1507,7 +1567,9 @@
         ctx.fillStyle = '#00e5ff';
         ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(20, 18); ctx.lineTo(10, 14); ctx.lineTo(0, 18);
         ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.fillText('友', 5, 12);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText('友', 5, 12);
         ctx.restore();
       }
 
@@ -1521,7 +1583,7 @@
         ctx.restore();
       }
 
-      // 三大兵種外觀繪製
+      // 敵機外觀
       enemies.forEach(en => {
         const eImg = enemyImages[`enemy${en.type}`];
         if (eImg && eImg.complete && eImg.naturalWidth !== 0) {
@@ -1573,13 +1635,13 @@
         ctx.fillRect(m.x + 6, m.y + 6, 12, 10);
       });
 
-      // Boss 繪製與金色字卡蓄力
+      // Boss 繪製
       if (boss && boss.hp > 0 && gameState === 'PLAYING') {
         const isEnraged = (boss.hp / boss.maxHp) <= 0.40;
 
         ctx.save();
         if (boss.isChargingSkill) {
-          ctx.shadowBlur = 24;
+          ctx.shadowBlur = 25;
           ctx.shadowColor = '#ffd700';
         } else if (isEnraged) {
           ctx.shadowBlur = 18;
@@ -1602,7 +1664,6 @@
         }
         ctx.restore();
 
-        // 隨體型自動縮放血條
         ctx.fillStyle = isEnraged ? '#ff4444' : '#fff';
         ctx.font = 'bold 12px sans-serif';
         ctx.fillText(`${boss.name}${isEnraged ? ' (狂暴!)' : ''}`, boss.x, boss.y - 12);
@@ -1611,22 +1672,35 @@
         ctx.fillStyle = isEnraged ? '#ff0000' : '#ff3333';
         ctx.fillRect(boss.x, boss.y - 8, Math.max(0, (boss.hp / boss.maxHp) * boss.w), 5);
 
-        // 金色技能字卡 (半血必出或蓄力時顯示)
+        // 【超大字體、逐字浮現的金色大招字卡】
         if (boss.isChargingSkill && boss.skillName) {
           ctx.save();
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.88)';
-          ctx.strokeStyle = '#ffd700';
-          ctx.lineWidth = 2;
-          const cardW = 230;
-          const cardH = 36;
+          const cardW = 300;
+          const cardH = 48;
           const cardX = (canvas.width - cardW) / 2;
           const cardY = 185;
+
+          // 戰意爆發背景框
+          ctx.fillStyle = 'rgba(10, 5, 2, 0.92)';
+          ctx.strokeStyle = '#ffd700';
+          ctx.lineWidth = 3;
+          ctx.shadowBlur = 20;
+          ctx.shadowColor = '#ff9900';
           ctx.fillRect(cardX, cardY, cardW, cardH);
           ctx.strokeRect(cardX, cardY, cardW, cardH);
+
+          // 根據 0.5 秒蓄力時間，計算逐字浮現
+          const fullText = `⚡ ${boss.skillName}`;
+          const progress = Math.min(1.0, boss.chargeProgress / 0.45);
+          const charsToShow = Math.max(1, Math.floor(fullText.length * progress));
+          const textToRender = fullText.substring(0, charsToShow);
+
           ctx.fillStyle = '#ffea00';
-          ctx.font = 'bold 13px sans-serif';
+          ctx.font = '900 20px "PingFang TC", "Microsoft JhengHei", sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText(`⚡ ${boss.skillName}`, canvas.width / 2, cardY + 23);
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = '#ff3d00';
+          ctx.fillText(textToRender, canvas.width / 2, cardY + 31);
           ctx.restore();
         }
 
